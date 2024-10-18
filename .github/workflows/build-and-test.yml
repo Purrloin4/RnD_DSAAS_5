@@ -35,21 +35,28 @@ jobs:
         run: |
             echo "Installing dependencies"
             npm install
+        working-directory: vlinder
 
       - name: Build
         run: |
             echo "Building"
             npm run build
+        working-directory: vlinder
 
       - name: Run tests
         run: |
             echo "Running tests"
             npm run test
+        working-directory: vlinder
+
       - name: Run linter
         run: |
             echo "Running linter"
             npm run lint
+        working-directory: vlinder
+
       - name: Coverage
         run: |
             echo "Running coverage"
             npm run coverage
+        working-directory: vlinder
