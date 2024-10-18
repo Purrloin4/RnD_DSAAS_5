@@ -1,0 +1,62 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+      - staging
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: vlinder/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
+      - name: Install dependencies
+        run: |
+            echo "Installing dependencies"
+            npm install
+        working-directory: vlinder
+
+      - name: Build
+        run: |
+            echo "Building"
+            npm run build
+        working-directory: vlinder
+
+      - name: Run tests
+        run: |
+            echo "Running tests"
+            npm run test
+        working-directory: vlinder
+
+      - name: Run linter
+        run: |
+            echo "Running linter"
+            npm run lint
+        working-directory: vlinder
+
+      - name: Coverage
+        run: |
+            echo "Running coverage"
+            npm run coverage
+        working-directory: vlinder

@@ -58,7 +58,7 @@ To start developing on this project please refer to [here](vlinder/README.md).
 
 ## Implemented Features
 
-- ....
+- CI: a workflow that builds and tests your code
 
 
 
