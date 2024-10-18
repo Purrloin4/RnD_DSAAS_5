@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -32,7 +32,24 @@ jobs:
             ${{ runner.os }}-node_modules-
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+            echo "Installing dependencies"
+            npm ci
+
+      - name: Build
+        run: |
+            echo "Building"
+            npm run build
 
       - name: Run tests
-        run: npm run test
+        run: |
+            echo "Running tests"
+            npm run test
+      - name: Run linter
+        run: |
+            echo "Running linter"
+            npm run lint
+      - name: Coverage
+        run: |
+            echo "Running coverage"
+            npm run coverage
