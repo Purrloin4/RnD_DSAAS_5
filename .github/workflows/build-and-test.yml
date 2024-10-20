@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
             echo "Installing dependencies"
-            npm install
+            npm ci
         working-directory: vlinder
 
       - name: Build
