@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - development
+      - staging
+      - main
   pull_request:
     branches:
       - development
@@ -34,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
             echo "Installing dependencies"
-            npm install
+            npm ci
         working-directory: vlinder
 
       - name: Build
@@ -43,6 +45,11 @@ jobs:
             npm run build
         working-directory: vlinder
 
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:            
       - name: Run tests
         run: |
             echo "Running tests"
