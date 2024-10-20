@@ -12,6 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check Vercel Project Info
+        run: |
+          echo "Project ID: ${{ secrets.VERCEL_PROJECT_ID }}"
+          echo "Org ID: ${{ secrets.VERCEL_ORG_ID }}"
+          echo "Token: ${{ secrets.VERCEL_ACCES_TOKEN }}"
       - name: Checkout code
         uses: actions/checkout@v3
 
