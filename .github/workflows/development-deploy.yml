@@ -24,10 +24,10 @@ jobs:
         run: npm install --global vercel
 
       - name: Pull Vercel development environment
-        run: vercel pull --yes --environment=development --token=${{ secrets.VERCEL_ACCES_TOKEN }}
+        run: vercel pull --yes --environment=development --token=${{ vars.VERCEL_ACCES_TOKEN }}
 
       - name: Build with Vercel
-        run: vercel build --token=${{ secrets.VERCEL_ACCES_TOKEN }}
+        run: vercel build --token=${{ vars.VERCEL_ACCES_TOKEN }}
 
       - name: Deploy to Vercel development
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_ACCES_TOKEN }}
+        run: vercel deploy --prebuilt --token=${{ vars.VERCEL_ACCES_TOKEN }}
