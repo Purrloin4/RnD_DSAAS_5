@@ -8,7 +8,7 @@ on:
     pull_request:
         types: [closed]
         branches:
-            - production
+            - main
 
 jobs:
   deploy_production:
