@@ -1,0 +1,37 @@
+name: Deploy development environment
+
+env:
+  VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+
+on:
+    pull_request:
+        types: [closed]
+        branches:
+            - development
+
+jobs:
+  deploy_production:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel
+
+      - name: Pull Vercel development environment
+        run: vercel pull --yes --environment=development --token=${{vars.VERCEL_ACCES_TOKEN}}
+
+      - name: Build with Vercel
+        run: vercel build --token=${{vars.VERCEL_ACCES_TOKEN}}
+
+      - name: Deploy to Vercel development
+        run: vercel deploy --prebuilt --token=${{vars.VERCEL_ACCES_TOKEN}}
