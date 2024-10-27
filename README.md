@@ -5,7 +5,7 @@
 ## Deployed website
 Our project is deployed to Vercel you can find them here:
 - Production: https://rnd-dsaas-5.vercel.app/
-- Development: https://rnd-dsaas-5-purrloin4-vlinder-cekejee.vercel.app/
+- Development:  preview.rnd-dsaas-5.vercel.app
 
 ## Overview
 
