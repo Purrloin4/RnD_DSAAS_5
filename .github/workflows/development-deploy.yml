@@ -40,4 +40,4 @@ jobs:
           echo "url=${url}" >> $GITHUB_ENV
 
       - name: Assign alias to static preview URL
-        run: vercel alias set "$url" preview.rnd-dsaas-5.vercel.app --token=${{ vars.VERCEL_ACCES_TOKEN }}
+        run: vercel alias set "$url" preview.vlinder-cekejee.vercel.app --token=${{ vars.VERCEL_ACCES_TOKEN }}
