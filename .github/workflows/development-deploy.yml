@@ -34,4 +34,10 @@ jobs:
         run: vercel build --token=${{vars.VERCEL_ACCES_TOKEN}}
 
       - name: Deploy to Vercel development
-        run: vercel deploy --prebuilt --token=${{vars.VERCEL_ACCES_TOKEN}} --env=development
+        id: deploy
+        run: |
+          url="$(vercel deploy --prebuilt --token=${{ vars.VERCEL_ACCES_TOKEN }})""
+          echo "url=${url}" >> $GITHUB_ENV
+
+      - name: Assign alias to static preview URL
+        run: vercel alias set "$url" preview.rnd-dsaas-5.vercel.app --token=${{ vars.VERCEL_ACCES_TOKEN }}
