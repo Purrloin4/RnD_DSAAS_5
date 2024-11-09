@@ -1,18 +1,17 @@
 import Hello from 'Components/hello';
-import {logout} from "./logout/actions";
-import React from "react";
-export default function Page() {
+import {Card, CardBody} from "@nextui-org/react";
 
+function Page() {
 
+    return (
+      <div className='w-1/2 h-1/2'>
+      <Card>
+        <CardBody>
+          <p>Make beautiful websites regardless of your design experience.</p>
+        </CardBody>
+      </Card>
+      </div>
+    );
+}
 
-  return (
-
-
-   <Hello />
-// <form action={logout}>
-//     <button type="submit">
-//      Logout
-//     </button>
-//     </form >
-    )
-  }
+export default Page;
