@@ -15,7 +15,7 @@ The project serves real-world use cases, particularly the **V(l)inder** project,
 
 ## Team Members
 - **Cédric Josse**: DevOps, backend
-- **Eltaj Amirlir**: 
+- **Eltaj Amirli**: 
 - **Kobe_Casaer**:
 - **Thiewout_Bekaert**: 
 - **Wensui Li**:
