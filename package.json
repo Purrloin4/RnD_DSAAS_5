@@ -1,6 +1,10 @@
 {
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "eslint": "^9.14.0",
+    "glob": "^11.0.0",
+    "inflight": "^1.0.6",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
     "supabase": "^1.219.2"
