@@ -1,30 +1,57 @@
 import Hello from 'Components/hello';
+import { createClient } from '@/utils/supabase/server'
 
-const ProfilePage: React.FC = () => {
+
+// Define the type of data you expect from the table
+type UserProfile = {
+    id: string
+    updated_at: string
+    username: string
+    full_name: string
+    avatar_url: string
+    sexual_orientation: string
+    sex_positive: boolean
+    display_disability: boolean
+    disability: string[]
+    hobbies: string[]
+    smoker: boolean
+    birthday: string
+    gender: string
+    need_assistance: boolean
+}
+
+export default async function ProfilePage() {
+    const supabase = createClient()
+
+    // Fetch data from Supabase
+    const { data, error } = await supabase
+        .from('profiles') // replace with your actual table name
+        .select('*')
+        //.eq('username', 'dragon') // replace with the relevant filter
+
+    if (error) {
+        console.error('Error fetching data:', error.message)
+        return <div>Error loading profile</div>
+    }
+
+    if (!data || data.length === 0) {
+        return <div>No profile data found</div>
+    }
+
+    const profileData = data[0] as UserProfile
+
     return (
-        <div className="flex items-center justify-center min-h-screen bg-purple-100">
-            <div className="flex flex-col items-center bg-white p-6 rounded-lg w-11/12 sm:w-80 md:w-96 lg:w-1/4 text-center shadow-lg">
-                <div className="bg-yellow-400 rounded-full w-16 h-16 flex items-center justify-center text-3xl">
-                    👤
-                </div>
-                <div className="bg-yellow-400 w-full text-lg font-bold py-2 mt-4 rounded-lg text-gray-800">
-                    John Johnson
-                </div>
-                <div className="bg-yellow-100 w-full py-2 mt-2 rounded-lg text-gray-800">
-                    SEX: Male
-                </div>
-                <div className="bg-yellow-100 w-full py-2 mt-2 rounded-lg text-gray-800">
-                    SMOKE: ❌
-                </div>
-                <div className="bg-yellow-100 w-full py-2 mt-2 rounded-lg text-gray-800">
-                    AGE: 26
-                </div>
-                <div className="bg-yellow-100 w-full py-2 mt-2 rounded-lg text-gray-800">
-                    HOBBY: ⚽ 🎵
-                </div>
-            </div>
+        <div className="profile-page">
+            <h1>{profileData.full_name}</h1>
+            <img src={profileData.avatar_url} alt="Avatar" />
+            <p>Username: {profileData.username}</p>
+            <p>Gender: {profileData.gender}</p>
+            <p>Birthday: {profileData.birthday}</p>
+            <p>Sexual Orientation: {profileData.sexual_orientation}</p>
+            <p>Smoker: {profileData.smoker ? 'Yes' : 'No'}</p>
+            <p>Disabilities: {profileData.display_disability ? profileData.disability.join(', ') : 'None'}</p>
+            <p>Hobbies: {profileData.hobbies.join(', ')}</p>
+            <p>Needs Assistance: {profileData.need_assistance ? 'Yes' : 'No'}</p>
         </div>
-    );
-};
-
-export default ProfilePage;
+    )
+}
