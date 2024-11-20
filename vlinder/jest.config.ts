@@ -44,13 +44,17 @@ module.exports = {
  
     // Handle module aliases
     '^@/components/(.*)$': '<rootDir>/components/$1',
- 
+    '^@/app/(.*)$': '<rootDir>/vlinder/src/app/$1',
+    '^@/utils/(.*)$': '<rootDir>/vlinder/utils/$1',
+    
     // Handle @next/font
     '@next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
     // Handle next/font
     'next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
     // Disable server-only
     'server-only': `<rootDir>/__mocks__/empty.js`,
+
+
   },
   // Add more setup options before each test is run
   // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

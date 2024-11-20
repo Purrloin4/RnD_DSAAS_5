@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/client'
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Switch, Spacer } from '@nextui-org/react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure } from '@nextui-org/react';
 
 interface Profile{
     id: string;
@@ -13,16 +13,19 @@ interface Profile{
 
 export default function HomePage() {
     const supabase = createClient()
-    const [visible, setVisible] = useState(false);
     const [profiles, setProfiles] =  useState<Profile[]>([]);
     const [smokerFilter, setSmokerFilter] = useState(false);
     const [assistanceFilter, setAssistanceFilter] = useState(false);
     const [loading, setLoading] = useState(true); 
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [isMounted, setIsMounted] = useState(false);
 
-    const openModal = () => setVisible(true);
-    const closeModal = () => setVisible(false);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     async function fetchProfiles(){
+        setLoading(true);
         let query =  supabase
             .from('profiles')
             .select('id, username, avatar_url');    
@@ -46,54 +49,65 @@ export default function HomePage() {
 
     const handleApplyFilters = () => {
         fetchProfiles(); // Re-fetch profiles when filters are applied
-        closeModal();
       };
+
+    if (!isMounted) {
+        return null; // Render nothing on the server because otherwise it will throw a hydration error
+    }
       
     return (
-        <div style={{ padding: '2rem' }}>
+        <div style={{ padding: '2rem', overflowY: 'auto', maxHeight: '100vh' }}>
             <h1>User Profiles</h1>
 
-            <Button color="primary" onPress={openModal}>
+            <Button color="primary" onPress={onOpen}>
                 Open Filters
             </Button>
 
-            <Modal closeButton isOpen = {visible} onClose={closeModal}>
-                <ModalHeader>
-                    <h3>Filters</h3>
-                </ModalHeader>
-                <ModalBody>
-                    <div>
-                        <h4>Not A Smoker</h4>
-                        <Switch isSelected = {smokerFilter} onValueChange={setSmokerFilter}/>
-                    </div>
-                    <Spacer y={1} />
-                    <div>
-                        <h4>Does Not Need Assistance</h4>
-                        <Switch isSelected = {assistanceFilter} onValueChange ={setAssistanceFilter}/>
-                    </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button color="primary" onPress={closeModal}>
-                        Close
-                    </Button>
-                    <Button  color="success" onPress={handleApplyFilters}>
-                        Apply Filters
-                    </Button>
-                </ModalFooter>
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader>
+                                <h3>Filters</h3>
+                            </ModalHeader>
+                            <ModalBody>
+                                <div>
+                                    <h4>Not A Smoker</h4>
+                                    <Switch isSelected={smokerFilter} onValueChange={setSmokerFilter} />
+                                </div>
+                                <Spacer y={1} />
+                                <div>
+                                    <h4>Does Not Need Assistance</h4>
+                                    <Switch isSelected={assistanceFilter} onValueChange={setAssistanceFilter} />
+                                </div>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    Close
+                                </Button>
+                                <Button color="success" onPress={() => { handleApplyFilters(); onClose(); }}>
+                                    Apply Filters
+                                </Button>
+                                // TODO: Need help understanding filters button to have it in a more question like format
+                            </ModalFooter> 
+                        </>
+                    )}
+                </ModalContent>
             </Modal>
 
-            
-            
             <div>
                 <h3>Results</h3>
                 {loading ? (
                 <p>Loading...</p> // Display loading state while fetching profiles
                 ) : (
                 <ul>
-                    {profiles.map((profile) => (
-                    <li key={profile.id}>{profile.username}</li>
-                    ))}
-                </ul>
+                    {profiles.map(profile => (
+                            <div key={profile.id}>
+                                <h2>{profile.username}</h2>
+                                <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+                            </div>
+                        ))}
+                </ul> // TODO: once profile pages are added we can link to them here
                 )}
             </div>
         </div>
