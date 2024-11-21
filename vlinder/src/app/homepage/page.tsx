@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { createClient } from '@/utils/supabase/client'
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure } from '@nextui-org/react';

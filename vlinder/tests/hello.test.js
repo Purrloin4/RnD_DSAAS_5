@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Hello from '../src/components/hello.tsx';
+import Hello from '@/components/hello.tsx';
 
 test('renders Hello component with "Hello World" text', () => {
   render(<Hello />);

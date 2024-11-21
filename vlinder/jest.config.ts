@@ -43,9 +43,9 @@ module.exports = {
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': `<rootDir>/__mocks__/fileMock.js`,
  
     // Handle module aliases
-    '^@/components/(.*)$': '<rootDir>/components/$1',
-    '^@/app/(.*)$': '<rootDir>/vlinder/src/app/$1',
-    '^@/utils/(.*)$': '<rootDir>/vlinder/utils/$1',
+    '^@/components/(.*)$': '<rootDir>/src/components/$1',
+    '^@/app/(.*)$': '<rootDir>/src/app/$1',
+    '^@/utils/(.*)$': '<rootDir>/utils/$1',
     
     // Handle @next/font
     '@next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
@@ -84,4 +84,5 @@ module.exports = {
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
   ],
+  setupFiles: ["<rootDir>/.jest/env.js"]
 }

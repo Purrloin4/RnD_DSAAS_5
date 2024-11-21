@@ -1,23 +1,31 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import HomePage from '@/app/homepage/page';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server-testing';
 
-jest.mock('@/utils/supabase/client');
+import '@testing-library/jest-dom';
 
-const mockProfiles = [
-    { id: '1', username: 'user1', avatar_url: 'avatar1.png' },
-    { id: '2', username: 'user2', avatar_url: 'avatar2.png' },
-];
+
+
+const supabase = createClient();
+export default supabase;
+
+// jest.mock('@/utils/supabase/client');
+
+// const mockProfiles = [
+//     { id: '1', username: 'user1', avatar_url: 'avatar1.png' },
+//     { id: '2', username: 'user2', avatar_url: 'avatar2.png' },
+// ];
 
 describe('HomePage', () => {
-    beforeEach(() => {
-        createClient.mockReturnValue({
-            from: jest.fn().mockReturnThis(),
-            select: jest.fn().mockReturnThis(),
-            eq: jest.fn().mockReturnThis(),
-            then: jest.fn().mockResolvedValue({ data: mockProfiles }),
-        });
-    });
+    // beforeEach(() => {
+    //     createClient.mockReturnValue({
+    //         from: jest.fn().mockReturnThis(),
+    //         select: jest.fn().mockReturnThis(),
+    //         eq: jest.fn().mockReturnThis(),
+    //         then: jest.fn().mockResolvedValue({ data: mockProfiles }),
+    //     });
+    // });
 
     it('renders loading state initially', () => {
         render(<HomePage />);
@@ -26,8 +34,8 @@ describe('HomePage', () => {
 
     it('renders profiles after loading', async () => {
         render(<HomePage />);
-        await waitFor(() => expect(screen.getByText('user1')).toBeInTheDocument());
-        expect(screen.getByText('user2')).toBeInTheDocument();
+        await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
+        expect(screen.getByText('unicorn')).toBeInTheDocument();
     });
 
     it('opens and closes filters modal', () => {
