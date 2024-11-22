@@ -14,7 +14,7 @@ The project serves real-world use cases, particularly the **V(l)inder** project,
 - **Kobe_Casaer**:
 - **Thiewout_Bekaert**: 
 - **Wensui Li**:
-- **Yixuan Li**:
+- **Yixuan Li**: backend, frontend
 
 
 ### Key Features:

@@ -63,7 +63,6 @@ export default function EditProfilePage() {
 
         const fileName = `${profile.id}-${Date.now()}.${avatarFile.name.split('.').pop()}`;
         try {
-            // Upload the file to the 'avatars' bucket
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('avatars')
                 .upload(fileName, avatarFile);
@@ -73,7 +72,6 @@ export default function EditProfilePage() {
                 return null;
             }
 
-            // Get the public URL for the uploaded file
             const { data: publicUrlData } = supabase.storage
                 .from('avatars')
                 .getPublicUrl(fileName);
@@ -121,7 +119,6 @@ export default function EditProfilePage() {
 
     return (
         <div style={styles.profilePage}>
-            <h2>Edit Profile</h2>
             <div style={styles.avatarContainer}>
                 {profile.avatar_url ? (
                     <img src={profile.avatar_url} alt="Avatar" style={styles.avatar} />
@@ -176,23 +173,55 @@ export default function EditProfilePage() {
                     style={styles.input}
                 />
             </div>
-            <div style={styles.inputContainer}>
-                <label>Smoker:</label>
-                <input
-                    type="checkbox"
-                    name="smoker"
-                    checked={profile.smoker}
-                    onChange={handleChange}
-                />
+            <div style={styles.checkboxContainer}>
+                <div
+                    style={{
+                        ...styles.customCheckbox,
+                        ...(profile.smoker ? styles.customCheckboxChecked : {}),
+                    }}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, smoker: !prev.smoker } : null
+                        )
+                    }
+                >
+                    {profile.smoker && <span style={styles.checkmark}></span>}
+                </div>
+                <label
+                    style={styles.label}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, smoker: !prev.smoker } : null
+                        )
+                    }
+                >
+                    Smoker
+                </label>
             </div>
-            <div style={styles.inputContainer}>
-                <label>Display Disability:</label>
-                <input
-                    type="checkbox"
-                    name="display_disability"
-                    checked={profile.display_disability}
-                    onChange={handleChange}
-                />
+            <div style={styles.checkboxContainer}>
+                <div
+                    style={{
+                        ...styles.customCheckbox,
+                        ...(profile.display_disability ? styles.customCheckboxChecked : {}),
+                    }}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, display_disability: !prev.display_disability } : null
+                        )
+                    }
+                >
+                    {profile.display_disability && <span style={styles.checkmark}></span>}
+                </div>
+                <label
+                    style={styles.label}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, display_disability: !prev.display_disability } : null
+                        )
+                    }
+                >
+                    Display Disability
+                </label>
             </div>
             <div style={styles.inputContainer}>
                 <label>Disabilities:</label>
@@ -212,14 +241,30 @@ export default function EditProfilePage() {
                     style={styles.textarea}
                 />
             </div>
-            <div style={styles.inputContainer}>
-                <label>Needs Assistance:</label>
-                <input
-                    type="checkbox"
-                    name="need_assistance"
-                    checked={profile.need_assistance}
-                    onChange={handleChange}
-                />
+            <div style={styles.checkboxContainer}>
+                <div
+                    style={{
+                        ...styles.customCheckbox,
+                        ...(profile.need_assistance ? styles.customCheckboxChecked : {}),
+                    }}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, need_assistance: !prev.need_assistance } : null
+                        )
+                    }
+                >
+                    {profile.need_assistance && <span style={styles.checkmark}></span>}
+                </div>
+                <label
+                    style={styles.label}
+                    onClick={() =>
+                        setProfile((prev) =>
+                            prev ? { ...prev, need_assistance: !prev.need_assistance } : null
+                        )
+                    }
+                >
+                    Needs Assistance
+                </label>
             </div>
             <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
         </div>
@@ -284,6 +329,44 @@ const styles = {
         borderRadius: '5px',
         border: '1px solid #ddd',
     },
+    checkboxContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '15px',
+        cursor: 'pointer',
+    },
+    label: {
+        marginLeft: '10px',
+        cursor: 'pointer',
+    },
+    customCheckbox: {
+        position: 'relative' as const,
+        width: '20px',
+        height: '20px',
+        backgroundColor: '#fff',
+        border: '2px solid #ddd',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'inline-block',
+        flexShrink: 0,
+        marginRight: '10px',
+        transition: 'all 0.2s ease',
+    },
+    customCheckboxChecked: {
+        backgroundColor: '#ffd42f',
+        borderColor: '#ffd42f',
+    },
+    checkmark: {
+        position: 'absolute' as const,
+        content: '""',
+        width: '8px',
+        height: '14px',
+        border: 'solid #fff',
+        borderWidth: '0 2px 2px 0',
+        transform: 'rotate(45deg)',
+        top: '2px',
+        left: '6px',
+    },
     saveButton: {
         padding: '10px 20px',
         backgroundColor: '#ffd42f',
@@ -292,4 +375,3 @@ const styles = {
         cursor: 'pointer',
     },
 };
-
