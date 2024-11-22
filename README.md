@@ -2,6 +2,11 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+## Deployed website
+Our project is deployed to Vercel you can find them here:
+- Production: https://rnd-dsaas-5.vercel.app/
+- Development: https://rnd-dsaas-5-purrloin4-vlinder-cekejee.vercel.app/
+
 ## Overview
 
 The disOrderly SaaS project is a research and development initiative aimed at designing a cloud-hosted Software as a Service (SaaS) application with a focus on motivational design strategies and user-centered principles. This project explores the potential of SaaS applications to drive behavioral change, improve user experiences, and create positive engagement.
@@ -58,7 +63,9 @@ To start developing on this project please refer to [here](vlinder/README.md).
 
 ## Implemented Features
 
-- CI: a workflow that builds and tests your code
+- CI: a workflow that builds and tests your code before allowing merge
+- CD: workflow that deploys the development branch to a development location and deploys the main branch to a production location
+- Testing with Jest 
 
 
 
