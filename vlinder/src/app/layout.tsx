@@ -3,6 +3,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { HotJar } from '@/src/components/Hotjar';
 
+//components
+import Navbar from "Components/Navbar/Navbar";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -28,8 +31,9 @@ export default function RootLayout({
     <html lang="en">
       <HotJar />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
+        <Navbar />
         {children}
       </body>
     </html>
