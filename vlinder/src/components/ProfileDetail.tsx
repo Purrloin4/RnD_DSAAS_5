@@ -9,11 +9,12 @@ interface ProfileDetailProps {
 
 const ProfileDetail: React.FC<ProfileDetailProps> = ({ label, value }) => (
     <div style={styles.detailItem}>
-        {label}: {value}
+        <span style={styles.label}>{label}:</span>
+        <span style={styles.value}>{value}</span>
     </div>
 );
 
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
     detailItem: {
         backgroundColor: '#fff8e5',
         margin: '5px 0',
@@ -21,8 +22,19 @@ const styles = {
         borderRadius: '10px',
         fontSize: '14px',
         display: 'flex',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
+        width: '300px',
+    },
+    label: {
+        fontWeight: 'bold',
+        flex: 1, 
+        textAlign: 'left' as 'left',
+    },
+    value: {
+        fontWeight: 'bold',
+        flex: 2,
+        textAlign: 'right' as 'right', 
     },
 };
 
