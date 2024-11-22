@@ -29,12 +29,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     label: {
         fontWeight: 'bold',
         flex: 1, 
-        textAlign: 'left' as 'left',
+        textAlign: 'left',
     },
     value: {
         fontWeight: 'bold',
         flex: 2,
-        textAlign: 'right' as 'right', 
+        textAlign: 'right', 
     },
 };
 
