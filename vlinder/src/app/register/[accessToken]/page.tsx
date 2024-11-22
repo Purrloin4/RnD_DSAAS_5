@@ -39,20 +39,7 @@ function Page({params,}: {params: Promise<{ accessToken: string }>})
     //if (accessToken == null || !valid) redirect("/register")
     
     return (
-        <main className='flex items-center justify-center min-h-screen'>
-            <div className='w-1/4 p-8 h-fit'>
-                <Logo alt="logo vlinder" className='pb-24'/>
-                <Input
-                    type="text"
-                    label="access token"
-                    defaultValue={accessToken} //problem with loading to early
-                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                    className="max-w-full"
-                />
-                <Link className='m-2 w-full' href='#'>Request an access token</Link>
-                <Button className='w-full mt-8' color="primary">Start my registration</Button>
-            </div>
-        </main>
+        
     );
 }
 
