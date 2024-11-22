@@ -83,6 +83,6 @@ module.exports = {
   transformIgnorePatterns: [
     '/node_modules/',
     '^.+\\.module\\.(css|sass|scss)$',
-  ],
+  ],  
   setupFiles: ["<rootDir>/.jest/env.js"]
 }

@@ -60,28 +60,39 @@ export default function HomePage() {
         <div style={{ padding: '2rem', overflowY: 'auto', maxHeight: '100vh' }}>
             <h1>User Profiles</h1>
 
-            <Button color="primary" onPress={onOpen}>
+            <Button 
+                data-testid="open-filters-button"
+                color="primary" 
+                onPress={onOpen}>
                 Open Filters
             </Button>
 
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal data-testid isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (
                         <>
                             <ModalHeader>
                                 <h3>Filters</h3>
                             </ModalHeader>
-                            <ModalBody>
-                                <div>
-                                    <h4>Not A Smoker</h4>
-                                    <Switch isSelected={smokerFilter} onValueChange={setSmokerFilter} />
-                                </div>
-                                <Spacer y={1} />
-                                <div>
-                                    <h4>Does Not Need Assistance</h4>
-                                    <Switch isSelected={assistanceFilter} onValueChange={setAssistanceFilter} />
-                                </div>
-                            </ModalBody>
+                                <ModalBody>
+                                    <div>
+                                        <h4>Not A Smoker</h4>
+                                        <Switch 
+                                            data-testid="smoker-switch"
+                                            isSelected={smokerFilter}   
+                                            onValueChange={setSmokerFilter} 
+                                        />
+                                    </div>
+                                    <Spacer y={1} />
+                                    <div>
+                                        <h4 >Does Not Need Assistance</h4>
+                                        <Switch 
+                                            data-testid="assistance-switch"
+                                            isSelected={assistanceFilter} 
+                                            onValueChange={setAssistanceFilter} 
+                                        />
+                                    </div>
+                                </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={onClose}>
                                     Close

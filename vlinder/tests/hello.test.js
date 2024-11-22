@@ -5,7 +5,13 @@ import Hello from '@/components/hello.tsx';
 
 test('renders Hello component with "Hello World" text', () => {
   render(<Hello />);
-  const helloElement = screen.getByText(/Hello World/i);
+  var helloElement = null;
+  if (process.env.LANDING_TEXT != null) {
+    helloElement = screen.getByText(process.env.LANDING_TEXT);
+  }
+  else {
+    helloElement = screen.getByText(/Hello World/i);
+  }
   expect(helloElement).toBeInTheDocument();
 });
 
