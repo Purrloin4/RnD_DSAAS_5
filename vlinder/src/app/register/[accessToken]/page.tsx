@@ -39,7 +39,7 @@ function Page({params,}: {params: Promise<{ accessToken: string }>})
     //if (accessToken == null || !valid) redirect("/register")
     
     return (
-        
+        <></>
     );
 }
 
