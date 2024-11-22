@@ -9,22 +9,8 @@ import '@testing-library/jest-dom';
 const supabase = createClient();
 export default supabase;
 
-// jest.mock('@/utils/supabase/client');
-
-// const mockProfiles = [
-//     { id: '1', username: 'user1', avatar_url: 'avatar1.png' },
-//     { id: '2', username: 'user2', avatar_url: 'avatar2.png' },
-// ];
 
 describe('HomePage', () => {
-    // beforeEach(() => {
-    //     createClient.mockReturnValue({
-    //         from: jest.fn().mockReturnThis(),
-    //         select: jest.fn().mockReturnThis(),
-    //         eq: jest.fn().mockReturnThis(),
-    //         then: jest.fn().mockResolvedValue({ data: mockProfiles }),
-    //     });
-    // });
 
     it('renders loading state initially', () => {
         render(<HomePage />);
@@ -35,6 +21,7 @@ describe('HomePage', () => {
         render(<HomePage />);
         await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
         expect(screen.getByText('unicorn')).toBeInTheDocument();
+        expect(screen.getByText('mamaBear')).toBeInTheDocument();
     });
 
     // it('opens and closes filters modal', () => {
