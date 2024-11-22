@@ -1,7 +1,7 @@
-'use client'
-
+// 'use client'
+import { profile } from 'console'
 import { useEffect, useState, useRef } from 'react'
-import supabase from '@/utils/supabase/supabase'
+import {createClient} from '@/utils/supabase/server'
 
 type Message = {
   id: string
@@ -9,62 +9,110 @@ type Message = {
   content: string
   profile_id: string
   profile: {
+    id: string
     username: string
   }
 }
-export default function Messages() {
+type MessagesProps = {
+  roomId: string
+}
+let profileCache: any = {}
+export default function Messages({ roomId }: MessagesProps) {
+
+  
+const supabase = createClient()
+  const [userId, setUserId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const messagesRef = useRef<HTMLDivElement>(null)
-    const getData = async () => {
+
+  console.log({ messagesRef })
+
+  const getData = async () => {
     const { data } = await supabase
-      // .from<Message>('messages')
       .from('messages')
-      .select('*, profile: profiles(username)')
+      .select('*, profile: profiles(id, username)')
+      .match({ room_id: roomId })
+      .order('created_at')
 
     if (!data) {
       alert('no data')
       return
     }
+
+    data
+      .map((message) => message.profile)
+      .forEach((profile) => {
+        profileCache[profile.id] = profile
+      })
     setMessages(data)
-    if(messagesRef.current){
+
+    if (messagesRef.current) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }
+
   useEffect(() => {
     getData()
   }, [])
+
   useEffect(() => {
-    const subscription = supabase
-    .from<Message>('messages')
-    .on('INSERT', () => {
-      getData()
-    })
-    .subscribe()
-      // .channel('messages')
-      // .on(
-      //   'postgres_changes', // Event type for listening to database changes
-      //   {
-      //     event: 'INSERT',
-      //     schema: 'public',
-      //     table: 'messages',
-      //   },
-      //   () => {
-      //     getData(); // Fetch new data on each new insert
-      //   }
-      // )
-      // .subscribe();
-  
-  
+    const channel = supabase
+      .channel('realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: 'room_id=eq.${roomId}'
+        },
+        (payload: { new: Message }) => {
+          if (payload && payload.new) {
+            const newMessage = {
+              ...payload.new,
+              profile: profileCache[payload.new.profile_id] || {
+                id: payload.new.profile_id,
+                username: 'Unknown',
+              },
+            }
+
+            setMessages((current) => [...current, newMessage])
+
+            if (messagesRef.current) {
+              messagesRef.current.scrollTop = messagesRef.current.scrollHeight
+            }
+          } else {
+            console.error('Unexpected payload structure:', payload)
+          }
+        }
+      )
+        
+      .subscribe()
+
     return () => {
-      // supabase.removeSubscription(subscription)
-      supabase.removeChannel(subscription)
+      supabase.removeChannel(channel)
     }
   }, [])
 
-  const userId = supabase.auth.user()?.id
+
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      if (error) {
+        console.error('Error fetching user:', error)
+      } else {
+        setUserId(data?.user?.id || null)
+      }
+    }
+
+    getUser()
+  }, [])
+
   console.log({ messages })
+
   return (
-    <div className="flex-1 overflow-y-scroll bg-pink-200"ref={messagesRef}>
+    <div className="flex-1 overflow-y-scroll bg-pink-200" ref={messagesRef}>
       <ul className="flex flex-col justify-end space-y-1 p-4">
         {messages.map((message) => (
           <li
