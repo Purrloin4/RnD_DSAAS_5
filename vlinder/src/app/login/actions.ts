@@ -1,5 +1,4 @@
 'use server'
-
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -16,12 +15,13 @@ export async function login(formData: FormData) {
   }
 
   const { error } = await supabase.auth.signInWithPassword(data)
+
   if (error) {
     redirect('/login?message=Could not authenticate user')
   }
 
   revalidatePath('/', 'layout')
-  redirect('/chat')
+  redirect('/private')
 }
 
 export async function signup(formData: FormData) {

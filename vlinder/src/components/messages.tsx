@@ -1,7 +1,7 @@
 // 'use client'
 import { profile } from 'console'
 import { useEffect, useState, useRef } from 'react'
-import {createClient} from '@/utils/supabase/server'
+import supabase from '@/utils/supabase/supabase'
 
 type Message = {
   id: string
@@ -20,7 +20,7 @@ let profileCache: any = {}
 export default function Messages({ roomId }: MessagesProps) {
 
   
-const supabase = createClient()
+// const supabase = createClient()
   const [userId, setUserId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const messagesRef = useRef<HTMLDivElement>(null)
