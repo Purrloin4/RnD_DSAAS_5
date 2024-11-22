@@ -26,7 +26,7 @@ export default function EditProfilePage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const router = useRouter();
 
-    const userId = document.cookie.split('; ').find(row => row.startsWith('userId='))?.split('=')[1] || '637465ac-0729-442c-8dc8-441d2303f560';
+    const userId = '637465ac-0729-442c-8dc8-441d2303f560';
 
     const fetchProfile = async () => {
         const { data, error } = await supabase
