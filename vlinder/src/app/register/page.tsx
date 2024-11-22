@@ -7,7 +7,7 @@ import { Input, Link, Button } from "@nextui-org/react";
 
 
 //Components
-import Logo from 'Components/Logo'
+import Logo from '@/src/components/Logo/Logo'
 
 function Page() {
     return (

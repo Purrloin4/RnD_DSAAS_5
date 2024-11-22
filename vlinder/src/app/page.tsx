@@ -1,4 +1,3 @@
-import Hello from 'Components/hello';
 import {Card, CardBody} from "@nextui-org/react";
 
 function Page() {
