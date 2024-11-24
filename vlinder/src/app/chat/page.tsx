@@ -66,7 +66,7 @@ import InitUser from "@/utils/store/InitUser";
 import ChatInput from "@/src/components/ChatInput";
 import ListMessages from "@/src/components/ListMessages";
 import ChatMessages from "@/src/components/ChatMessages";
-// import ChatAbout from "@/src/components/ChatAbout";
+import ChatAbout from "@/src/components/ChatAbout";
 
 export default async function Page() {
 	const supabase = createClient();

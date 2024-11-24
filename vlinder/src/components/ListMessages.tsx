@@ -6,7 +6,7 @@ import { DeleteAlert, EditAlert } from "./MessageActions";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { ArrowDown } from "lucide-react";
-// import LoadMoreMessages from "./LoadMoreMessages";
+import LoadMoreMessages from "./LoadMoreMessages";
 
 export default function ListMessages() {
 	const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
@@ -114,7 +114,7 @@ export default function ListMessages() {
 				onScroll={handleOnScroll}
 			>
 				<div className="flex-1 pb-5 ">
-					{/* <LoadMoreMessages /> */}
+					<LoadMoreMessages />
 				</div>
 				<div className=" space-y-7">
 					{messages.map((value, index) => {

@@ -4,7 +4,7 @@ import {Button, ButtonGroup} from "@nextui-org/button";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-// import ChatPresence from "./ChatPresence";
+import ChatPresence from "./ChatPresence";
 import {login} from "@/src/app/login/actions";
 
 export default function ChatHeader({ user }: { user: User | undefined }) {
@@ -20,7 +20,7 @@ export default function ChatHeader({ user }: { user: User | undefined }) {
 			<div className="p-5 border-b flex items-center justify-between h-full">
 				<div>
 					<h1 className="text-xl font-bold">Daily Chat</h1>
-					{/* <ChatPresence /> */}
+					<ChatPresence />
 				</div>
 				{/* {user ? (
 					<Button formAction={handleLogout}>Logout</Button>
