@@ -114,12 +114,14 @@ export default function HomePage() {
                 ) : (
                 <ul>
                     {profiles.map(profile => (
-                            <div key={profile.id}>
-                                <h2>{profile.username}</h2>
-                                <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
-                            </div>
-                        ))}
-                </ul> // TODO: once profile pages are added we can link to them here
+                        <div key={profile.id}>
+                            <h2>
+                                <a href={`/profile/${profile.id}`}>{profile.username}</a>
+                            </h2>
+                            <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+                        </div>
+                    ))}
+                </ul> 
                 )}
             </div>
         </div>
