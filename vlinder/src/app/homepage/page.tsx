@@ -19,7 +19,13 @@ interface Profile{
 
 export default function HomePage() {
     const supabase = createClient()
-    const userId = '637465ac-0729-442c-8dc8-441d2303f560';
+    var userId: string;
+    if (process.env.NODE_ENV === 'test') {
+        userId = '637465ac-0729-442c-8dc8-441d2303f560-id'; // unicode test user ID for testing
+    }
+    else {
+        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // Hardcoded user ID for now
+    }
     const [profile, setProfile] = useState<Profile | null>(null);
     const [profiles, setProfiles] =  useState<Profile[]>([]);
     const [loverFilter, setLoverFilter] = useState(false);
@@ -65,8 +71,10 @@ export default function HomePage() {
 
             if (profile?.sexual_orientation === 'heterosexual') {
             query = query.neq('gender', profile.gender);
+            query = query.neq('sexual_orientation', 'asexual');
             } else if (profile?.sexual_orientation === 'asexual') {
             query = query.eq('gender', profile.gender);
+            query = query.eq('sexual_orientation', 'asexual');
             }
         } else {
             if (!genderFilter.includes("Male")) {
@@ -195,14 +203,8 @@ export default function HomePage() {
                     )}
                 </ModalContent>
             </Modal>
-
-            <div>
-                <h3>Results</h3>
-                {loading ? (
-                <p>Loading...</p> // Display loading state while fetching profiles
-                ) : (
-                    <>
-                        {profile?.sex_positive && (
+            
+            {profile?.sex_positive && (
                             <div>
                                 <h4>Looking for a lover?</h4>
                                 <Switch 
@@ -211,7 +213,21 @@ export default function HomePage() {
                                     onValueChange={setLoverFilter} 
                                 />
                             </div>
-                        )}
+                )}
+            <div>
+                                <h4>Looking for a lover?</h4>
+                                <Switch 
+                                    data-testid="lover-switch"
+                                    isSelected={loverFilter} 
+                                    onValueChange={setLoverFilter} 
+                                />
+                            </div>
+            <div>
+                <h3>Results</h3>
+                {loading ? (
+                <p>Loading...</p> // Display loading state while fetching profiles
+                ) : (
+                    <>
                         <ul>
                             {profiles.map(profile => (
                                 <div key={profile.id}>

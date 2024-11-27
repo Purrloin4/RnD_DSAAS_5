@@ -24,6 +24,14 @@ describe('HomePage', () => {
         expect(screen.getByText('mamaBear')).toBeInTheDocument();
     });
 
+    it('test lover switch/filter', async () => {
+        render(<HomePage />);
+        await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
+        fireEvent.click(screen.getByTestId('lover-switch'));
+        expect(screen.queryByText('dragon')).not.toBeInTheDocument();
+        await waitFor(() => expect(screen.getByText('mamaBear')).toBeInTheDocument());
+    });
+
     // it('opens and closes filters modal', () => {
     //     render(<HomePage />);
     //     fireEvent.click(screen.getByTestId('open-filters-button'));
