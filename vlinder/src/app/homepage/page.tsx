@@ -109,9 +109,6 @@ export default function HomePage() {
 
     // Apply filters when user is looking for a lover
     useEffect(() => {
-        if (!loverFilter) {
-            //setGenderFilter(["Male", "Female", "Other"]);
-        }
         fetchProfiles();
     }, [loverFilter]);
 
@@ -197,7 +194,7 @@ export default function HomePage() {
                                 <Button color="success" onPress={() => { fetchProfiles(); onClose(); }}>
                                     Apply Filters
                                 </Button>
-                                // TODO: Need help understanding filters button to have it in a more question like format
+                                {/* TODO: Need help understanding filters button to have it in a more question like format */}
                             </ModalFooter> 
                         </>
                     )}
