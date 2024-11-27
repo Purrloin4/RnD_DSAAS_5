@@ -27,7 +27,7 @@ describe('HomePage', () => {
     it('test lover switch/filter', async () => {
         render(<HomePage />);
         await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
-        fireEvent.click(screen.getByTestId('lover-switch'));
+        await waitFor(() => fireEvent.click(screen.getByTestId('lover-switch')));
         expect(screen.queryByText('dragon')).not.toBeInTheDocument();
         await waitFor(() => expect(screen.getByText('mamaBear')).toBeInTheDocument());
     });
