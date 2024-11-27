@@ -65,10 +65,8 @@ export default function HomePage() {
 
             if (profile?.sexual_orientation === 'heterosexual') {
             query = query.neq('gender', profile.gender);
-            setGenderFilter(genderFilter.filter(gender => gender !== profile.gender));
             } else if (profile?.sexual_orientation === 'asexual') {
             query = query.eq('gender', profile.gender);
-            setGenderFilter([profile.gender]);
             }
         } else {
             if (!genderFilter.includes("Male")) {
@@ -104,7 +102,7 @@ export default function HomePage() {
     // Apply filters when user is looking for a lover
     useEffect(() => {
         if (!loverFilter) {
-            setGenderFilter(["Male", "Female", "Other"]);
+            //setGenderFilter(["Male", "Female", "Other"]);
         }
         fetchProfiles();
     }, [loverFilter]);
@@ -154,11 +152,17 @@ export default function HomePage() {
                                         orientation="horizontal"
                                         value = {genderFilter}
                                         onValueChange={setGenderFilter}
-                                        isReadOnly={loverFilter}
+                                        isDisabled={loverFilter}
                                     >
-                                        <Checkbox value="Male">Male</Checkbox>
-                                        <Checkbox value="Female">Female</Checkbox>
-                                        <Checkbox value="Other">Other</Checkbox>
+                                    {!loverFilter ? (
+                                        <>
+                                            <Checkbox value="Male">Male</Checkbox>
+                                            <Checkbox value="Female">Female</Checkbox>
+                                            <Checkbox value="Other">Other</Checkbox>
+                                        </>
+                                    ) : (
+                                        <text>Gender filter is applied based on your sexual orientation</text>
+                                    )}
                                     </CheckboxGroup>
                                     </div>
                                     <Spacer y={1} />
