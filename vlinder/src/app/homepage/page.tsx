@@ -21,10 +21,10 @@ export default function HomePage() {
     const supabase = createClient()
     let userId: string;
     if (process.env.NODE_ENV === 'test') {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560-id'; // unicode test user ID for testing
+        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // unicorn test user ID for testing
     }
     else {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // Hardcoded user ID for now
+        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // Hardcoded unicorn user ID for now
     }
     const [profile, setProfile] = useState<Profile | null>(null);
     const [profiles, setProfiles] =  useState<Profile[]>([]);
