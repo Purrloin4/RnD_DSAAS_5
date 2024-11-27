@@ -19,7 +19,7 @@ interface Profile{
 
 export default function HomePage() {
     const supabase = createClient()
-    var userId: string;
+    let userId: string;
     if (process.env.NODE_ENV === 'test') {
         userId = '637465ac-0729-442c-8dc8-441d2303f560-id'; // unicode test user ID for testing
     }
@@ -211,14 +211,7 @@ export default function HomePage() {
                                 />
                             </div>
                 )}
-            <div>
-                                <h4>Looking for a lover?</h4>
-                                <Switch 
-                                    data-testid="lover-switch"
-                                    isSelected={loverFilter} 
-                                    onValueChange={setLoverFilter} 
-                                />
-                            </div>
+
             <div>
                 <h3>Results</h3>
                 {loading ? (
