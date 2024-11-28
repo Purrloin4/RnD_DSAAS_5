@@ -57,8 +57,8 @@ export default function Message({ message }: { message: Imessage }) {
 </div>
 
 
-          {/* Message Actions (Edit/Delete) for Own Messages */}
-          {isOwnMessage && <MessageMenu message={message} />}
+          {/* Message Actions (Edit/Delete) for Own Messages
+          {isOwnMessage && <MessageMenu message={message} />} */}
         </div>
 
         {/* Message Text */}
@@ -68,32 +68,32 @@ export default function Message({ message }: { message: Imessage }) {
   );
 }
 
-const MessageMenu = ({ message }: { message: Imessage }) => {
-  const setActionMessage = useMessage((state) => state.setActionMessage);
+// const MessageMenu = ({ message }: { message: Imessage }) => {
+//   const setActionMessage = useMessage((state) => state.setActionMessage);
 
-  return (
-    <Dropdown>
-      <DropdownTrigger>
-        <MoreHorizontal />
-      </DropdownTrigger>
-      <DropdownMenu aria-label="Actions">
-        <DropdownItem
-          onClick={() => {
-            document.getElementById("trigger-edit")?.click();
-            setActionMessage(message);
-          }}
-        >
-          Edit
-        </DropdownItem>
-        <DropdownItem
-          onClick={() => {
-            document.getElementById("trigger-delete")?.click();
-            setActionMessage(message);
-          }}
-        >
-          Delete
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  );
-};
+//   return (
+//     <Dropdown>
+//       <DropdownTrigger>
+//         <MoreHorizontal />
+//       </DropdownTrigger>
+//       <DropdownMenu aria-label="Actions">
+//         <DropdownItem
+//           onClick={() => {
+//             document.getElementById("trigger-edit")?.click();
+//             setActionMessage(message);
+//           }}
+//         >
+//           Edit
+//         </DropdownItem>
+//         <DropdownItem
+//           onClick={() => {
+//             document.getElementById("trigger-delete")?.click();
+//             setActionMessage(message);
+//           }}
+//         >
+//           Delete
+//         </DropdownItem>
+//       </DropdownMenu>
+//     </Dropdown>
+//   );
+// };

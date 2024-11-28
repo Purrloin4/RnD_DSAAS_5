@@ -25,6 +25,7 @@ export type Imessage = {
         smoker: boolean | null
         updated_at: string | null
         username: string | null
+		organization_id: string | null
 	
 	} | null;
 };

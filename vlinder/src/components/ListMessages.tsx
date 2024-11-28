@@ -42,6 +42,7 @@ export default function ListMessages() {
 								...payload.new,
 								profiles: data,
 							};
+							
 							addMessage(newMessage as Imessage);
 						}
 					}
@@ -122,8 +123,8 @@ export default function ListMessages() {
 					})}
 				</div>
 
-				<DeleteAlert />
-				<EditAlert />
+				{/* <DeleteAlert />
+				<EditAlert /> */}
 			</div>
 			{userScrolled && (
 				<div className=" absolute bottom-20 w-full">
