@@ -3,7 +3,8 @@ import { login, signup } from './actions';
 import { Button, Input } from "@nextui-org/react";
 
 export default function LoginPage() {
-  const widthClass = "w-[70%]"; 
+  const widthClass = "w-[70%]"; // Change this to "w-[70%]" to update all widths
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center space-y-4 w-full">
@@ -14,6 +15,7 @@ export default function LoginPage() {
           className={widthClass}
         />
 
+        {/* Password Input */}
         <Input
           type="password"
           label="Password"
@@ -21,6 +23,7 @@ export default function LoginPage() {
           className={widthClass}
         />
 
+        {/* Login Button */}
         <Button
           size="lg"
           className={`${widthClass} bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg py-3`}
