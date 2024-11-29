@@ -8,7 +8,7 @@ import { Input, Button } from "@nextui-org/react";
 import Link from "next/link";
 import { Select, SelectSection, SelectItem } from "@nextui-org/select";
 //Components
-import Logo from "Components/Logo";
+import Logo from "Components/Logo/Logo";
 
 export default function page() {
   const organisations = [
@@ -21,12 +21,7 @@ export default function page() {
     <main className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md p-8 h-fit bg-white rounded-md shadow-md">
         <Logo alt="logo vlinder" className="pb-8 mx-auto" />
-        <Input
-          type="email"
-          label="Email"
-          placeholder="john.doe@vlinder.com"
-          className="max-w-full"
-        />
+        <Input type="email" label="Email" placeholder="john.doe@vlinder.com" className="max-w-full" />
 
         <Select label="Select your organisation" className="max-w-full mt-4">
           {organisations.map((organisation) => (
