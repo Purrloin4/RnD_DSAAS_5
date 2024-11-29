@@ -14,9 +14,14 @@ npm update
 
 > Run the development server:
 **Make sure to cd to the react root folder so cd ./vlinder/**
-
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -27,17 +32,13 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ### Adding new packages
 When you install new packages trough npm with the comand:
-
 ```bash
 npm install ###
 ```
-
 They are automatically added to package-lock.json, when you have merge conflicts because other packages were installed on a more up do date development branch make sure when fixing the conflict to **add the packages of both branches.**
-
 ### Environment variables
 Environment variables are stored in `.env`, this folder will also be put on the git so the tests do not fail.
 If you want to change the variables for your local development you can use `.env.development.local` or `.env.local` as stated in the [Next.js documentation](https://nextjs.org/docs/basic-features/environment-variables). How to use them in the code is also explained in the documentation.
-
 If an environment variable is needed on the deployment server, it needs to be add on Vercel. So send the variable to the project manager (Cédric) so he can add it.
 
 ## Learn More

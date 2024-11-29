@@ -15,7 +15,7 @@ The project serves real-world use cases, particularly the **V(l)inder** project,
 
 ## Team Members
 - **Cédric Josse**: DevOps, backend
-- **Eltaj Amirlir**: 
+- **Eltaj Amirli**: 
 - **Kobe_Casaer**:
 - **Thiewout_Bekaert**: 
 - **Wensui Li**:
@@ -65,6 +65,7 @@ To start developing on this project please refer to [here](vlinder/README.md).
 
 - CI: a workflow that builds and tests your code before allowing merge
 - CD: workflow that deploys the development branch to a development location and deploys the main branch to a production location
+- Testing with Jest 
 
 
 

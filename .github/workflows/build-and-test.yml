@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,13 +23,18 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache node modules
-        uses: actions/cache@v3
+      - name: Cache next modules
+        uses: actions/cache@v4
         with:
-          path: vlinder/node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+          path: |
+            ~/.npm
+            ${{ github.workspace }}/vlinder/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: |
-            ${{ runner.os }}-node_modules-
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Install dependencies
         run: |
