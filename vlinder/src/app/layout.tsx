@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { HotJar } from '@/src/components/Hotjar';
 
 //components
 import Navbar from "Components/Navbar";
@@ -28,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <HotJar />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
