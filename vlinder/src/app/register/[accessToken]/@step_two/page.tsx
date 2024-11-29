@@ -16,9 +16,7 @@ import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
 
 export default function page() {
   const [location, setLocation] = useState<string>("");
-  const [locationError, setLocationError] = useState<string | undefined>(
-    undefined
-  );
+  const [locationError, setLocationError] = useState<string | undefined>(undefined);
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(event.target.value);
@@ -79,20 +77,8 @@ export default function page() {
     <section className="w-full h-96 flex flex-col justify-start items-center p-4">
       <h2>Enter Your Personal Information</h2>
       <div className="w-full max-w-md p-8 h-fit">
-        <Input
-          className="w-full mb-4"
-          color="default"
-          type="text"
-          label="First Name"
-          placeholder="Enter First Name"
-        />
-        <Input
-          className="w-full mb-4"
-          color="default"
-          type="text"
-          label="Last Name"
-          placeholder="Enter Last Name"
-        />
+        <Input className="w-full mb-4" color="default" type="text" label="First Name" placeholder="Enter First Name" />
+        <Input className="w-full mb-4" color="default" type="text" label="Last Name" placeholder="Enter Last Name" />
         <DatePicker label="Birth Date" className="w-full mb-4" />
         <Input
           className="w-full"

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { useState } from "react";
 
 //Components
 import { Input } from "@nextui-org/react";
@@ -17,13 +18,7 @@ export default function page() {
     <section className="w-full h-96 flex flex-col justify-start items-center p-4">
       <h2>Enter Your Email And Password</h2>
       <div className="w-full max-w-md p-8 h-fit">
-        <Input
-          className="w-full mb-4"
-          color="default"
-          type="email"
-          label="Email"
-          placeholder="Enter Your Email"
-        />
+        <Input className="w-full mb-4" color="default" type="email" label="Email" placeholder="Enter Your Email" />
         <Input
           className="w-full mb-4"
           color="default"
