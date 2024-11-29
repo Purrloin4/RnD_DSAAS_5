@@ -34,9 +34,18 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
         fetchWorkerData();
     }, []);
 
-    const handleButtonClick = () => {
+    const handleCheckActivitiesClick = () => {
         if (worker && worker.organization_id) {
-            // Navigate to URL in the desired format
+            // Navigate to the Check Activities page
+            router.push(`/admin/${params.id}/checkactivities/${worker.organization_id}`);
+        } else {
+            alert('Organization ID not found!');
+        }
+    };
+
+    const handleProfileClick = () => {
+        if (worker && worker.organization_id) {
+            // Navigate to the Organization Profile page
             router.push(`/admin/${params.id}/checkprofile/${worker.organization_id}`);
         } else {
             alert('Organization ID not found!');
@@ -50,8 +59,15 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
     return (
         <div style={styles.container}>
             <h1 style={styles.greeting}>Hello! {worker.name}</h1>
-            <button style={styles.button} onClick={handleButtonClick}>
-                Go to Organization Profile
+
+            {/* Go to Organization Profile Button */}
+            <button style={styles.button} onClick={handleProfileClick}>
+                Check Profiles
+            </button>
+
+            {/* Check Activities Button */}
+            <button style={styles.button} onClick={handleCheckActivitiesClick}>
+                Check Activities
             </button>
         </div>
     );
@@ -80,5 +96,6 @@ const styles = {
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
+        marginTop: '10px',
     },
 };
