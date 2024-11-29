@@ -10,7 +10,7 @@ import { Button } from "@nextui-org/react";
 import { EyeFilledIcon } from "Components/Icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "Components/Icons/EyeSlashFilledIcon";
 
-export default function page() {
+export default function Page() {
   const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 

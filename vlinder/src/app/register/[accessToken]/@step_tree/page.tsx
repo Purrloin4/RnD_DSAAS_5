@@ -14,7 +14,7 @@ import { Button } from "@nextui-org/react";
 import { EyeFilledIcon } from "Components/Icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "Components/Icons/EyeSlashFilledIcon";
 
-export default function page() {
+export default function Page() {
   const [gender, setGender] = React.useState<Gender | undefined>(undefined);
   const [sexualOrientation, setSexualOrientation] = React.useState<SexualOrientation | undefined>(undefined);
 

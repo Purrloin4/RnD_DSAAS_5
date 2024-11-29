@@ -14,7 +14,7 @@ import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
 //  We can also request for location every time they log on
 //
 
-export default function page() {
+export default function Page() {
   const [location, setLocation] = useState<string>("");
   const [locationError, setLocationError] = useState<string | undefined>(undefined);
 
