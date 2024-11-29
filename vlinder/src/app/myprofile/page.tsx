@@ -25,10 +25,25 @@ export default function EditProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const router = useRouter();
+    const [userId, setUserId] = useState<string | null>(null);
 
-    const userId = '637465ac-0729-442c-8dc8-441d2303f560';
+    // 获取当前用户的 ID
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error || !data?.user) {
+                // 如果用户未登录，则重定向到登录页面
+                router.push('/login');
+            } else {
+                setUserId(data.user.id);  // 保存用户 ID
+            }
+        };
+        fetchUser();
+    }, [router]);
 
     const fetchProfile = async () => {
+        if (!userId) return; // 确保只有在获取到用户 ID 后才执行查询
+
         const { data, error } = await supabase
             .from('profiles')
             .select('*')
@@ -43,8 +58,10 @@ export default function EditProfilePage() {
     };
 
     useEffect(() => {
-        fetchProfile();
-    }, []);
+        if (userId) {
+            fetchProfile();
+        }
+    }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -266,24 +283,24 @@ export default function EditProfilePage() {
                     Needs Assistance
                 </label>
             </div>
-            <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
+            <button onClick={handleSave} style={styles.saveButton}>Save</button>
+            <div style={styles.emptySpace}></div>
         </div>
     );
 }
 
 const styles = {
     profilePage: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        alignItems: 'center',
+        width: '400px',
+        margin: 'auto',
         padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f8e8ff',
-        minHeight: '100vh',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        backgroundColor: '#f9f9f9',
     },
     avatarContainer: {
         display: 'flex',
-        flexDirection: 'column' as const,
+        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: '20px',
     },
@@ -291,87 +308,84 @@ const styles = {
         width: '100px',
         height: '100px',
         borderRadius: '50%',
-        objectFit: 'cover' as const,
-        marginBottom: '10px',
     },
     placeholder: {
         width: '100px',
         height: '100px',
         borderRadius: '50%',
-        backgroundColor: '#ccc',
+        backgroundColor: '#ddd',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: '10px',
+        alignItems: 'center',
     },
     fileInput: {
         marginTop: '10px',
     },
     inputContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        marginBottom: '15px',
-        width: '300px',
+        marginBottom: '10px',
     },
     input: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-    },
-    textarea: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-        height: '80px',
+        width: '100%',
+        padding: '8px',
+        marginTop: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
     },
     select: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
+        width: '100%',
+        padding: '8px',
+        marginTop: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+    },
+    textarea: {
+        width: '100%',
+        height: '80px',
+        padding: '8px',
+        marginTop: '5px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
     },
     checkboxContainer: {
         display: 'flex',
         alignItems: 'center',
-        marginBottom: '15px',
-        cursor: 'pointer',
-    },
-    label: {
-        marginLeft: '10px',
-        cursor: 'pointer',
+        marginBottom: '10px',
     },
     customCheckbox: {
-        position: 'relative' as const,
         width: '20px',
         height: '20px',
-        backgroundColor: '#fff',
-        border: '2px solid #ddd',
+        border: '1px solid #ccc',
         borderRadius: '4px',
-        cursor: 'pointer',
-        display: 'inline-block',
-        flexShrink: 0,
         marginRight: '10px',
-        transition: 'all 0.2s ease',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        cursor: 'pointer',
     },
     customCheckboxChecked: {
-        backgroundColor: '#ffd42f',
-        borderColor: '#ffd42f',
+        backgroundColor: '#007BFF',
     },
     checkmark: {
-        position: 'absolute' as const,
-        content: '""',
-        width: '8px',
-        height: '14px',
-        border: 'solid #fff',
-        borderWidth: '0 2px 2px 0',
-        transform: 'rotate(45deg)',
-        top: '2px',
-        left: '6px',
+        width: '10px',
+        height: '10px',
+        backgroundColor: '#fff',
+        borderRadius: '50%',
+    },
+    label: {
+        cursor: 'pointer',
     },
     saveButton: {
-        padding: '10px 20px',
-        backgroundColor: '#ffd42f',
+        width: '100%',
+        padding: '10px',
+        backgroundColor: '#007BFF',
+        color: '#fff',
         border: 'none',
-        borderRadius: '5px',
+        borderRadius: '4px',
         cursor: 'pointer',
+        fontSize: '16px',
+        marginBottom: '30px'
+    },
+    emptySpace: {
+        height: '60px',
     },
 };
