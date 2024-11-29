@@ -1,13 +1,13 @@
 "use client";
 import { redirect, useRouter } from "next/navigation";
-import Link from "next/link"
+import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 
 //Next-ui components
 import { Input, Button } from "@nextui-org/react";
 
 //Components
-import Logo from "Components/Logo";
+import Logo from "Components/Logo/Logo";
 
 function Page() {
   return (
@@ -20,7 +20,7 @@ function Page() {
           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           className="max-w-full"
         />
-        <Link className="block mt-2 text-sm text-blue-500" href="./register/request-access" 	replace>
+        <Link className="block mt-2 text-sm text-blue-500" href="./register/request-access" replace>
           Request an access token
         </Link>
         <Button className="w-full mt-8" color="primary">

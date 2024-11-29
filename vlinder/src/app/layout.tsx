@@ -4,7 +4,7 @@ import "./globals.css";
 import { HotJar } from '@/src/components/Hotjar';
 
 //components
-import Navbar from "Components/Navbar";
+import Navbar from "Components/Navbar/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,7 +33,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
-        <Navbar></Navbar>
+        <Navbar />
         {children}
       </body>
     </html>
