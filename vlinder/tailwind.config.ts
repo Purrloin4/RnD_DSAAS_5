@@ -1,3 +1,4 @@
+import { colors } from "@nextui-org/react";
 import type { Config } from "tailwindcss";
 const {nextui} = require("@nextui-org/react");
 
@@ -11,14 +12,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: "var(--primary)",
-        secondary: "var(--secondary)",
+        background: "var(--background-)",
+        foreground: "var(--foreground-)",
+        primary: "var(--primary-)",
+        //secondary: "var(--secondary-)",
       },
     },
   },
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [nextui({
+    themes: {
+      light:{
+        colors:{
+          primary: {
+            DEFAULT: "#9333ea",
+            foreground: "#ffffff",
+          },
+          secondary: {
+            DEFAULT: "#facc15",
+            foreground: "#000000",
+          }
+        }
+      },
+      dark:{
+
+      }
+    }
+  })],
 };
 export default config;
