@@ -40,6 +40,7 @@ export default function Page() {
             color={gender === g ? "primary" : "default"}
             className="w-full mb-4"
             data-gender={g}
+            key={g}
             onClick={genderChange}
           >
             {GenderDisplayNames[g]}
@@ -52,6 +53,7 @@ export default function Page() {
             color={sexualOrientation === o ? "primary" : "default"}
             className="w-full mb-4"
             data-sexualOrientation={o}
+            key={o}
             onClick={sexualOrientationChange}
           >
             {SexualOrientationDisplayNames[o]}
