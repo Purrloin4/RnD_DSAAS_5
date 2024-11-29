@@ -27,22 +27,20 @@ export default function EditProfilePage() {
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
 
-    // 获取当前用户的 ID
     useEffect(() => {
         const fetchUser = async () => {
             const { data, error } = await supabase.auth.getUser();
             if (error || !data?.user) {
-                // 如果用户未登录，则重定向到登录页面
                 router.push('/login');
             } else {
-                setUserId(data.user.id);  // 保存用户 ID
+                setUserId(data.user.id);
             }
         };
         fetchUser();
     }, [router]);
 
     const fetchProfile = async () => {
-        if (!userId) return; // 确保只有在获取到用户 ID 后才执行查询
+        if (!userId) return;
 
         const { data, error } = await supabase
             .from('profiles')

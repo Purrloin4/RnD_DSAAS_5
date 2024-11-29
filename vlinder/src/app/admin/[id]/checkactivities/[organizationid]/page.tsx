@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
@@ -10,14 +10,26 @@ interface Activity {
     id: string;
     title: string;
     time: string;
-    visibility: string;
-    visible_to_organizations: string[];
+    description: string;
+    place: string;
+    picture_url: string;
     organization_id: string;
 }
 
 interface UserActivity {
     user_id: string;
-    activity_id: string;  // Ensure activity_id is part of the interface
+    activity_id: string;
+}
+
+interface UserWithActivity {
+    user_id: string;
+    activity_id: string;
+    full_name: string;
+    organization_name: string;
+}
+
+interface Organization {
+    name: string;
 }
 
 export default function CheckActivitiesPage({
@@ -27,11 +39,34 @@ export default function CheckActivitiesPage({
 }) {
     const [comingActivities, setComingActivities] = useState<Activity[]>([]);
     const [pastActivities, setPastActivities] = useState<Activity[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<UserWithActivity[]>([]);
     const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
-    const [userActivities, setUserActivities] = useState<UserActivity[]>([]);
+    const [showComingActivities, setShowComingActivities] = useState(true);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [worker, setWorker] = useState<any | null>(null);
-    const [showComingActivities, setShowComingActivities] = useState(true); // Track the selected tab
+    const [loading, setLoading] = useState(true);
+    const [loadingUsers, setLoadingUsers] = useState(false); // Add loading state for users
     const router = useRouter();
+
+    // Fetch user data and check for admin role
+    const fetchUserData = async () => {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData?.user) {
+            router.push('/login');
+        } else {
+            const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', userData.user.id)
+                .single();
+
+            if (profileError) {
+                console.error('Error fetching profile:', profileError);
+            } else {
+                setIsAdmin(profileData?.role === 'admin');
+            }
+        }
+    };
 
     const fetchActivities = async () => {
         // Fetch worker's organization ID
@@ -47,69 +82,97 @@ export default function CheckActivitiesPage({
             console.error('Error fetching worker data:', workerError);
         }
 
-        // Fetch coming activities (visibility = 'all' or visibility = 'specific')
-        const { data: allActivities, error: activitiesError } = await supabase
-            .from('activities')
-            .select('*')
-            .or(`visibility.eq.all,visibility.eq.specific`)
-            .filter('visible_to_organizations', 'cs', `{${params.organizationid}}`)
-            .gt('time', new Date().toISOString()); // Fetch activities after current time
+        // Fetch activity IDs associated with the organization
+        const { data: activityOrgData, error: activityOrgError } = await supabase
+            .from('activity_organization')
+            .select('activity_id')
+            .eq('organization_id', params.organizationid);
 
-        // Fetch coming activities with visibility = 'all'
-        const { data: allActivitiesNoFilter, error: activitiesErrorNoFilter } = await supabase
-            .from('activities')
-            .select('*')
-            .eq('visibility', 'all')
-            .gt('time', new Date().toISOString()); // Fetch activities after current time
+        if (activityOrgData) {
+            const activityIds = activityOrgData.map((item) => item.activity_id);
 
-        // Merge both results into one list for coming activities
-        const mergedActivities = [
-            ...(allActivities || []), // activities with visibility = 'specific'
-            ...(allActivitiesNoFilter || []), // activities with visibility = 'all'
-        ];
+            // Fetch upcoming activities (future events)
+            const { data: comingActivitiesData, error: comingActivitiesError } = await supabase
+                .from('activities')
+                .select('*')
+                .in('id', activityIds)
+                .gt('time', new Date().toISOString());
 
-        if (mergedActivities) {
-            setComingActivities(mergedActivities);
+            if (comingActivitiesData) {
+                setComingActivities(comingActivitiesData);
+            } else {
+                console.error('Error fetching coming activities:', comingActivitiesError);
+            }
+
+            // Fetch past activities (past events)
+            const { data: pastActivitiesData, error: pastActivitiesError } = await supabase
+                .from('activities')
+                .select('*')
+                .in('id', activityIds)
+                .lt('time', new Date().toISOString());
+
+            if (pastActivitiesData) {
+                setPastActivities(pastActivitiesData);
+            } else {
+                console.error('Error fetching past activities:', pastActivitiesError);
+            }
         } else {
-            console.error('Error fetching coming activities:', activitiesError || activitiesErrorNoFilter);
-        }
-
-        // Fetch past activities
-        const { data: pastActivitiesData, error: pastActivitiesError } = await supabase
-            .from('activities')
-            .select('*')
-            .lt('time', new Date().toISOString()); // Fetch activities before current time
-
-        if (pastActivitiesData) {
-            setPastActivities(pastActivitiesData);
-        } else {
-            console.error('Error fetching past activities:', pastActivitiesError);
+            console.error('Error fetching activity organization data:', activityOrgError);
         }
     };
 
-    const fetchUserActivities = async (activityId: string) => {
+    const fetchUsersForActivity = async (activityId: string) => {
+        setLoadingUsers(true); // Start loading users
         const { data, error } = await supabase
             .from('user_activity')
-            .select('user_id, activity_id')  // Make sure both user_id and activity_id are fetched
+            .select('user_id')
             .eq('activity_id', activityId);
 
         if (data) {
-            setUserActivities(data);  // Set the data to userActivities state
+            const userDetails = await Promise.all(
+                data.map(async (item) => {
+                    const { data: profileData, error: profileError } = await supabase
+                        .from('profiles')
+                        .select('full_name, organization_id')
+                        .eq('id', item.user_id)
+                        .single();
+
+                    if (profileError || !profileData) {
+                        console.error('Error fetching profile data:', profileError);
+                        return null;
+                    }
+
+                    const { data: organizationData, error: orgError } = await supabase
+                        .from('organizations')
+                        .select('name')
+                        .eq('id', profileData.organization_id)
+                        .single();
+
+                    if (orgError || !organizationData) {
+                        console.error('Error fetching organization data:', orgError);
+                        return null;
+                    }
+
+                    return {
+                        user_id: item.user_id,
+                        activity_id: activityId,
+                        full_name: profileData.full_name,
+                        organization_name: organizationData.name,
+                    };
+                })
+            );
+
+            setSelectedUsers(userDetails.filter(Boolean) as UserWithActivity[]);
         } else {
-            console.error('Error fetching user activities:', error);
+            console.error('Error fetching users for activity:', error);
         }
+        setLoadingUsers(false); // Stop loading users
     };
 
     const handleActivitySelect = (activityId: string) => {
-        setSelectedActivityId(activityId);
-        fetchUserActivities(activityId);  // Fetch user activities when an activity is selected
-    };
-
-    const handleEditActivity = (activityId: string) => {
-        if (worker && worker.organization_id) {
-            router.push(`/admin/${params.id}/editactivity/${activityId}`);
-        } else {
-            alert('Activity ID not found!');
+        if (activityId !== selectedActivityId) {
+            setSelectedActivityId(activityId);
+            fetchUsersForActivity(activityId);
         }
     };
 
@@ -117,29 +180,54 @@ export default function CheckActivitiesPage({
         setShowComingActivities(showComing);
     };
 
+    const handleEditActivity = (activityId: string) => {
+        console.log(`Editing activity with ID: ${activityId}`);
+        router.push(`/editactivity/${activityId}`);
+    };
+
     useEffect(() => {
-        fetchActivities();
+        fetchUserData(); // Fetch user data and check for admin role
     }, []);
+
+    useEffect(() => {
+        if (isAdmin !== null) {
+            fetchActivities(); // Only fetch activities after confirming admin status
+        }
+    }, [isAdmin]);
+
+    useEffect(() => {
+        if (isAdmin !== null && worker) {
+            setLoading(false); // Set loading to false once data is loaded
+        }
+    }, [isAdmin, worker]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (isAdmin === false) {
+        return <div>You do not have permission to access this page.</div>;
+    }
 
     if (!worker) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div style={styles.container}>
-            <h1 style={styles.title}>Check Activities</h1>
-            
+        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+            <h1>Check Activities</h1>
+
             {/* Toggle between Coming and Past Activities */}
-            <div style={styles.tabs}>
-                <button 
-                    style={styles.tabButton} 
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <button
                     onClick={() => handleTabSwitch(true)}
+                    style={{ padding: '10px 20px' }}
                 >
                     Coming Activities
                 </button>
-                <button 
-                    style={styles.tabButton} 
+                <button
                     onClick={() => handleTabSwitch(false)}
+                    style={{ padding: '10px 20px' }}
                 >
                     Past Activities
                 </button>
@@ -147,22 +235,69 @@ export default function CheckActivitiesPage({
 
             {/* Display Coming Activities */}
             {showComingActivities ? (
-                <div style={styles.activitiesList}>
+                <div>
                     {comingActivities.length > 0 ? (
                         comingActivities.map((activity) => (
-                            <div key={activity.id} style={styles.activityItem}>
-                                <h3>{activity.title}</h3>
-                                <p>{activity.time}</p>
+                            <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
+                                <div style={{ flex: 1 }}>
+                                    <h3>{activity.title}</h3>
+                                    <p>{activity.time}</p>
+                                    <p>{activity.description}</p>
+                                    <p>{activity.place}</p>
 
-                                {/* If activity belongs to the user's organization, show the edit button */}
-                                {activity.organization_id === worker.organization_id && (
+                                    {activity.organization_id === worker.organization_id && (
+                                        <button
+                                            onClick={() => handleEditActivity(activity.id)}
+                                            style={{
+                                                marginTop: '10px',
+                                                padding: '5px 10px',
+                                                backgroundColor: '#28a745',
+                                                color: '#fff',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            Edit Activity
+                                        </button>
+                                    )}
+
                                     <button
-                                        onClick={() => handleEditActivity(activity.id)}
-                                        style={styles.editButton}
+                                        onClick={() => handleActivitySelect(activity.id)}
+                                        style={{
+                                            marginTop: '10px',
+                                            padding: '5px 10px',
+                                            backgroundColor: '#17a2b8',
+                                            color: '#fff',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                        }}
                                     >
-                                        Edit Activity
+                                        Show Users
                                     </button>
-                                )}
+
+                                    {selectedActivityId === activity.id && loadingUsers && (
+                                        <p>Loading users...</p>
+                                    )}
+
+                                    {selectedActivityId === activity.id && !loadingUsers && selectedUsers.length > 0 && (
+                                        <ul>
+                                            {selectedUsers.map((user) => (
+                                                <li key={user.user_id}>
+                                                    {user.full_name} ({user.organization_name})
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Right-aligned Image */}
+                                <div style={{ flexShrink: 0, marginLeft: '20px' }}>
+                                    <img
+                                        src={activity.picture_url}
+                                        alt={activity.title}
+                                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                    />
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -170,12 +305,25 @@ export default function CheckActivitiesPage({
                     )}
                 </div>
             ) : (
-                <div style={styles.activitiesList}>
+                <div>
                     {pastActivities.length > 0 ? (
                         pastActivities.map((activity) => (
-                            <div key={activity.id} style={styles.activityItem}>
-                                <h3>{activity.title}</h3>
-                                <p>{activity.time}</p>
+                            <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
+                                <div style={{ flex: 1 }}>
+                                    <h3>{activity.title}</h3>
+                                    <p>{activity.time}</p>
+                                    <p>{activity.description}</p>
+                                    <p>{activity.place}</p>
+                                </div>
+
+                                {/* Right-aligned Image */}
+                                <div style={{ flexShrink: 0, marginLeft: '20px' }}>
+                                    <img
+                                        src={activity.picture_url}
+                                        alt={activity.title}
+                                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                    />
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -183,72 +331,6 @@ export default function CheckActivitiesPage({
                     )}
                 </div>
             )}
-
-            {/* Dropdown to select an activity and view users */}
-            {selectedActivityId && (
-                <div style={styles.userList}>
-                    <h3>Users Interested in {comingActivities.find(a => a.id === selectedActivityId)?.title}</h3>
-                    <ul>
-                        {userActivities.map((userActivity) => (
-                            <li key={userActivity.user_id}>
-                                User ID: {userActivity.user_id}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
         </div>
     );
 }
-
-const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontFamily: 'Arial, sans-serif',
-    },
-    title: {
-        fontSize: '24px',
-        color: '#333',
-        marginBottom: '20px',
-    },
-    tabs: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        width: '100%',
-    },
-    tabButton: {
-        padding: '10px 20px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        backgroundColor: '#007bff',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-    },
-    activitiesList: {
-        width: '100%',
-        marginTop: '20px',
-        padding: '0 20px',
-    },
-    activityItem: {
-        borderBottom: '1px solid #ccc',
-        padding: '10px 0',
-    },
-    editButton: {
-        marginTop: '10px',
-        padding: '10px 20px',
-        fontSize: '16px',
-        backgroundColor: '#28a745',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-    },
-    userList: {
-        marginTop: '30px',
-    },
-};
