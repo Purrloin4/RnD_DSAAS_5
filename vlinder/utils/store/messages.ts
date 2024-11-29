@@ -9,7 +9,13 @@ export type Imessage = {
 	is_edit: boolean;
 	profile_id: string;
 	content: string;
-	profiles: {
+	room_id:string,
+	rooms:{
+		id:string
+		created_at: string | null
+		name:string|null
+	}|null, 
+		profiles: {
         avatar_url: string | null
         birthday: string | null
         disability: string[] | null
@@ -28,6 +34,7 @@ export type Imessage = {
 		organization_id: string | null
 	
 	} | null;
+
 };
 
 interface MessageState {
