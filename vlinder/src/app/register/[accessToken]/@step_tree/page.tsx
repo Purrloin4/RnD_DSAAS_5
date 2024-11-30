@@ -52,7 +52,7 @@ export default function Page() {
           <Button
             color={sexualOrientation === o ? "primary" : "default"}
             className="w-full mb-4"
-            data-sexualOrientation={o}
+            data-sexualorientation={o}
             key={o}
             onClick={sexualOrientationChange}
           >

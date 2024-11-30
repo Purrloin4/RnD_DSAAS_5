@@ -4,7 +4,7 @@ enum Gender {
   Other = "Other",
 }
 
-const GenderDisplayNames: { [key in Gender]: string } = {
+const GenderDisplayNames: Record<Gender, string> = {
   [Gender.Male]: "Male",
   [Gender.Female]: "Female",
   [Gender.Other]: "Other (Non-binary)",

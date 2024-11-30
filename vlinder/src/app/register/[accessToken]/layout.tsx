@@ -10,13 +10,15 @@ function RegisterLayout({
   step_two,
   step_tree,
   step_four,
+  step_five,
 }: {
   step_one: React.ReactNode;
   step_two: React.ReactNode;
   step_tree: React.ReactNode;
   step_four: React.ReactNode;
+  step_five: React.ReactNode;
 }) {
-  const steps = [step_one, step_two, step_tree, step_four];
+  const steps = [step_one, step_two, step_tree, step_four, step_five];
   const numberOfSteps = steps.length;
   const nextStep = () => {
     setStep(step < numberOfSteps - 1 ? step + 1 : numberOfSteps - 1);
@@ -30,19 +32,14 @@ function RegisterLayout({
 
   return (
     <main className="">
-      <Progress
-        size="sm"
-        radius="none"
-        aria-label="steps"
-        value={((step + 1) / numberOfSteps) * 100}
-      />
+      <Progress size="sm" radius="none" aria-label="steps" value={((step + 1) / numberOfSteps) * 100} />
       {steps[step]}
-      <div className="w-full flex justify-center gap-4 absolute bottom-4">
-        <Button onClick={prevStep} color="primary" className="min-w-fit w-1/3">
+      <div className="w-full flex justify-center gap-4 absolute bottom-4 text-center">
+        <Button onClick={prevStep} disabled={step == 0} color="primary" className="min-w-fit w-1/3">
           Previous
         </Button>
         <Button onClick={nextStep} color="primary" className="min-w-fit w-1/3">
-          Next
+          {step == numberOfSteps - 1 ? "Done" : "Next"}
         </Button>
       </div>
     </main>

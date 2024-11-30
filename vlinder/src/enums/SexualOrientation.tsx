@@ -4,7 +4,7 @@ enum SexualOrientation {
   Both = "Both",
 }
 
-const SexualOrientationDisplayNames: { [key in SexualOrientation]: string } = {
+const SexualOrientationDisplayNames: Record<SexualOrientation, string> = {
   [SexualOrientation.Male]: "Male",
   [SexualOrientation.Female]: "Female",
   [SexualOrientation.Both]: "Both",
