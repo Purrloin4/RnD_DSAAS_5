@@ -23,7 +23,7 @@ interface Profile {
     sex_positive: boolean;
     gender: string;
     display_disability: boolean;
-    disability: string[];
+    disability: string;
     profile_hobbies: ProfileHobby[];
 }
 
@@ -112,35 +112,30 @@ export default function HomePage() {
         }
 
         const { data: profiles } = await query;
-        const filteredProfiles = profiles?.map(profile => ({
-            ...profile,
-            profile_hobbies: profile.profile_hobbies.map((ph: any) => ({
-                hobbies: ph.hobbies[0]
-            }))
-        })).filter(profile => {
+        const filteredProfiles = profiles?.filter(profile => {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-
+        console.log(filteredProfiles);
         setProfiles(filteredProfiles || []);
         setLoading(false);
 
         
-        const { data, error } = await supabase.from('profiles').select(`id, 
-                username, 
-                avatar_url, 
-                birthday, 
-                sexual_orientation, 
-                sex_positive, 
-                gender, 
-                display_disability, 
-                disability, 
-                profile_hobbies (
-                hobbies (id, name, emoji)
-            )`);
+        // const { data, error } = await supabase.from('profiles').select(`id, 
+        //         username, 
+        //         avatar_url, 
+        //         birthday, 
+        //         sexual_orientation, 
+        //         sex_positive, 
+        //         gender, 
+        //         display_disability, 
+        //         disability, 
+        //         profile_hobbies (
+        //         hobbies (id, name, emoji)
+        //     )`);
 
-            setProfiles(data || []);
-            console.log(data);
+        //     setProfiles(data || []);
+        //     console.log(data);
     }
 
     // Fetch profiles when the page is rendered
@@ -264,28 +259,27 @@ export default function HomePage() {
                 ) : (
                     <>
                         <ul>
-                        {profiles.map(profile => (
-                            <div key={profile.id}>
-                                <h2>
-                                    <a href={`/profile/${profile.id}`}>{profile.username}</a>
-                                </h2>
-                                <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
-                                {/* Display hobbies */}
-                                <ul>
-                                    {profile.profile_hobbies.length > 0 ? (
-                                        profile.profile_hobbies.map(profile_hobby => {
-                                            console.log(profile_hobby.hobbies[0].name);
-                                            return (
-                                                <></>
-                                            );
-                                        })
+                            {profiles.map(profile => (
+                                <div key={profile.id}>
+                                    <h2>
+                                        <a href={`/profile/${profile.id}`}>{profile.username}</a>
+                                    </h2>
+                                    <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+                                    {/* Display hobbies if they exist */}
+                                    {profile.profile_hobbies?.length > 0 ? (
+                                        <ul>
+                                            {profile.profile_hobbies.map((ph, index) => (
+                                                <li key={index}>
+                                                    {ph.hobbies.name} {ph.hobbies.emoji}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     ) : (
-                                        <li>No hobbies listed</li>
+                                        <p>No hobbies listed.</p>
                                     )}
-                                </ul>
-                            </div>
-                        ))}
-                    </ul>
+                                </div>
+                            ))}
+                        </ul>
                     </>
                 )}
             </div>
