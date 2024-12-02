@@ -5,16 +5,28 @@ import { createClient } from '@/utils/supabase/client'
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure, Slider, CheckboxGroup, Checkbox } from '@nextui-org/react';
 
-interface Profile{
+interface Hobby {
+    id: number;
+    name: string;
+    emoji: string;
+}
+
+interface ProfileHobby {
+    hobbies: Hobby;
+}
+
+interface Profile {
     id: string;
     username: string;
-    avatar_url: string,
+    avatar_url: string;
     sexual_orientation: string;
     sex_positive: boolean;
     gender: string;
     display_disability: boolean;
     disability: string[];
+    profile_hobbies: ProfileHobby[];
 }
+
 
 
 export default function HomePage() {
@@ -57,7 +69,18 @@ export default function HomePage() {
         setLoading(true);
         let query = supabase
             .from('profiles')
-            .select('id, username, avatar_url, birthday, sexual_orientation, sex_positive, gender, display_disability, disability');    
+            .select(`id, 
+                username, 
+                avatar_url, 
+                birthday, 
+                sexual_orientation, 
+                sex_positive, 
+                gender, 
+                display_disability, 
+                disability, 
+                profile_hobbies (
+                hobbies (id, name, emoji)
+            )`);    
 
         if (smokerFilter == true) {
             query = query.eq('smoker', false);
@@ -89,13 +112,35 @@ export default function HomePage() {
         }
 
         const { data: profiles } = await query;
-        const filteredProfiles = profiles?.filter(profile => {
+        const filteredProfiles = profiles?.map(profile => ({
+            ...profile,
+            profile_hobbies: profile.profile_hobbies.map((ph: any) => ({
+                hobbies: ph.hobbies[0]
+            }))
+        })).filter(profile => {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
 
         setProfiles(filteredProfiles || []);
         setLoading(false);
+
+        
+        const { data, error } = await supabase.from('profiles').select(`id, 
+                username, 
+                avatar_url, 
+                birthday, 
+                sexual_orientation, 
+                sex_positive, 
+                gender, 
+                display_disability, 
+                disability, 
+                profile_hobbies (
+                hobbies (id, name, emoji)
+            )`);
+
+            setProfiles(data || []);
+            console.log(data);
     }
 
     // Fetch profiles when the page is rendered
@@ -219,15 +264,28 @@ export default function HomePage() {
                 ) : (
                     <>
                         <ul>
-                            {profiles.map(profile => (
-                                <div key={profile.id}>
-                                    <h2>
-                                        <a href={`/profile/${profile.id}`}>{profile.username}</a>
-                                    </h2>
-                                    <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
-                                </div>
-                            ))}
-                        </ul>
+                        {profiles.map(profile => (
+                            <div key={profile.id}>
+                                <h2>
+                                    <a href={`/profile/${profile.id}`}>{profile.username}</a>
+                                </h2>
+                                <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+                                {/* Display hobbies */}
+                                <ul>
+                                    {profile.profile_hobbies.length > 0 ? (
+                                        profile.profile_hobbies.map(profile_hobby => {
+                                            console.log(profile_hobby.hobbies[0].name);
+                                            return (
+                                                <></>
+                                            );
+                                        })
+                                    ) : (
+                                        <li>No hobbies listed</li>
+                                    )}
+                                </ul>
+                            </div>
+                        ))}
+                    </ul>
                     </>
                 )}
             </div>
