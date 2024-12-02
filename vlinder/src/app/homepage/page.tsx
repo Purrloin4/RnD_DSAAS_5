@@ -116,26 +116,9 @@ export default function HomePage() {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-        console.log(filteredProfiles);
+
         setProfiles(filteredProfiles || []);
         setLoading(false);
-
-        
-        // const { data, error } = await supabase.from('profiles').select(`id, 
-        //         username, 
-        //         avatar_url, 
-        //         birthday, 
-        //         sexual_orientation, 
-        //         sex_positive, 
-        //         gender, 
-        //         display_disability, 
-        //         disability, 
-        //         profile_hobbies (
-        //         hobbies (id, name, emoji)
-        //     )`);
-
-        //     setProfiles(data || []);
-        //     console.log(data);
     }
 
     // Fetch profiles when the page is rendered

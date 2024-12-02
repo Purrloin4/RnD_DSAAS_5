@@ -6,6 +6,16 @@ import ProfileDetail from 'Components/ProfileDetail';
 
 const supabase = createClient();
 
+interface Hobby {
+    id: number;
+    name: string;
+    emoji: string;
+}
+
+interface ProfileHobby {
+    hobbies: Hobby;
+}
+
 interface UserProfile {
     id: string;
     username: string;
@@ -19,8 +29,8 @@ interface UserProfile {
     birthday: string;
     gender: string;
     need_assistance: boolean;
+    profile_hobbies: ProfileHobby[];
 }
-
 
 function calculateAge(birthday: string) {
     const birthDate = new Date(birthday);
@@ -35,7 +45,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     const fetchProfile = async () => {
         const { data, error } = await supabase
             .from('profiles')
-            .select('id, username, full_name, avatar_url, sexual_orientation, display_disability, disability, hobbies, smoker, birthday, gender, need_assistance')
+            .select(`id, 
+                    username, 
+                    full_name, 
+                    avatar_url, 
+                    sexual_orientation, 
+                    display_disability, 
+                    disability, 
+                    smoker, 
+                    birthday, 
+                    gender, 
+                    need_assistance,
+                    profile_hobbies (
+                    hobbies (id, name, emoji))
+                    `)
             .eq('id', params.id)
             .single();
 
@@ -68,7 +91,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             {profile.display_disability && (
                 <ProfileDetail label="DISABILITIES" value={profile.disability.join(', ') || 'None'} />
             )}
-            <ProfileDetail label="HOBBY" value={profile.hobbies.join(', ')} />
+            <ProfileDetail label="HOBBIES" value={profile.profile_hobbies.map((h) => ` ${h.hobbies.name} ${h.hobbies.emoji}`).join(', ')} />
             <ProfileDetail label="NEEDS ASSISTANCE" value={profile.need_assistance ? 'YES' : 'NO'} />
         </div>
     );
