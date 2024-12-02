@@ -3,8 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { checkbox } from '@nextui-org/react';
 
 const supabase = createClient();
+
+interface Hobby {
+    id: number;
+    name: string;
+    emoji: string;
+}
+
+interface ProfileHobby {
+    hobbies: Hobby;
+}
 
 interface UserProfile {
     id: string;
@@ -14,16 +25,18 @@ interface UserProfile {
     sexual_orientation: string;
     display_disability: boolean;
     disability: string[];
-    hobbies: string[];
     smoker: boolean;
     birthday: string;
     gender: string;
     need_assistance: boolean;
+    profile_hobbies: ProfileHobby[];
 }
+
 
 export default function EditProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [allHobbies, setHobbies] = useState<Hobby[]>([]);
     const router = useRouter();
 
     const userId = '637465ac-0729-442c-8dc8-441d2303f560';
@@ -31,7 +44,20 @@ export default function EditProfilePage() {
     const fetchProfile = async () => {
         const { data, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select(`id, 
+                username, 
+                full_name, 
+                avatar_url, 
+                sexual_orientation, 
+                display_disability, 
+                disability, 
+                smoker, 
+                birthday, 
+                gender, 
+                need_assistance,
+                profile_hobbies (
+                hobbies (id, name, emoji))
+                `)
             .eq('id', userId)
             .single();
 
@@ -42,8 +68,19 @@ export default function EditProfilePage() {
         }
     };
 
+    const fetchHobbies = async () => {
+        const { data, error } = await supabase.from('hobbies').select('*');
+
+        if (data) {
+            setHobbies(data);
+        } else {
+            console.error('Error fetching hobbies:', error);
+        }
+    }
+
     useEffect(() => {
         fetchProfile();
+        fetchHobbies();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -97,10 +134,13 @@ export default function EditProfilePage() {
         }
 
         if (profile) {
+            // Exclude hobbies from the profile object
+            const { profile_hobbies, ...profileData } = profile;
+
             const { error } = await supabase
                 .from('profiles')
                 .update({
-                    ...profile,
+                    ...profileData,
                     avatar_url: avatarUrl,
                 })
                 .eq('id', profile.id);
@@ -232,15 +272,55 @@ export default function EditProfilePage() {
                     style={styles.textarea}
                 />
             </div>
-            <div style={styles.inputContainer}>
-                <label>Hobbies:</label>
+            <div>
+                <label>Hobbies:<br></br></label>
                 <textarea
+                    readOnly
                     name="hobbies"
-                    value={profile.hobbies.join(', ')}
-                    onChange={(e) => setProfile(prevProfile => prevProfile ? { ...prevProfile, hobbies: e.target.value.split(', ') } : null)}
+                    value={profile.profile_hobbies.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`).join(', ')}
                     style={styles.textarea}
                 />
             </div>
+            <div style={styles.inputContainer}>
+    <label>Add Hobbies:</label>
+    <div style={styles.scrollableContainer}>
+        {allHobbies.map((hobby) => (
+            <div key={hobby.id} style={styles.checkboxItem}>
+                <input
+                    type="checkbox"
+                    value={hobby.id}
+                    checked={profile.profile_hobbies?.some(ph => ph.hobbies.id === hobby.id) || false}
+                    onChange={(e) => {
+                        const { checked, value } = e.target;
+                        const hobbyId = parseInt(value);
+
+                        setProfile((prevProfile) => {
+                            if (!prevProfile) return null;
+
+                            const updatedHobbies = checked
+                                ? [
+                                    ...prevProfile.profile_hobbies,
+                                    { hobbies: allHobbies.find(h => h.id === hobbyId) as Hobby }
+                                ]
+                                : prevProfile.profile_hobbies.filter(ph => ph.hobbies.id !== hobbyId);
+
+
+                            return {
+                                ...prevProfile,
+                                profile_hobbies: updatedHobbies,
+                            };
+                        });
+                    }}
+                />
+                <label style={styles.checkboxLabel}>
+                    {hobby.name} {hobby.emoji}
+                </label>
+            </div>
+        ))}
+    </div>
+</div>
+
+
             <div style={styles.checkboxContainer}>
                 <div
                     style={{
@@ -323,6 +403,7 @@ const styles = {
         borderRadius: '5px',
         border: '1px solid #ddd',
         height: '80px',
+        width: '300px',
     },
     select: {
         padding: '10px',
@@ -367,11 +448,27 @@ const styles = {
         top: '2px',
         left: '6px',
     },
+    scrollableContainer: {
+        maxHeight: '150px',
+        overflowY: 'auto' as const,
+        border: '1px solid #ddd',
+        borderRadius: '5px',
+        padding: '10px',
+        backgroundColor: '#fff',
+    },
+    checkboxItem: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '10px',
+    },
     saveButton: {
         padding: '10px 20px',
         backgroundColor: '#ffd42f',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
+    },
+    checkboxLabel: {
+        marginLeft: '10px',
     },
 };
