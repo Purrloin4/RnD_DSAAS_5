@@ -63,7 +63,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             .single();
 
         if (data) {
-            /* @ts-expect-error */
+            // @ts-expect-error intellisense is wrong, this works
             setProfile(data);
         } else {
             console.error('Error fetching profile:', error);

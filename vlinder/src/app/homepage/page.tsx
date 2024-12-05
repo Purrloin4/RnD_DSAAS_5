@@ -130,7 +130,7 @@ export default function HomePage() {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-        // @ts-expect-error
+        // @ts-expect-error intellisense is wrong, this works
         setProfiles(filteredProfiles || []);
         setLoading(false);
     }
