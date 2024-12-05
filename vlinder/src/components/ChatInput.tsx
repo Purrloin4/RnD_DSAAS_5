@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/utils/store/user";
 import { Imessage, useMessage } from "@/utils/store/messages";
 
-export default function ChatInput() {
+export default function ChatInput({ roomId }: { roomId: string }) {
 	const user = useUser((state) => state.user);
 	const addMessage = useMessage((state) => state.addMessage);
 	const setOptimisticIds = useMessage((state) => state.setOptimisticIds);
@@ -26,7 +26,12 @@ export default function ChatInput() {
 				profile_id: user?.id,
 				is_edit: false,
 				created_at: new Date().toISOString(),
-                // room_id,
+        room_id: roomId,  
+        rooms:{
+          id:roomId,
+          created_at : null,
+          name: null,
+        },
 				profiles: {
 					id: user?.id,
 					avatar_url: user?.user_metadata.avatar_url,
@@ -49,7 +54,7 @@ export default function ChatInput() {
 			setOptimisticIds(newMessage.id);
 			const { error } = await supabase
 				.from("messages")
-				.insert({ content, id });
+				.insert({ content, id, profile_id: user?.id, room_id: roomId });
 			if (error) {
 				toast.error(error.message);
 			}

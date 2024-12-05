@@ -31,7 +31,7 @@ export default async function Chat({ params }: { params: { id: string } }) {
                     {sessionData.session?.user ? (
                         <>
                             <ChatMessages roomId={params.id} />
-                            <ChatInput />
+                            <ChatInput roomId={params.id} />
                         </>
                     ) : (
                         <ChatAbout />

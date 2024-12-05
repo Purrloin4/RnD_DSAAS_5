@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { ArrowDown } from "lucide-react";
 import LoadMoreMessages from "./LoadMoreMessages";
 
-export default function ListMessages() {
+export default function ListMessages({ roomId }: { roomId: string }) {
 	const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
 	const [userScrolled, setUserScrolled] = useState(false);
 	const [notification, setNotification] = useState(0);
@@ -24,8 +24,8 @@ export default function ListMessages() {
 	const supabase = createClient();
 	useEffect(() => {
 		const channel = supabase
-			.channel("chat-room")  /// should be unique if there are multiple rooms
-			.on(
+		.channel(`chat-room-${roomId}`) // Unique channel name for each room
+		.on(
 				"postgres_changes",
 				{ event: "INSERT", schema: "public", table: "messages" },
 				async (payload) => {

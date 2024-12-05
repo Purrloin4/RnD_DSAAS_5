@@ -16,7 +16,7 @@ export default async function ChatMessages({ roomId }: { roomId: string }) {
 
 	return (
 		<Suspense fallback={"loading.."}>
-			<ListMessages />
+		<ListMessages roomId={roomId} />
 			<InitMessages messages={data?.reverse() || []} />
 		</Suspense>
 	);

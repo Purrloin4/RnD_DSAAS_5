@@ -9,12 +9,12 @@ export type Imessage = {
 	is_edit: boolean;
 	profile_id: string;
 	content: string;
-	room_id:string,
+	room_id:string;
 	rooms:{
 		id:string
 		created_at: string | null
-		name:string|null
-	}|null, 
+		name:string | null
+	}|null;
 		profiles: {
         avatar_url: string | null
         birthday: string | null
