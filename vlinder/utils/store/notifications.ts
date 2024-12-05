@@ -3,12 +3,14 @@ import { create } from "zustand";
 import { Database } from "@/types/supabase";
 
 export type INotification = {
-  id: string;
-  content: string;
-  created_at: string;
-  from_who: string;
-  to_who: string;
-  notification_type: Database["public"]["Enums"]["NotificationType"];
+  content: string
+          created_at: string
+          from_who: string
+          id: string
+          notification_type:
+            | Database["public"]["Enums"]["NotificationType"]
+            | null
+          to_who: string
   profiles: {
     avatar_url: string | null
     birthday: string | null
@@ -16,16 +18,15 @@ export type INotification = {
     display_disability: boolean | null
     full_name: string | null
     gender: Database["public"]["Enums"]["Gender"] | null
-    hobbies: string[] | null
     id: string
     need_assistance: boolean | null
+    organization_id: string | null
     role: string
     sex_positive: boolean | null
     sexual_orientation: string | null
     smoker: boolean | null
     updated_at: string | null
     username: string | null
-    organization_id: string | null
 
 } | null;
 

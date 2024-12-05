@@ -25,7 +25,7 @@ export default function Message({ message }: { message: Imessage }) {
       {/* Avatar only appears for received messages */}
       {!isOwnMessage && (
         <div>
-         { message.profiles.avatar_url?
+         { message.profiles && message.profiles.avatar_url?
           <Image src={message.profiles?.avatar_url!}
            alt={message.profiles?.username!} 
            width={40} height={40} className=" rounded-full ring-2" /> 

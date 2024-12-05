@@ -14,7 +14,7 @@ export default function Notification({ notification }: { notification: INotifica
       {/* Avatar only appears for received messages */}
       
         <div>
-         { notification.profiles.avatar_url?
+         { notification.profiles && notification.profiles.avatar_url ?
           <Image src={notification.profiles?.avatar_url!}
            alt={notification.profiles?.username!} 
            width={40} height={40} className=" rounded-full ring-2" /> 
