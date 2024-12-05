@@ -14,7 +14,7 @@ export default function ChatPresence() {
 			.on("presence", { event: "sync" }, () => {
 				const userIds = [];
 				for (const id in channel.presenceState()) {
-					// @ts-ignore
+					// @ts-expect-error
 					userIds.push(channel.presenceState()[id][0].user_id);
 				}
 				setOnlineUsers([...new Set(userIds)].length);
