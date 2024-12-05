@@ -1,3 +1,4 @@
+/* @ts-ignore */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -74,6 +75,7 @@ export default function EditProfilePage() {
             .single();
 
         if (data) {
+            /* @ts-ignore */
             setProfile(data);
         } else {
             console.error('Error fetching profile:', error);

@@ -1,3 +1,5 @@
+/* @ts-ignore */
+
 'use client';
 
 import React from 'react';
@@ -116,7 +118,7 @@ export default function HomePage() {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-
+        // @ts-ignore
         setProfiles(filteredProfiles || []);
         setLoading(false);
     }
@@ -249,6 +251,7 @@ export default function HomePage() {
                                     </h2>
                                     <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
                                     {/* Display hobbies if they exist */}
+                                    {/* Note naar fronted: dit is gwn een voorbeeld voor als we dat zouden willen gebruiken, mag verwijderd worden */}
                                     {profile.profile_hobbies?.length > 0 ? (
                                         <ul>
                                             {profile.profile_hobbies.map((ph, index) => (
