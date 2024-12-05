@@ -44,7 +44,7 @@ export default function ChatRooms() {
       // Call the function to get the room_ids the user is participating in
       const supabase = createClient()
       const { data, error } = await supabase
-        .rpc('get_user_rooms', { user_id: user.id });
+        .rpc('get_user_rooms', { user_id: user?.id });
 
       if (error) {
         console.error('Error fetching user rooms:', error);
@@ -73,7 +73,7 @@ export default function ChatRooms() {
   };
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchUserRooms();
     }
   }, [user]);
