@@ -1,3 +1,5 @@
+# For detailed configuration reference documentation, visit:
+# https://supabase.com/docs/guides/local-development/cli/config
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
 project_id = "vlinder"
@@ -72,6 +74,8 @@ port = 54324
 # Uncomment to expose additional ports for testing user applications that send emails.
 # smtp_port = 54325
 # pop3_port = 54326
+# admin_email = "admin@email.com"
+# sender_name = "Admin"
 
 [storage]
 enabled = true
@@ -108,6 +112,11 @@ enable_signup = true
 enable_anonymous_sign_ins = false
 # Allow/disallow testing manual linking of accounts
 enable_manual_linking = false
+# Passwords shorter than this value will be rejected as weak. Minimum 6, recommended 8 or more.
+minimum_password_length = 6
+# Passwords that do not meet the following requirements will be rejected as weak. Supported values
+# are: `letters_digits`, `lower_upper_letters_digits`, `lower_upper_letters_digits_symbols`
+password_requirements = ""
 
 [auth.email]
 # Allow/disallow new user signups via email to your project.
@@ -146,7 +155,7 @@ enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 # Template for sending OTP to users
-template = "Your code is {{ .Code }} ."
+template = "Your code is {{ .Code }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.
 max_frequency = "5s"
 
@@ -184,12 +193,12 @@ enroll_enabled = true
 verify_enabled = true
 
 # Configure Multi-factor-authentication via Phone Messaging
-# [auth.mfa.phone]
-# enroll_enabled = true
-# verify_enabled = true
-# otp_length = 6
-# template = "Your code is {{ .Code }} ."
-# max_frequency = "10s"
+[auth.mfa.phone]
+enroll_enabled = false
+verify_enabled = false
+otp_length = 6
+template = "Your code is {{ .Code }}"
+max_frequency = "5s"
 
 # Configure Multi-factor-authentication via WebAuthn
 # [auth.mfa.web_authn]
@@ -234,7 +243,17 @@ enabled = true
 # Configure one of the supported request policies: `oneshot`, `per_worker`.
 # Use `oneshot` for hot reload, or `per_worker` for load testing.
 policy = "oneshot"
+# Port to attach the Chrome inspector for debugging edge functions.
 inspector_port = 8083
+
+# Use these configurations to customize your Edge Function.
+# [functions.MY_FUNCTION_NAME]
+# enabled = true
+# verify_jwt = true
+# import_map = "./functions/MY_FUNCTION_NAME/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+# entrypoint = "./functions/MY_FUNCTION_NAME/index.ts"
 
 [analytics]
 enabled = true

@@ -16,22 +16,21 @@ export type Imessage = {
 		name:string | null
 	}|null;
 		profiles: {
-        avatar_url: string | null
-        birthday: string | null
-        disability: string[] | null
-        display_disability: boolean | null
-        full_name: string | null
-        gender: Database["public"]["Enums"]["Gender"] | null
-        hobbies: string[] | null
-        id: string
-        need_assistance: boolean | null
-        role: string
-        sex_positive: boolean | null
-        sexual_orientation: string | null
-        smoker: boolean | null
-        updated_at: string | null
-        username: string | null
-		organization_id: string | null
+			avatar_url: string | null
+			birthday: string | null
+			disability: string[] | null
+			display_disability: boolean | null
+			full_name: string | null
+			gender: Database["public"]["Enums"]["Gender"] | null
+			id: string
+			need_assistance: boolean | null
+			organization_id: string | null
+			role: string
+			sex_positive: boolean | null
+			sexual_orientation: string | null
+			smoker: boolean | null
+			updated_at: string | null
+			username: string | null
 	
 	} | null;
 
