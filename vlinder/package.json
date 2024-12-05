@@ -15,6 +15,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",
     "@supabase/ui": "^0.36.5",
+    "dotenv": "^16.4.5",
     "framer-motion": "^11.11.11",
     "glob": "^11.0.0",
     "lucide-react": "^0.460.0",
