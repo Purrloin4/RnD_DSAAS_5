@@ -38,8 +38,20 @@ export default function EditProfilePage() {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [allHobbies, setHobbies] = useState<Hobby[]>([]);
     const router = useRouter();
+    const [userId, setUserId] = useState<string | null>(null);
 
-    const userId = '637465ac-0729-442c-8dc8-441d2303f560';
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const { data, error } = await supabase.auth.getUser();
+            if (error || !data?.user) {
+                router.push('/login');
+            } else {
+                setUserId(data.user.id);
+            }
+        };
+        fetchUser();
+    }, [router]);
 
     const fetchProfile = async () => {
         const { data, error } = await supabase
@@ -81,7 +93,7 @@ export default function EditProfilePage() {
     useEffect(() => {
         fetchProfile();
         fetchHobbies();
-    }, []);
+    }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -147,9 +159,62 @@ export default function EditProfilePage() {
 
             if (error) {
                 console.error('Failed to update profile:', error.message);
-            } else {
-                router.push(`/profile/${profile.id}`);
+            } 
+            
+            // Get the current hobbies from the database
+            const { data: currentHobbies, error: fetchError } = await supabase
+            .from('profile_hobbies')
+            .select('hobby_id')
+            .eq('profile_id', profile.id);
+
+            if (fetchError) {
+            console.error('Failed to fetch current hobbies:', fetchError.message);
+            return;
             }
+
+            const currentHobbyIds = currentHobbies.map((h) => h.hobby_id);
+            const updatedHobbyIds = profile_hobbies.map((ph) => ph.hobbies.id);
+            
+            // Delete hobbies that are no longer in the updated profile
+            const hobbiesToDelete = currentHobbyIds.filter(
+                (id) => !updatedHobbyIds.includes(id)
+            );
+        
+            if (hobbiesToDelete.length > 0) {
+                const { error: deleteError } = await supabase
+                .from('profile_hobbies')
+                .delete()
+                .in('hobby_id', hobbiesToDelete)
+                .eq('profile_id', profile.id);
+        
+                if (deleteError) {
+                console.error('Failed to delete hobbies:', deleteError.message);
+                return;
+                }
+            }
+
+            // Add hobbies that are newly added to the updated profile
+            const hobbiesToAdd = updatedHobbyIds.filter(
+                (id) => !currentHobbyIds.includes(id)
+            );
+        
+            if (hobbiesToAdd.length > 0) {
+                const { error: insertError } = await supabase
+                .from('profile_hobbies')
+                .insert(
+                    hobbiesToAdd.map((hobbyId) => ({
+                    profile_id: profile.id,
+                    hobby_id: hobbyId,
+                    }))
+                );
+        
+                if (insertError) {
+                console.error('Failed to add hobbies:', insertError.message);
+                return;
+                }
+            }
+
+            router.push('/myprofile');
         }
     };
 
@@ -293,7 +358,7 @@ export default function EditProfilePage() {
                     onChange={(e) => {
                         const { checked, value } = e.target;
                         const hobbyId = parseInt(value);
-
+    
                         setProfile((prevProfile) => {
                             if (!prevProfile) return null;
 
@@ -303,7 +368,6 @@ export default function EditProfilePage() {
                                     { hobbies: allHobbies.find(h => h.id === hobbyId) as Hobby }
                                 ]
                                 : prevProfile.profile_hobbies.filter(ph => ph.hobbies.id !== hobbyId);
-
 
                             return {
                                 ...prevProfile,
@@ -467,6 +531,7 @@ const styles = {
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
+        marginBottom: '100px',
     },
     checkboxLabel: {
         marginLeft: '10px',
