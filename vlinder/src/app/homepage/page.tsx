@@ -43,11 +43,10 @@ export default function HomePage() {
     const {isOpen, onOpen, onOpenChange } = useDisclosure();
     const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
 
-    if (process.env.NODE_ENV === 'test') {
-        setUserId('637465ac-0729-442c-8dc8-441d2303f560'); // unicorn test user ID for testing
-    }
-    else {
-        useEffect(() => {
+    useEffect(() => {
+        if (process.env.NODE_ENV === 'test') {
+            setUserId('637465ac-0729-442c-8dc8-441d2303f560'); // unicorn test user ID for testing
+        } else {
             const fetchUser = async () => {
                 const { data, error } = await supabase.auth.getUser();
                 if (error || !data?.user) {
@@ -57,8 +56,8 @@ export default function HomePage() {
                 }
             };
             fetchUser();
-        }, [router]);
-    }
+        }
+    }, [router]);
 
     function calculateAge(birthday: string) {
         const birthDate = new Date(birthday);
