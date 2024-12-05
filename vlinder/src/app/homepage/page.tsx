@@ -1,10 +1,8 @@
-/* @ts-ignore */
-
 'use client';
 
-import React from 'react';
 import { createClient } from '@/utils/supabase/client'
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure, Slider, CheckboxGroup, Checkbox } from '@nextui-org/react';
 
 interface Hobby {
@@ -33,13 +31,8 @@ interface Profile {
 
 export default function HomePage() {
     const supabase = createClient()
-    let userId: string;
-    if (process.env.NODE_ENV === 'test') {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // unicorn test user ID for testing
-    }
-    else {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // Hardcoded unicorn user ID for now
-    }
+    const [userId, setUserId] = useState<string | null>(null);
+    const router = useRouter();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [profiles, setProfiles] =  useState<Profile[]>([]);
     const [loverFilter, setLoverFilter] = useState(false);
@@ -49,6 +42,23 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true); 
     const {isOpen, onOpen, onOpenChange } = useDisclosure();
     const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
+
+    if (process.env.NODE_ENV === 'test') {
+        setUserId('637465ac-0729-442c-8dc8-441d2303f560'); // unicorn test user ID for testing
+    }
+    else {
+        useEffect(() => {
+            const fetchUser = async () => {
+                const { data, error } = await supabase.auth.getUser();
+                if (error || !data?.user) {
+                    router.push('/login');
+                } else {
+                    setUserId(data.user.id);
+                }
+            };
+            fetchUser();
+        }, [router]);
+    }
 
     function calculateAge(birthday: string) {
         const birthDate = new Date(birthday);
@@ -82,7 +92,9 @@ export default function HomePage() {
                 disability, 
                 profile_hobbies (
                 hobbies (id, name, emoji)
-            )`);    
+            )`);
+                
+        //query = query.neq('id', userId); // fkn doesn't work for some reason
 
         if (smokerFilter == true) {
             query = query.eq('smoker', false);
@@ -118,7 +130,7 @@ export default function HomePage() {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-        // @ts-ignore
+        // @ts-expect-error
         setProfiles(filteredProfiles || []);
         setLoading(false);
     }
@@ -130,9 +142,9 @@ export default function HomePage() {
             fetchProfiles();
         };
         fetchData();
-    }, []);
+    }, [userId]);
 
-    // Apply filters when user is looking for a lover
+    //Apply filters when user is looking for a lover
     useEffect(() => {
         fetchProfiles();
     }, [loverFilter]);

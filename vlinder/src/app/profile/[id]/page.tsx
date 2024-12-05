@@ -1,4 +1,3 @@
-/* @ts-ignore */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -64,7 +63,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             .single();
 
         if (data) {
-            /* @ts-ignore */
+            /* @ts-expect-error */
             setProfile(data);
         } else {
             console.error('Error fetching profile:', error);
