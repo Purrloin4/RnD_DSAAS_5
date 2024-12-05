@@ -1,7 +1,9 @@
-import { Input, Card, Button, Spacer } from '@nextui-org/react';
 import { login, signup } from './actions';
 
+import { Button, Input } from "@nextui-org/react";
+
 export default function LoginPage() {
+  const widthClass = "w-[70%]"; 
   return (
 <form>
       <label htmlFor="email">Email:</label>
