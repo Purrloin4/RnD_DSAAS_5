@@ -1,13 +1,11 @@
 enum SexualOrientation {
-  Male = "Male",
-  Female = "Female",
-  Both = "Both",
+  Heterosexual = "Heterosexual",
+  Asexual = "Asexual",
 }
 
-const SexualOrientationDisplayNames: { [key in SexualOrientation]: string } = {
-  [SexualOrientation.Male]: "Male",
-  [SexualOrientation.Female]: "Female",
-  [SexualOrientation.Both]: "Both",
+const SexualOrientationDisplayNames: Record<SexualOrientation, string> = {
+  [SexualOrientation.Heterosexual]: "Heterosexual",
+  [SexualOrientation.Asexual]: "Asexual",
 };
 
 export default SexualOrientation;

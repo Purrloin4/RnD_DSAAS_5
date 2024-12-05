@@ -7,8 +7,11 @@ export default function ConditionalNavbar() {
   const pathname = usePathname();
 
   // Define routes without Navbar
-  const noNavbarRoutes = ["/", "/login", "/register"];
-  const showNavbar = !noNavbarRoutes.includes(pathname);
+  const noNavbarRoutes = ["/", "/login", "/register", "/register/*"];
+  const showNavbar = !noNavbarRoutes.some((route) => {
+    const regex = new RegExp(`^${route.replace("*", ".*")}$`);
+    return regex.test(pathname);
+  });
 
   return showNavbar ? <Navbar /> : null;
 }

@@ -22,13 +22,6 @@ export default function Page() {
         <Input
           className="w-full mb-4"
           color="default"
-          type="password"
-          label="Password"
-          placeholder="Enter your Password"
-        />
-        <Input
-          className="w-full mb-4"
-          color="default"
           type={isVisible ? "text" : "password"}
           label="Password"
           placeholder="Enter Your Password"
