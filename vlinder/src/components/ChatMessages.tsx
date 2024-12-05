@@ -9,7 +9,7 @@ export default async function ChatMessages({ roomId }: { roomId: string }) {
 
 	const { data } = await supabase
 		.from("messages")
-		.select("*,profiles(*)")
+		.select("*,profiles(*),rooms(*)")
 		.eq("room_id", roomId)
 		.range(0, LIMIT_MESSAGE)
 		.order("created_at", { ascending: false });
