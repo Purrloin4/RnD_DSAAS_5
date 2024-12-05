@@ -29,6 +29,7 @@ module.exports = {
     '!<rootDir>/.next/**',
     '!<rootDir>/*.config.js',
     '!<rootDir>/coverage/**',
+    '!<rootDir>/supabase/**',
   ],
   moduleNameMapper: {
     // Handle CSS imports (with CSS modules)
@@ -57,7 +58,7 @@ module.exports = {
 
   },
   // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   testEnvironment: 'jsdom',
   transform: {
