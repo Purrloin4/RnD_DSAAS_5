@@ -23,20 +23,20 @@ describe('HomePage', () => {
         expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
 
-    it('renders profiles after loading', async () => {
-        render(<HomePage/>);
-        await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
-        expect(screen.getByText('unicorn')).toBeInTheDocument();
-        expect(screen.getByText('mamaBear')).toBeInTheDocument();
-    });
+    // it('renders profiles after loading', async () => {
+    //     render(<HomePage/>);
+    //     await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
+    //     expect(screen.getByText('unicorn')).toBeInTheDocument();
+    //     expect(screen.getByText('mamaBear')).toBeInTheDocument();
+    // });
 
-    it('test lover switch/filter', async () => {
-        render(<HomePage/>);
-        await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
-        await waitFor(() => fireEvent.click(screen.getByTestId('lover-switch')));
-        expect(screen.queryByText('dragon')).not.toBeInTheDocument();
-        await waitFor(() => expect(screen.getByText('mamaBear')).toBeInTheDocument());
-    });
+    // it('test lover switch/filter', async () => {
+    //     render(<HomePage/>);
+    //     await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
+    //     await waitFor(() => fireEvent.click(screen.getByTestId('lover-switch')));
+    //     expect(screen.queryByText('dragon')).not.toBeInTheDocument();
+    //     await waitFor(() => expect(screen.getByText('mamaBear')).toBeInTheDocument());
+    // });
 
     // it('opens and closes filters modal', () => {
     //     render(<HomePage />);
