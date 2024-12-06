@@ -10,52 +10,98 @@ import { useRouter } from 'next/navigation';
 export default function Reset() {
   const router = useRouter();
  const supabase = createClient(); 
-const [data, setData] = useState<{
-  password:string,
-   confirmPassword:string}>({
-    
-    password:'',
-    confirmPassword:''});
-   
+
+ const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState('');
+    const [isVisible, setIsVisible] = useState(false); // State for toggling password visibility
+  const [isConfirmVisible, setIsConfirmVisible] = useState(false);
+
+      
 const confirmPasswords = async () => {
-  const{password,confirmPassword} = data;
   if(password !== confirmPassword)return alert('Passwords do not match');
-   const{data:resetData,error} = await supabase.auth.updateUser({password:data.password});
+   const{data:resetData,error} = await supabase.auth.updateUser({password:password});
   if(resetData){
-router.push('/');
+router.push('/login');
   }
 if(error) console.log(error);
 }
+const toggleVisibility = () => {
+  setIsVisible(!isVisible);
+};
 
+const toggleConfirmVisibility = () => {
+  setIsConfirmVisible(!isConfirmVisible);
+};
 
- const handleChange = (e: any)=>{
-const {name,value} = e.target;
-setData((prev:any)=>({
-  ...prev,
-  [name]:value,}));}
+  return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
+            <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
+    
+    
+            <div className="relative w-full">
+              <Input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type={isVisible ? "text" : "password"} // Toggle between text and password
+                label="Password"
+                placeholder="Enter your new password"
+                className="w-full md-4"
 
+              />
+              
+              <button
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 focus:outline-none"
+                type="button"
+                onClick={toggleVisibility}
+                aria-label="toggle password visibility"
+              >
+                {isVisible ? (
+                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+              </div>
+              {/* <div className="mt-2">  */}
+                <div className='relative w-full'>
+                 <Input
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                type={isConfirmVisible ? "text" : "password"} // Toggle between text and password
+                label="Password"
+                placeholder="Confirm your new password"
+                className="w-full md-4"
+              />
 
-
-return(
-<div className='container mx-auto w-[400px] grid gap-4'>
-<div className='grid'>
-  <label>Enter your new password</label>
-<input type='password' name = 'password' value = {data?.password} onChange={handleChange} />
-
-</div>
-
-<div className='grid'>
-  <label>Confirm your new password</label>
-<input type='password' name = 'confirmPassword' value = {data?.confirmPassword} onChange={handleChange} />
-</div>
-
-<div>
-<button className='px-4 py-2 bg-blue-500 rounded cursor-pointer' onClick={confirmPasswords}>
-  Confirm
-  </button>   
-  </div>
-
-
-</div>
-);}
-
+              <button
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 focus:outline-none"
+                type="button"
+                onClick={toggleConfirmVisibility}
+                aria-label="toggle confirm password visibility"
+              >
+                {isConfirmVisible ? (
+                  <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                ) : (
+                  <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                )}
+              </button>
+            </div>
+    
+         
+            <Button
+              size="lg"
+              className="w-full md-4 btn-primary"
+              aria-label="login-button"
+              type="submit"
+              onClick={confirmPasswords}
+            >
+              Confirm
+            </Button>
+    
+          
+          </div>
+        </div>
+       
+      );
+    }

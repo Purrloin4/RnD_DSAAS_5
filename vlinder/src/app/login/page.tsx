@@ -5,15 +5,12 @@ import Logo from "Components/Logo/Logo";
 import React, { useState } from "react";
 import {EyeFilledIcon} from "Components/Icons/EyeFilledIcon";
 import {EyeSlashFilledIcon} from "Components/Icons/EyeSlashFilledIcon";
-import { s } from 'framer-motion/client';
-import {createClient} from '@/utils/supabase/client';
+
 export default function LoginPage() {
-  const supabase = createClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isVisible, setIsVisible] = useState(false); // State for toggling password visibility
-   const[resetPassword, setResetPassword] = useState<boolean>(false);
-   const[success, setSuccess] = useState<boolean>(false);
+
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
@@ -26,30 +23,13 @@ export default function LoginPage() {
     formData.append("password", password);
 
     await login(formData);
-  }; 
-  const sendResetPassword = async () => {
-try{
-const {data:resetData,error} = await supabase.auth.resetPasswordForEmail(email,{
-  redirectTo:'${window.location.href}reset-password'
-})
-
-
-setSuccess(true)
-}
-
-catch(error){
-console.log(error)
-
-}
-
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      
-      {!resetPassword && < div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
+      <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
         <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
-      
+
         <Input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -82,7 +62,15 @@ console.log(error)
           </button>
         </div>
 
-       
+        <div className="w-full flex justify-end">
+          <Link
+            href="/forgot-password"
+            color="primary"
+            className="text-sm font-semibold"
+          >
+            Forgot Password?
+          </Link>
+        </div>
 
         <Button
           size="lg"
@@ -93,37 +81,7 @@ console.log(error)
         >
           Login
         </Button>
-</div>}  
-        <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
 
-        <div className="w-full flex justify-center">
-          {/* <Link
-            href="/forgot-password"
-            color="primary"
-            className="text-sm font-semibold"
-          >
-            Forgot Password?
-          </Link> */}
-          {resetPassword && <div className="grid gap-4 ">
-            <Input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="text"
-          label="Email/Phone number"
-          placeholder="Enter your email or phone number"
-          className="w-full md-4"
-        />
-       {success && <div className='bg-green-100 text-green-600 px-2 rounded'>Success! Check your email to reset your password</div>}
-            <div>
-              <button className='px-4 py-2 bg-blue-500 rounded cursor-pointer' onClick={sendResetPassword}>
-                Reset my password
-              </button>
-              </div>
-            </div>}
-
-
-          <p className = "cursor-pointer hover:underline" onClick={()=>setResetPassword(!resetPassword)}>{resetPassword ? 'Login' : 'Reset my password' }</p>
-        </div>
         <div className="w-full flex justify-center">
           <Link href="/register" color="primary" className="text-sm font-semibold">
             <span>Don't have an account?</span>
@@ -134,3 +92,4 @@ console.log(error)
     </div>
   );
 }
+
