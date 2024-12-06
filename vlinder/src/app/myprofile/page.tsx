@@ -339,7 +339,7 @@ export default function EditProfilePage() {
                 />
             </div>
             <div>
-                <label>Hobbies:<br></br></label>
+                <label>Hobbies:<br/></label>
                 <textarea
                     readOnly
                     name="hobbies"
