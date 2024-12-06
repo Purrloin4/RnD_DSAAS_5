@@ -1,9 +1,11 @@
 // import Uploader from "@/src/components/Gallery/Uploader";
 // import { createClient } from "@/utils/supabase/server";
-// import React from "react";
+import React from "react";
 // import Image from "next/image";
 // import DeletePost from "@/src/components/Gallery/DeletePost";
-// export default async function page() {
+export default async function page() {
+	return(<></>)
+}
 // 	const supabase = createClient();
 // 	const { data } = await supabase
 // 		.from("posts")
