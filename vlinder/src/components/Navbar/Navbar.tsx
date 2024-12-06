@@ -7,6 +7,7 @@ import Communities_Icon from 'Components/Icons/Communities_Icon';
 import Settings_Icon from 'Components/Icons/Settings_Icon';
 import Messages_Icon from 'Components/Icons/Messages_Icon';
 import Profile_Icon from 'Components/Icons/Profile_Icon';
+import Notifications_Icon from 'Components/Icons/Notifications_Icon';
 
 export default function Navbar() {
   return (
@@ -30,6 +31,11 @@ export default function Navbar() {
         <Link href="/settings" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
           <Settings_Icon alt="settings icon" className="w-6 h-6" />
           <span className="text-xs mt-1">Settings</span>
+        </Link>
+
+        <Link href="/notifications" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+          <Notifications_Icon alt="notifications icon" className="w-6 h-6" />
+          <span className="text-xs mt-1">Notifications</span>
         </Link>
       </div>
     </nav>

@@ -3,8 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { checkbox } from '@nextui-org/react';
 
 const supabase = createClient();
+
+interface Hobby {
+    id: number;
+    name: string;
+    emoji: string;
+}
+
+interface ProfileHobby {
+    hobbies: Hobby;
+}
 
 interface UserProfile {
     id: string;
@@ -14,18 +25,21 @@ interface UserProfile {
     sexual_orientation: string;
     display_disability: boolean;
     disability: string[];
-    hobbies: string[];
     smoker: boolean;
     birthday: string;
     gender: string;
     need_assistance: boolean;
+    profile_hobbies: ProfileHobby[];
 }
+
 
 export default function EditProfilePage() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [allHobbies, setHobbies] = useState<Hobby[]>([]);
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
+
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -44,21 +58,44 @@ export default function EditProfilePage() {
 
         const { data, error } = await supabase
             .from('profiles')
-            .select('*')
+            .select(`id, 
+                username, 
+                full_name, 
+                avatar_url, 
+                sexual_orientation, 
+                display_disability, 
+                disability, 
+                smoker, 
+                birthday, 
+                gender, 
+                need_assistance,
+                profile_hobbies (
+                hobbies (id, name, emoji))
+                `)
             .eq('id', userId)
             .single();
 
         if (data) {
+            // @ts-expect-error intellisense is wrong, this works
             setProfile(data);
         } else {
             console.error('Error fetching profile:', error);
         }
     };
 
-    useEffect(() => {
-        if (userId) {
-            fetchProfile();
+    const fetchHobbies = async () => {
+        const { data, error } = await supabase.from('hobbies').select('*');
+
+        if (data) {
+            setHobbies(data);
+        } else {
+            console.error('Error fetching hobbies:', error);
         }
+    }
+
+    useEffect(() => {
+        fetchProfile();
+        fetchHobbies();
     }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -112,19 +149,75 @@ export default function EditProfilePage() {
         }
 
         if (profile) {
+            // Exclude hobbies from the profile object
+            const { profile_hobbies, ...profileData } = profile;
+
             const { error } = await supabase
                 .from('profiles')
                 .update({
-                    ...profile,
+                    ...profileData,
                     avatar_url: avatarUrl,
                 })
                 .eq('id', profile.id);
 
             if (error) {
                 console.error('Failed to update profile:', error.message);
-            } else {
-                router.push(`/profile/${profile.id}`);
+            } 
+            
+            // Get the current hobbies from the database
+            const { data: currentHobbies, error: fetchError } = await supabase
+            .from('profile_hobbies')
+            .select('hobby_id')
+            .eq('profile_id', profile.id);
+
+            if (fetchError) {
+            console.error('Failed to fetch current hobbies:', fetchError.message);
+            return;
             }
+
+            const currentHobbyIds = currentHobbies.map((h) => h.hobby_id);
+            const updatedHobbyIds = profile_hobbies.map((ph) => ph.hobbies.id);
+            
+            // Delete hobbies that are no longer in the updated profile
+            const hobbiesToDelete = currentHobbyIds.filter(
+                (id) => !updatedHobbyIds.includes(id)
+            );
+        
+            if (hobbiesToDelete.length > 0) {
+                const { error: deleteError } = await supabase
+                .from('profile_hobbies')
+                .delete()
+                .in('hobby_id', hobbiesToDelete)
+                .eq('profile_id', profile.id);
+        
+                if (deleteError) {
+                console.error('Failed to delete hobbies:', deleteError.message);
+                return;
+                }
+            }
+
+            // Add hobbies that are newly added to the updated profile
+            const hobbiesToAdd = updatedHobbyIds.filter(
+                (id) => !currentHobbyIds.includes(id)
+            );
+        
+            if (hobbiesToAdd.length > 0) {
+                const { error: insertError } = await supabase
+                .from('profile_hobbies')
+                .insert(
+                    hobbiesToAdd.map((hobbyId) => ({
+                    profile_id: profile.id,
+                    hobby_id: hobbyId,
+                    }))
+                );
+        
+                if (insertError) {
+                console.error('Failed to add hobbies:', insertError.message);
+                return;
+                }
+            }
+
+            router.push('/myprofile');
         }
     };
 
@@ -247,15 +340,54 @@ export default function EditProfilePage() {
                     style={styles.textarea}
                 />
             </div>
-            <div style={styles.inputContainer}>
-                <label>Hobbies:</label>
+            <div>
+                <label>Hobbies:<br/></label>
                 <textarea
+                    readOnly
                     name="hobbies"
-                    value={profile.hobbies.join(', ')}
-                    onChange={(e) => setProfile(prevProfile => prevProfile ? { ...prevProfile, hobbies: e.target.value.split(', ') } : null)}
+                    value={profile.profile_hobbies.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`).join(', ')}
                     style={styles.textarea}
                 />
             </div>
+            <div style={styles.inputContainer}>
+    <label>Add Hobbies:</label>
+    <div style={styles.scrollableContainer}>
+        {allHobbies.map((hobby) => (
+            <div key={hobby.id} style={styles.checkboxItem}>
+                <input
+                    type="checkbox"
+                    value={hobby.id}
+                    checked={profile.profile_hobbies?.some(ph => ph.hobbies.id === hobby.id) || false}
+                    onChange={(e) => {
+                        const { checked, value } = e.target;
+                        const hobbyId = parseInt(value);
+    
+                        setProfile((prevProfile) => {
+                            if (!prevProfile) return null;
+
+                            const updatedHobbies = checked
+                                ? [
+                                    ...prevProfile.profile_hobbies,
+                                    { hobbies: allHobbies.find(h => h.id === hobbyId) as Hobby }
+                                ]
+                                : prevProfile.profile_hobbies.filter(ph => ph.hobbies.id !== hobbyId);
+
+                            return {
+                                ...prevProfile,
+                                profile_hobbies: updatedHobbies,
+                            };
+                        });
+                    }}
+                />
+                <label style={styles.checkboxLabel}>
+                    {hobby.name} {hobby.emoji}
+                </label>
+            </div>
+        ))}
+    </div>
+</div>
+
+
             <div style={styles.checkboxContainer}>
                 <div
                     style={{
@@ -339,10 +471,12 @@ const styles = {
     textarea: {
         width: '100%',
         height: '80px',
-        padding: '8px',
-        marginTop: '5px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
+        width: '300px',
+    },
+    select: {
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ddd',
     },
     checkboxContainer: {
         display: 'flex',
@@ -364,13 +498,28 @@ const styles = {
         backgroundColor: '#007BFF',
     },
     checkmark: {
-        width: '10px',
-        height: '10px',
-        backgroundColor: '#fff',
-        borderRadius: '50%',
+        position: 'absolute' as const,
+        content: '""',
+        width: '8px',
+        height: '14px',
+        border: 'solid #fff',
+        borderWidth: '0 2px 2px 0',
+        transform: 'rotate(45deg)',
+        top: '2px',
+        left: '6px',
     },
-    label: {
-        cursor: 'pointer',
+    scrollableContainer: {
+        maxHeight: '150px',
+        overflowY: 'auto' as const,
+        border: '1px solid #ddd',
+        borderRadius: '5px',
+        padding: '10px',
+        backgroundColor: '#fff',
+    },
+    checkboxItem: {
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '10px',
     },
     saveButton: {
         width: '100%',
@@ -380,10 +529,9 @@ const styles = {
         border: 'none',
         borderRadius: '4px',
         cursor: 'pointer',
-        fontSize: '16px',
-        marginBottom: '30px'
+        marginBottom: '100px',
     },
-    emptySpace: {
-        height: '60px',
+    checkboxLabel: {
+        marginLeft: '10px',
     },
 };
