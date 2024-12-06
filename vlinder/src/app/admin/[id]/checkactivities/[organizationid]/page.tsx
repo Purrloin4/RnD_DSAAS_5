@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const supabase = createClient();
 
@@ -28,8 +29,8 @@ interface UserWithActivity {
     organization_name: string;
 }
 
-interface Organization {
-    name: string;
+interface Worker {
+    organization_id: string;
 }
 
 export default function CheckActivitiesPage({
@@ -43,7 +44,7 @@ export default function CheckActivitiesPage({
     const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
     const [showComingActivities, setShowComingActivities] = useState(true);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-    const [worker, setWorker] = useState<any | null>(null);
+    const [worker, setWorker] = useState<Worker | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadingUsers, setLoadingUsers] = useState(false);
     const router = useRouter();
