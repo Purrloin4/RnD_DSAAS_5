@@ -6,4 +6,5 @@
     "@next/next/no-page-custom-font": "off",
     "@typescript-eslint/no-non-null-asserted-optional-chain": "off"
   }
+  
 }
