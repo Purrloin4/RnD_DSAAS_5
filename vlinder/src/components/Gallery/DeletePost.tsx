@@ -30,15 +30,18 @@ export default function DeletePost({
 		}
 	};
 
-	if (isFetching) {
-		return <></>;
-	}
+	
 	if (user?.id === post_by) {
 		return (
 			<div className=" absolute top-0 right-5">
 				<Button onClick={handleDelete}>Delete</Button>
 			</div>
 		);
+	}
+	else{
+		return(
+			<></>
+		)
 	}
 	return <></>;
 }

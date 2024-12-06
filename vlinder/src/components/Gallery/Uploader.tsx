@@ -16,6 +16,7 @@ export default function Uploader() {
 const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  
   const user = useUser((state) => state.user);
 
   const supabase = createClient();
@@ -75,7 +76,8 @@ const {isOpen, onOpen, onOpenChange} = useDisclosure();
           user?.id + "/" + randomUUID + "/" + uppy.getFiles()[0].name,
       });
 
-      uppy.upload().then(async () => {
+      uppy.upload()
+      .then(async () => {
         const description = inputRef.current.value;
         if (description.trim()) {
           const { error } = await supabase

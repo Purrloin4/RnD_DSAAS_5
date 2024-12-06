@@ -7,11 +7,11 @@ export default async function page() {
 	const supabase = createClient();
 	const { data } = await supabase
 		.from("posts")
-		.select("*,profiles(username)")
+		.select("*,profiles(*)")
 		.order("created_at", { ascending: false });
 	const imgeUrlHost =
-		"https://keanyssgpgbjyamedini.supabase.co/storage/v1/object/public/images/";
-
+		"https://abctwtskoufyjtelmfwd.supabase.co/storage/v1/object/public/images/";
+		
 	const posts = data?.map((post) => {
 		return {
 			image: `${post.post_by}/${post.id}/${post.name}`,
