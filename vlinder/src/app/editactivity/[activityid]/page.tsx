@@ -1,302 +1,382 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
 
 const supabase = createClient();
 
 interface Activity {
     id: string;
     title: string;
+    place: string;
     time: string;
     description: string;
-    place: string;
-    picture_url: string;
-    organization_ids: string[];  // Store related organization_ids
+    picture_url: string | null;
 }
 
-export default function EditActivityPage({ params }: { params: { activityId: string } }) {
+interface Organization {
+    id: string;
+    name: string;
+}
+
+export default function EditActivityPage() {
     const [activity, setActivity] = useState<Activity | null>(null);
-    const [userId, setUserId] = useState<string | null>(null);
+    const [organizations, setOrganizations] = useState<Organization[]>([]);
+    const [visibleOrganizations, setVisibleOrganizations] = useState<string[]>([]); // 当前可见的组织 ID 列表
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-    const [accessDenied, setAccessDenied] = useState(false); // Track access denial
-    const [loading, setLoading] = useState(true);  // To handle loading state
+    const [organizationId, setOrganizationId] = useState<string | null>(null); // 当前用户的组织 ID
+    const [userId, setUserId] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const router = useRouter();
+    const params = useParams();
+    const activityId = params.activityid;
 
-    // Fetch current user and check if they are an admin
-    const fetchUser = async () => {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user) {
-            router.push('/login');
-        } else {
-            setUserId(data.user.id);
-        }
-    };
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            const { data: userData, error: userError } = await supabase.auth.getUser();
+            if (userError || !userData?.user) {
+                router.push('/login');
+                return;
+            }
 
-    // Fetch user role to check if they are admin
-    const fetchUserRole = async () => {
-        if (userId) {
-            const { data, error } = await supabase
+            setUserId(userData.user.id);
+
+            const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('role')
-                .eq('id', userId)
+                .eq('id', userData.user.id)
                 .single();
 
-            if (error) {
-                console.error('Error fetching user role:', error);
+            if (profileError) {
+                console.error('Error fetching user role:', profileError);
             } else {
-                setIsAdmin(data?.role === 'admin');
+                setIsAdmin(profileData?.role === 'admin');
+
+                if (profileData?.role === 'admin') {
+                    const { data: workerData, error: workerError } = await supabase
+                        .from('healthcare_workers')
+                        .select('organization_id')
+                        .eq('id', userData.user.id)
+                        .single();
+
+                    if (workerData) {
+                        setOrganizationId(workerData.organization_id);
+                    } else {
+                        console.error('Error fetching organization ID:', workerError);
+                    }
+                }
             }
-        }
-    };
+        };
 
-    // Fetch activity details from the activities table and related organizations
-    const fetchActivityData = async () => {
-        console.log('Fetching activity data...');  // Debugging line
-
-        // Fetch basic activity details
-        const { data: activityData, error: activityError } = await supabase
-            .from('activities')
-            .select('id, title, time, description, place, picture_url')
-            .eq('id', params.activityId)
-            .single();
-
-        if (activityError) {
-            console.error('Error fetching activity:', activityError);
-            setLoading(false);
-            return;
-        }
-
-        console.log('Activity data:', activityData);  // Debugging line to check activity data
-
-        // Set activity data
-        setActivity({
-            id: activityData.id,
-            title: activityData.title,
-            time: activityData.time,
-            description: activityData.description,
-            place: activityData.place,
-            picture_url: activityData.picture_url,
-            organization_ids: [],  // Initialize with an empty array for organization IDs
-        });
-
-        // Fetch related organizations from activity_organization
-        const { data: organizationsData, error: orgError } = await supabase
-            .from('activity_organization')
-            .select('organization_id')
-            .eq('activity_id', params.activityId);
-
-        if (orgError) {
-            console.error('Error fetching activity organizations:', orgError);
-            setLoading(false);
-            return;
-        }
-
-        console.log('Organization data:', organizationsData);  // Debugging line to check organization data
-
-        // Update the activity with the organization_ids
-        setActivity((prevState) => ({
-            ...prevState!,
-            organization_ids: organizationsData.map((org) => org.organization_id),
-        }));
-
-        setLoading(false);  // Finished loading
-    };
+        fetchUserRole();
+    }, [router]);
 
     useEffect(() => {
-        fetchUser();  // Fetch current user details
-    }, []);
+        const fetchActivity = async () => {
+            if (!activityId) return;
 
-    useEffect(() => {
-        if (userId) {
-            fetchUserRole();  // Fetch user role after user ID is available
-        }
-    }, [userId]);
-
-    useEffect(() => {
-        if (isAdmin === false) {
-            setAccessDenied(true);  // If not admin, deny access
-        } else if (isAdmin === true) {
-            fetchActivityData();  // Fetch activity data if user is admin
-        }
-    }, [isAdmin]);
-
-    useEffect(() => {
-        if (accessDenied) {
-            console.log('Access Denied. User is not an admin.');
-        }
-    }, [accessDenied]);
-
-    // Handle saving changes to the activity
-    const handleSaveChanges = async () => {
-        if (activity) {
-            // Update activity details in the activities table
-            const { error: updateError } = await supabase
+            const { data, error } = await supabase
                 .from('activities')
-                .update({
-                    title: activity.title,
-                    time: activity.time,
-                    description: activity.description,
-                    place: activity.place,
-                    picture_url: activity.picture_url,
-                })
-                .eq('id', params.activityId);
+                .select('*')
+                .eq('id', activityId)
+                .single();
 
-            if (updateError) {
-                console.error('Error updating activity:', updateError);
-                alert('Failed to update activity');
-                return;
+            if (data) {
+                setActivity(data);
+            } else {
+                console.error('Error fetching activity:', error);
             }
+        };
 
-            // Remove old associations in activity_organization table
-            const { error: deleteError } = await supabase
+        const fetchOrganizations = async () => {
+            const { data, error } = await supabase.from('organizations').select('*');
+            if (data) {
+                setOrganizations(data);
+            } else {
+                console.error('Error fetching organizations:', error);
+            }
+        };
+
+        const fetchVisibleOrganizations = async () => {
+            if (!activityId) return;
+
+            const { data, error } = await supabase
+                .from('activity_organization')
+                .select('organization_id')
+                .eq('activity_id', activityId);
+
+            if (data) {
+                setVisibleOrganizations(data.map((item) => item.organization_id));
+            } else {
+                console.error('Error fetching visible organizations:', error);
+            }
+        };
+
+        if (isAdmin) {
+            fetchActivity();
+            fetchOrganizations();
+            fetchVisibleOrganizations();
+        }
+    }, [activityId, isAdmin]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setActivity((prev) => (prev ? { ...prev, [name]: value } : null));
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImageFile(e.target.files[0]);
+        }
+    };
+
+    const handleOrganizationToggle = async (orgId: string) => {
+        if (orgId === organizationId) return; // 禁止更改用户所在组织的可见性
+
+        const isCurrentlyVisible = visibleOrganizations.includes(orgId);
+
+        if (isCurrentlyVisible) {
+            const { error } = await supabase
                 .from('activity_organization')
                 .delete()
-                .eq('activity_id', params.activityId);
+                .eq('activity_id', activityId)
+                .eq('organization_id', orgId);
 
-            if (deleteError) {
-                console.error('Error deleting old organizations:', deleteError);
-                alert('Failed to delete old organizations');
-                return;
+            if (!error) {
+                setVisibleOrganizations((prev) => prev.filter((id) => id !== orgId));
+            } else {
+                console.error('Error removing visibility:', error);
             }
-
-            // Add new associations for organizations selected by user
-            const organizationInserts = activity.organization_ids.map((orgId) => ({
-                activity_id: params.activityId,
-                organization_id: orgId,
-            }));
-
-            const { error: insertError } = await supabase
+        } else {
+            const { error } = await supabase
                 .from('activity_organization')
-                .upsert(organizationInserts);
+                .insert([{ activity_id: activityId, organization_id: orgId }]);
 
-            if (insertError) {
-                console.error('Error inserting new organizations:', insertError);
-                alert('Failed to update organizations');
-                return;
+            if (!error) {
+                setVisibleOrganizations((prev) => [...prev, orgId]);
+            } else {
+                console.error('Error adding visibility:', error);
             }
-
-            alert('Activity updated successfully');
-            router.push(`/admin/activities`);  // Redirect to activities list page
         }
     };
 
-    if (accessDenied) {
-        return (
-            <div style={styles.container}>
-                <p>You do not have permission to edit this activity.</p>
-            </div>
-        );
-    }
+    const handleSelectAllOrganizations = async () => {
+        const allOrgIds = organizations.map((org) => org.id);
+        const visibleOrgIds = new Set(visibleOrganizations);
 
-    if (loading) {
+        const orgsToAdd = allOrgIds.filter((id) => !visibleOrgIds.has(id));
+
+        try {
+            await Promise.all(
+                orgsToAdd.map((orgId) =>
+                    supabase.from('activity_organization').insert([{ activity_id: activityId, organization_id: orgId }])
+                )
+            );
+            setVisibleOrganizations(allOrgIds); // 更新状态为所有组织可见
+        } catch (error) {
+            console.error('Error making all organizations visible:', error);
+        }
+    };
+
+    const uploadImage = async (): Promise<string | null> => {
+        if (!imageFile || !activity) return null;
+
+        const fileName = `${activity.id}-${Date.now()}.${imageFile.name.split('.').pop()}`;
+        try {
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('activity')
+                .upload(fileName, imageFile);
+
+            if (uploadError) {
+                console.error('Failed to upload image:', uploadError.message);
+                return null;
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('activity')
+                .getPublicUrl(fileName);
+
+            if (!publicUrlData || !publicUrlData.publicUrl) {
+                console.error('Failed to retrieve public URL');
+                return null;
+            }
+
+            return publicUrlData.publicUrl;
+        } catch (err) {
+            console.error('Unexpected error during image upload:', err);
+            return null;
+        }
+    };
+
+    const handleSave = async () => {
+        let pictureUrl = activity?.picture_url || null;
+
+        if (imageFile) {
+            const uploadedUrl = await uploadImage();
+            if (uploadedUrl) pictureUrl = uploadedUrl;
+        }
+
+        if (activity && organizationId && userId) {
+            const { error } = await supabase
+                .from('activities')
+                .update({ ...activity, picture_url: pictureUrl })
+                .eq('id', activity.id);
+
+            if (error) {
+                console.error('Failed to update activity:', error.message);
+            } else {
+                router.push(`/admin/${userId}/checkactivities/${organizationId}`);
+            }
+        }
+    };
+
+    if (isAdmin === null) {
         return <div>Loading...</div>;
     }
 
-    return (
-        <div style={styles.container}>
-            <h1>Edit Activity</h1>
-            <div style={styles.formContainer}>
-                <label style={styles.label}>
-                    Title:
-                    <input
-                        style={styles.input}
-                        type="text"
-                        value={activity?.title || ''}
-                        onChange={(e) => setActivity({ ...activity!, title: e.target.value })}
-                    />
-                </label>
-                <label style={styles.label}>
-                    Time:
-                    <input
-                        style={styles.input}
-                        type="datetime-local"
-                        value={activity?.time || ''}
-                        onChange={(e) => setActivity({ ...activity!, time: e.target.value })}
-                    />
-                </label>
-                <label style={styles.label}>
-                    Description:
-                    <textarea
-                        style={styles.textarea}
-                        value={activity?.description || ''}
-                        onChange={(e) => setActivity({ ...activity!, description: e.target.value })}
-                    />
-                </label>
-                <label style={styles.label}>
-                    Place:
-                    <input
-                        style={styles.input}
-                        type="text"
-                        value={activity?.place || ''}
-                        onChange={(e) => setActivity({ ...activity!, place: e.target.value })}
-                    />
-                </label>
-                <label style={styles.label}>
-                    Picture URL:
-                    <input
-                        style={styles.input}
-                        type="text"
-                        value={activity?.picture_url || ''}
-                        onChange={(e) => setActivity({ ...activity!, picture_url: e.target.value })}
-                    />
-                </label>
-                <label style={styles.label}>
-                    Organizations:
-                    <input
-                        style={styles.input}
-                        type="text"
-                        value={activity?.organization_ids.join(', ') || ''}
-                        onChange={(e) => setActivity({ ...activity!, organization_ids: e.target.value.split(',').map(id => id.trim()) })}
-                    />
-                </label>
+    if (isAdmin === false) {
+        return <div>You do not have access to this page.</div>;
+    }
 
-                <button style={styles.button} onClick={handleSaveChanges}>Save Changes</button>
+    if (!activity) {
+        return <div>Loading activity...</div>;
+    }
+
+    return (
+        <div style={styles.page}>
+            <div style={styles.inputContainer}>
+                <label>Title:</label>
+                <input
+                    type="text"
+                    name="title"
+                    value={activity.title}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
             </div>
+            <div style={styles.inputContainer}>
+                <label>Place:</label>
+                <input
+                    type="text"
+                    name="place"
+                    value={activity.place}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+            </div>
+            <div style={styles.inputContainer}>
+                <label>Time:</label>
+                <input
+                    type="datetime-local"
+                    name="time"
+                    value={activity.time.replace(' ', 'T')}
+                    onChange={handleChange}
+                    style={styles.input}
+                />
+            </div>
+            <div style={styles.inputContainer}>
+                <label>Description:</label>
+                <textarea
+                    name="description"
+                    value={activity.description}
+                    onChange={handleChange}
+                    style={styles.textarea}
+                />
+            </div>
+            <div style={styles.inputContainer}>
+                <label>Current Picture:</label>
+                {activity.picture_url ? (
+                    <img
+                        src={activity.picture_url}
+                        alt="Activity"
+                        style={{ width: '200px', height: '150px', objectFit: 'cover' }}
+                    />
+                ) : (
+                    <div>No picture uploaded</div>
+                )}
+                <input type="file" accept="image/*" onChange={handleImageChange} style={styles.fileInput} />
+            </div>
+            <div style={styles.inputContainer}>
+                <label>Visible Organizations:</label>
+                <ul>
+                    {organizations.map((org) => (
+                        <li key={org.id}>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={visibleOrganizations.includes(org.id)}
+                                    disabled={org.id === organizationId} // 禁用用户所在组织的复选框
+                                    onChange={() => handleOrganizationToggle(org.id)}
+                                />
+                                {org.name}
+                                {org.id === organizationId && ' (Your Organization)'}
+                            </label>
+                        </li>
+                    ))}
+                </ul>
+                <button onClick={handleSelectAllOrganizations} style={styles.selectAllButton}>
+                    Make All Organizations Visible
+                </button>
+            </div>
+            <button onClick={handleSave} style={styles.saveButton}>
+                Save
+            </button>
+            <div style={styles.emptySpace}></div>
         </div>
     );
 }
 
 const styles = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#f0f8ff',
-        fontFamily: 'Arial, sans-serif',
+    page: {
+        width: '400px',
+        margin: 'auto',
+        padding: '20px',
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        backgroundColor: '#f9f9f9',
     },
-    formContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        width: '400px',  // Adjust width for a cleaner form
-    },
-    label: {
-        marginBottom: '15px',  // Space between form fields
+    inputContainer: {
+        marginBottom: '10px',
     },
     input: {
+        width: '100%',
         padding: '8px',
-        fontSize: '16px',
-        borderRadius: '5px',
+        marginTop: '5px',
         border: '1px solid #ccc',
+        borderRadius: '4px',
     },
     textarea: {
+        width: '100%',
+        height: '80px',
         padding: '8px',
-        fontSize: '16px',
-        borderRadius: '5px',
+        marginTop: '5px',
         border: '1px solid #ccc',
-        height: '100px',  // Adjust height for textarea
+        borderRadius: '4px',
     },
-    button: {
-        padding: '10px 20px',
-        fontSize: '16px',
+    fileInput: {
+        marginTop: '10px',
+    },
+    saveButton: {
+        width: '100%',
+        padding: '10px',
+        backgroundColor: '#007BFF',
         color: '#fff',
-        backgroundColor: '#007bff',
         border: 'none',
-        borderRadius: '5px',
+        borderRadius: '4px',
         cursor: 'pointer',
-        marginTop: '20px',
+        fontSize: '16px',
+    },
+    selectAllButton: {
+        marginTop: '10px',
+        padding: '10px',
+        backgroundColor: '#28a745',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer',
+    },
+    emptySpace: {
+        height: '100px',
     },
 };
