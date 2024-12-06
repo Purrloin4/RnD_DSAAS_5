@@ -92,6 +92,10 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
         }
     };
 
+    const handleCreateActivityClick = () => {
+        router.push('/createactivity');
+    };
+
     if (!worker && !accessDenied) {
         return <div style={styles.container}>Loading...</div>;
     }
@@ -114,6 +118,10 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
 
             <button style={styles.button} onClick={handleCheckActivitiesClick}>
                 Check Activities
+            </button>
+
+            <button style={styles.button} onClick={handleCreateActivityClick}>
+                Create Activity
             </button>
         </div>
     );
