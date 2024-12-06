@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import InitUser from "@/utils/store/InitUser";
-import NotificationMessages from "@/src/components/NotificationMessages";
-import ChatAbout from "@/src/components/ChatAbout";
-import NotificationHeader from "@/src/components/NotificationHeader";
+import NotificationMessages from "@/src/components/Notification/NotificationMessages";
+import ChatAbout from "@/src/components/Chat/ChatAbout";
+import NotificationHeader from "@/src/components/Notification/NotificationHeader";
 export default async function Chat() {
     const supabase = createClient();
     const { data: sessionData } = await supabase.auth.getSession();

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { INotification, useNotifications } from "./notifications";
-import { LIMIT_MESSAGE } from "../constant";
+import { LIMIT_MESSAGE } from "../constant/constants";
 
 export default function InitNotifications({ notifications }: { notifications: INotification[] }) {
   const initState = useRef(false);

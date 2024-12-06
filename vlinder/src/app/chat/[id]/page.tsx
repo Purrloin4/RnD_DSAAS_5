@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import InitUser from "@/utils/store/InitUser";
-import ChatInput from "@/src/components/ChatInput";
+import ChatInput from "@/src/components/Chat/ChatInput";
 import ChatMessages from "@/src/components/ChatMessages";
-import ChatAbout from "@/src/components/ChatAbout";
+import ChatAbout from "@/src/components/Chat/ChatAbout";
 import ChatHeader from "@/src/components/ChatHeader";
 
 export default async function Chat({ params }: { params: { id: string } }) {

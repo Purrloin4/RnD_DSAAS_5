@@ -1,6 +1,6 @@
 import { User } from "@supabase/supabase-js";
 import { create } from "zustand";
-import { LIMIT_MESSAGE } from "../constant";
+import { LIMIT_MESSAGE } from "../constant/constants";
 import { Database } from "@/types/supabase";
 
 export type Imessage = { 

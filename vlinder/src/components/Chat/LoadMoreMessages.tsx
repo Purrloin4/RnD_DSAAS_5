@@ -1,7 +1,7 @@
 import React from "react";
 import {Button } from "@nextui-org/button";
 import { createClient } from "@/utils/supabase/client";
-import { LIMIT_MESSAGE } from "@/utils/constant";
+import { LIMIT_MESSAGE } from "@/utils/constant/constants";
 import { getFromAndTo } from "@/utils/utils";
 import { useMessage } from "@/utils/store/messages";
 import { toast } from "sonner";

@@ -1,7 +1,7 @@
 import React from "react";
 import {Button } from "@nextui-org/button";
 import { createClient } from "@/utils/supabase/client";
-import { LIMIT_NOTIFICATION } from "@/utils/constant";
+import { LIMIT_NOTIFICATION } from "@/utils/constant/constants";
 import { getFromAndTo } from "@/utils/utils";
 import { useNotifications } from "@/utils/store/notifications";
 import { toast } from "sonner";

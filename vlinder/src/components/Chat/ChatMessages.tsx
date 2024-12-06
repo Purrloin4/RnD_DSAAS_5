@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import ListMessages from "./ListMessages";
 import { createClient } from "@/utils/supabase/server";
 import InitMessages from "@/utils/store/InitMessages";
-import { LIMIT_MESSAGE } from "@/utils/constant";
+import { LIMIT_MESSAGE } from "@/utils/constant/constants";
 
 export default async function ChatMessages({ roomId }: { roomId: string }) {
 	const supabase = createClient();
