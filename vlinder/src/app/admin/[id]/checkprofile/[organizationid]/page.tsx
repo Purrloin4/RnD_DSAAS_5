@@ -15,7 +15,28 @@ interface Profile {
 export default function CheckProfilePage({ params }: { params: { id: string; organizationid: string } }) {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [organizationName, setOrganizationName] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);  // Track admin status
     const router = useRouter();
+
+    // Fetch user data and check for admin role
+    const fetchUserData = async () => {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData?.user) {
+            router.push('/login');  // Redirect if user is not logged in
+        } else {
+            const { data: profileData, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', userData.user.id)
+                .single();
+
+            if (profileError) {
+                console.error('Error fetching profile:', profileError);
+            } else {
+                setIsAdmin(profileData?.role === 'admin');
+            }
+        }
+    };
 
     // Fetch profiles from the profiles table
     const fetchProfiles = async () => {
@@ -47,13 +68,27 @@ export default function CheckProfilePage({ params }: { params: { id: string; org
     };
 
     useEffect(() => {
-        fetchProfiles();
-        fetchOrganizationName();
+        fetchUserData(); // Fetch user data and check for admin role
     }, []);
+
+    useEffect(() => {
+        if (isAdmin !== null) {
+            fetchProfiles(); // Fetch profiles after confirming admin status
+            fetchOrganizationName(); // Fetch organization name
+        }
+    }, [isAdmin]);
 
     const handleViewProfile = (id: string) => {
         router.push(`/profile/${id}`); // Navigate to the specific profile page
     };
+
+    if (isAdmin === null) {
+        return <div style={styles.container}>Loading...</div>; // Show loading until admin status is determined
+    }
+
+    if (isAdmin === false) {
+        return <div>You do not have permission to this page.</div>; // Show message if not admin
+    }
 
     if (!organizationName) {
         return <div style={styles.container}>Loading organization details...</div>;

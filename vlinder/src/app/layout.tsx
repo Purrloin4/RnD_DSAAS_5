@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { HotJar } from '@/src/components/Hotjar';
 import ConditionalNavbar from "Components/Navbar/ConditionalNavbar"; // New Client Component
+import { NextUIProvider } from "@nextui-org/react";
+
 import { Toaster } from "sonner"
 
 const geistSans = localFont({
@@ -32,8 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
+        <NextUIProvider>
         <ConditionalNavbar /> {/* Render Client Component for Navbar logic */}
         {children}
+        </NextUIProvider>
       </body>
       <Toaster/>
     </html>

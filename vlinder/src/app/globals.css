@@ -3,18 +3,18 @@
 @tailwind utilities;
 
 :root {
-  --background-: rgb(245 243 255);
-  --foreground-: #171717;
+  --background-: #f3e8ff;
+  --foreground-: #0f172a;
   --primary-: rgb(147 51 234);
   --secondary-: rgb(250 204 21);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background-: #0a0a0a;
-    --foreground-: #ededed;
-    --primary-: ;
-    --secondary-: ;
+    --background-: #f3e8ff;
+    --foreground-: #0f172a;
+    --primary-: rgb(147 51 234);
+  --secondary-: rgb(250 204 21);
   }
 }
 
@@ -40,3 +40,27 @@ body {
     text-wrap: balance;
   }
 }
+
+@layer components {
+  .btn-primary {
+    @apply bg-button-primary text-button-text !important;
+  }
+  
+  .btn-primary:hover {
+    @apply bg-button-primary-hover !important;
+  }
+  
+  .btn-secondary {
+    @apply bg-button-secondary text-button-text !important;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-button-secondary-hover !important;
+  }
+
+}
+
+
+
+
+
