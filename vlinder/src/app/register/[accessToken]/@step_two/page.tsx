@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 //Components
 import { Input, Button, DateValue } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/react";
+import { useUser } from "@/utils/store/user";
 
 //Icons
 import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
@@ -12,7 +13,6 @@ import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
-import { useUser } from "@/utils/store/user";
 
 //
 //  USE `https://nominatim.openstreetmap.org/search?city=${location}&format=json` API TO SEARCH FOR STORING COORDINATES IN DATABASE (ALSO SAVE CITYNAME FOR THERE PROFILE)
@@ -32,7 +32,6 @@ export default function Page() {
   const [usernames, setUsernames] = useState("");
   const [birthDate, setBirthDate] = useState<DateValue | null>(null);
 
-
   const handleStepTwoRegistration = async () => {
     const accessToken = pathName.split("/").pop();
   
@@ -49,7 +48,6 @@ export default function Page() {
       return;
     }
 
-    console.log(data);
 
     if (data.first_name) setFirstName(data.first_name);
     if (data.Last_name) setLastName(data.last_name);
@@ -66,7 +64,8 @@ export default function Page() {
   const handleSave = async () => {
     setError("");
     setMessage("");
-    const user = useUser((state) => state.user);
+    const { data, error } = await supabase.auth.getUser();
+    console.log(data);
   };
 
   const get_location = () => {
