@@ -47,7 +47,7 @@ module.exports = {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/app/(.*)$': '<rootDir>/src/app/$1',
     '^@/utils/(.*)$': '<rootDir>/utils/$1',
-    '^@/enums/(.*)$': '<rootDir>/enums/$1',
+    '^@/src/enums/(.*)$': '<rootDir>/src/enums/$1',
     
     // Handle @next/font
     '@next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
