@@ -1,12 +1,11 @@
 "use client";
 import { Imessage, useMessage } from "@/utils/store/messages";
 import React, { useEffect, useRef, useState } from "react";
-import Message from "./Message";
-import { DeleteAlert, EditAlert } from "./MessageActions";
+import Message from "@/src/components/Chat/Message";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { ArrowDown } from "lucide-react";
-import LoadMoreMessages from "./LoadMoreMessages";
+import LoadMoreMessages from "@/src/components/Chat/LoadMoreMessages";
 
 export default function ListMessages({ roomId }: { roomId: string }) {
 	const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;

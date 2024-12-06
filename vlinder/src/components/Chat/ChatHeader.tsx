@@ -4,7 +4,7 @@ import {Button, ButtonGroup} from "@nextui-org/button";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
-import ChatPresence from "./ChatPresence";
+import ChatPresence from "@/src/components/Chat/ChatPresence";
 export default function ChatHeader({ user }: { user: User | undefined }) {
 	const router = useRouter();
 
