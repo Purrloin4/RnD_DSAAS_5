@@ -30,12 +30,12 @@ export default function Page() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [usernames, setUsernames] = useState("");
-  const [birthDate, setBirthDate] = useState<DateValue | null>(null);
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
 
   const handleStepTwoRegistration = async () => {
     const accessToken = pathName.split("/").pop();
   
-    const { data, error } = await supabase
+    const { data: tokenData, error: tokenError } = await supabase
       .from("accessToken")
       .select("*")
       .eq("id", accessToken)
@@ -43,14 +43,42 @@ export default function Page() {
       .single();
 
   
-    if (error || !data) {
+    if (error || !tokenData) {
       router.push(`/register`);
       return;
     }
+    console.log(tokenData);
+    const { data: userData, error: userError } = await supabase.auth.getUser();
 
+    if (userError) {
+      setError("Something went wrong!");
+      return;
+    }
 
-    if (data.first_name) setFirstName(data.first_name);
-    if (data.Last_name) setLastName(data.last_name);
+    const { data: profileData, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userData.user.id)
+      .single();
+
+    if (profileError) {
+      setError("Something went wrong!");
+      return;
+    }
+
+    if (profileData.username) setUsernames(profileData.username);
+    if (profileData.birth_date) setBirthDate(new Date(profileData.birth_date));
+    
+
+    if (profileData.full_name) {
+      const [first_name, last_name] = profileData.full_name.split(" ");
+      setFirstName(first_name);
+      setLastName(last_name);
+    }
+    else{
+      if (tokenData.first_name) setFirstName(tokenData.first_name);
+      if (tokenData.Last_name) setLastName(tokenData.Last_name);
+    }
   };
 
   useEffect(() => {
@@ -66,6 +94,7 @@ export default function Page() {
     setMessage("");
     const { data, error } = await supabase.auth.getUser();
     console.log(data);
+    console.log(birthDate);
   };
 
   const get_location = () => {
@@ -152,8 +181,9 @@ export default function Page() {
         <DatePicker
           label="Birth Date"
           className="w-full mb-4"
-          onChange={(date) => setBirthDate(date)}
+          onChange={(date) => setBirthDate(date ? new Date(date.toString()) : null)}
         />
+        <text className="text-sm text-default-400">Tip: press the location icon to get your location!</text>
         <Input
           className="w-full"
           color="default"
