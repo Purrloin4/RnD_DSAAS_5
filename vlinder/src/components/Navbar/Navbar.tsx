@@ -11,8 +11,8 @@ import Notifications_Icon from 'Components/Icons/Notifications_Icon';
 
 export default function Navbar() {
   return (
-    <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-2xl px-6 py-4 w-[90%] max-w-md">
-      <div className="flex justify-around items-center">
+  <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-2xl px-6 py-4 w-[90%] max-w-md z-100">
+    <div className="flex justify-around items-center">
       <Link href="/messages" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
           <Messages_Icon alt="messages icon" className="w-6 h-6" />
         </Link>
@@ -34,10 +34,6 @@ export default function Navbar() {
           <Notifications_Icon alt="notifications icon" className="w-6 h-6" />
         </Link>
 
-        <Link href="/notifications" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
-          <Notifications_Icon alt="notifications icon" className="w-6 h-6" />
-          <span className="text-xs mt-1">Notifications</span>
-        </Link>
       </div>
     </nav>
   );
