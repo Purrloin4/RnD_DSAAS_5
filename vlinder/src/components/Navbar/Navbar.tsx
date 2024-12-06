@@ -33,6 +33,11 @@ export default function Navbar() {
         <Link href="/notifications" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
           <Notifications_Icon alt="notifications icon" className="w-6 h-6" />
         </Link>
+
+        <Link href="/notifications" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+          <Notifications_Icon alt="notifications icon" className="w-6 h-6" />
+          <span className="text-xs mt-1">Notifications</span>
+        </Link>
       </div>
     </nav>
   );
