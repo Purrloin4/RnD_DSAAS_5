@@ -15,11 +15,19 @@ interface Activity {
     picture_url: string;
 }
 
+interface Organization {
+    id: string;
+    name: string;
+}
+
 export default function UserActivitiesPage() {
     const [comingActivities, setComingActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
-    const [joinedActivities, setJoinedActivities] = useState<string[]>([]); // Tracks activities the user has joined
-    const [userId, setUserId] = useState<string | null>(null); // Tracks the current user's ID
+    const [joinedActivities, setJoinedActivities] = useState<string[]>([]);
+    const [activityOrganizations, setActivityOrganizations] = useState<Record<string, string[]>>(
+        {}
+    ); // Maps activity ID to organization names
+    const [userId, setUserId] = useState<string | null>(null);
     const router = useRouter();
 
     const fetchUserOrganization = async () => {
@@ -41,7 +49,7 @@ export default function UserActivitiesPage() {
                 return null;
             }
 
-            setUserId(userData.user.id); // Set userId state
+            setUserId(userData.user.id);
             return profileData.organization_id;
         } catch (err) {
             console.error('Error fetching user organization:', err);
@@ -71,6 +79,7 @@ export default function UserActivitiesPage() {
 
             if (comingActivitiesData) {
                 setComingActivities(comingActivitiesData);
+                fetchActivityOrganizations(comingActivitiesData.map((a) => a.id));
             } else {
                 console.error('Error fetching coming activities:', comingActivitiesError);
             }
@@ -78,6 +87,54 @@ export default function UserActivitiesPage() {
             console.error('Error fetching activities:', err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchActivityOrganizations = async (activityIds: string[]) => {
+        try {
+            const { data: activityOrgData, error: activityOrgError } = await supabase
+                .from('activity_organization')
+                .select('activity_id, organization_id')
+                .in('activity_id', activityIds);
+
+            if (activityOrgError || !activityOrgData) {
+                console.error('Error fetching activity organizations:', activityOrgError);
+                return;
+            }
+
+            const organizationIds = Array.from(
+                new Set(activityOrgData.map((item) => item.organization_id))
+            );
+
+            const { data: organizationsData, error: organizationsError } = await supabase
+                .from('organizations')
+                .select('*')
+                .in('id', organizationIds);
+
+            if (organizationsError || !organizationsData) {
+                console.error('Error fetching organizations:', organizationsError);
+                return;
+            }
+
+            const organizationMap: Record<string, string> = organizationsData.reduce(
+                (map, org) => ({ ...map, [org.id]: org.name }),
+                {}
+            );
+
+            const activityToOrganizations: Record<string, string[]> = activityOrgData.reduce(
+                (map, item) => {
+                    //@ts-expect-error it works
+                    if (!map[item.activity_id]) map[item.activity_id] = [];
+                    //@ts-expect-error it works
+                    map[item.activity_id].push(organizationMap[item.organization_id]);
+                    return map;
+                },
+                {}
+            );
+
+            setActivityOrganizations(activityToOrganizations);
+        } catch (err) {
+            console.error('Error fetching activity organizations:', err);
         }
     };
 
@@ -100,7 +157,7 @@ export default function UserActivitiesPage() {
     };
 
     const handleJoinActivity = async (activityId: string) => {
-        if (!userId) return; // Ensure userId is defined
+        if (!userId) return;
         try {
             const { error } = await supabase
                 .from('user_activity')
@@ -117,7 +174,7 @@ export default function UserActivitiesPage() {
     };
 
     const handleQuitActivity = async (activityId: string) => {
-        if (!userId) return; // Ensure userId is defined
+        if (!userId) return;
         try {
             const { error } = await supabase
                 .from('user_activity')
@@ -162,6 +219,11 @@ export default function UserActivitiesPage() {
                                 <p>{activity.time}</p>
                                 <p>{activity.description}</p>
                                 <p>{activity.place}</p>
+                                {activityOrganizations[activity.id] && (
+                                    <p>
+                                        Open to: {activityOrganizations[activity.id].join(', ')}
+                                    </p>
+                                )}
                                 {joinedActivities.includes(activity.id) ? (
                                     <button
                                         onClick={() => handleQuitActivity(activity.id)}
