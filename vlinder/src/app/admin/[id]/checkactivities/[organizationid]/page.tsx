@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
@@ -45,10 +45,9 @@ export default function CheckActivitiesPage({
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [worker, setWorker] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
-    const [loadingUsers, setLoadingUsers] = useState(false); // Add loading state for users
+    const [loadingUsers, setLoadingUsers] = useState(false);
     const router = useRouter();
 
-    // Fetch user data and check for admin role
     const fetchUserData = async () => {
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError || !userData?.user) {
@@ -69,7 +68,6 @@ export default function CheckActivitiesPage({
     };
 
     const fetchActivities = async () => {
-        // Fetch worker's organization ID
         const { data: workerData, error: workerError } = await supabase
             .from('healthcare_workers')
             .select('organization_id')
@@ -77,12 +75,11 @@ export default function CheckActivitiesPage({
             .single();
 
         if (workerData) {
-            setWorker(workerData); // Store worker data
+            setWorker(workerData);
         } else {
             console.error('Error fetching worker data:', workerError);
         }
 
-        // Fetch activity IDs associated with the organization
         const { data: activityOrgData, error: activityOrgError } = await supabase
             .from('activity_organization')
             .select('activity_id')
@@ -91,7 +88,6 @@ export default function CheckActivitiesPage({
         if (activityOrgData) {
             const activityIds = activityOrgData.map((item) => item.activity_id);
 
-            // Fetch upcoming activities (future events)
             const { data: comingActivitiesData, error: comingActivitiesError } = await supabase
                 .from('activities')
                 .select('*')
@@ -104,7 +100,6 @@ export default function CheckActivitiesPage({
                 console.error('Error fetching coming activities:', comingActivitiesError);
             }
 
-            // Fetch past activities (past events)
             const { data: pastActivitiesData, error: pastActivitiesError } = await supabase
                 .from('activities')
                 .select('*')
@@ -122,7 +117,7 @@ export default function CheckActivitiesPage({
     };
 
     const fetchUsersForActivity = async (activityId: string) => {
-        setLoadingUsers(true); // Start loading users
+        setLoadingUsers(true);
         const { data, error } = await supabase
             .from('user_activity')
             .select('user_id')
@@ -166,7 +161,7 @@ export default function CheckActivitiesPage({
         } else {
             console.error('Error fetching users for activity:', error);
         }
-        setLoadingUsers(false); // Stop loading users
+        setLoadingUsers(false);
     };
 
     const handleActivitySelect = (activityId: string) => {
@@ -181,23 +176,41 @@ export default function CheckActivitiesPage({
     };
 
     const handleEditActivity = (activityId: string) => {
-        console.log(`Editing activity with ID: ${activityId}`);
         router.push(`/editactivity/${activityId}`);
     };
 
+    const handleDeleteActivity = async (activityId: string) => {
+        if (confirm('Are you sure you want to delete this activity?')) {
+            try {
+                await supabase.from('activity_organization').delete().eq('activity_id', activityId);
+                await supabase.from('user_activity').delete().eq('activity_id', activityId);
+
+                const { error } = await supabase.from('activities').delete().eq('id', activityId);
+                if (error) {
+                    console.error('Error deleting activity:', error);
+                    return;
+                }
+
+                fetchActivities();
+            } catch (err) {
+                console.error('Error deleting activity:', err);
+            }
+        }
+    };
+
     useEffect(() => {
-        fetchUserData(); // Fetch user data and check for admin role
+        fetchUserData();
     }, []);
 
     useEffect(() => {
         if (isAdmin !== null) {
-            fetchActivities(); // Only fetch activities after confirming admin status
+            fetchActivities();
         }
     }, [isAdmin]);
 
     useEffect(() => {
         if (isAdmin !== null && worker) {
-            setLoading(false); // Set loading to false once data is loaded
+            setLoading(false);
         }
     }, [isAdmin, worker]);
 
@@ -216,36 +229,25 @@ export default function CheckActivitiesPage({
     return (
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
             <h1>Check Activities</h1>
-
-            {/* Toggle between Coming and Past Activities */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                <button
-                    onClick={() => handleTabSwitch(true)}
-                    style={{ padding: '10px 20px' }}
-                >
+                <button onClick={() => handleTabSwitch(true)} style={{ padding: '10px 20px' }}>
                     Coming Activities
                 </button>
-                <button
-                    onClick={() => handleTabSwitch(false)}
-                    style={{ padding: '10px 20px' }}
-                >
+                <button onClick={() => handleTabSwitch(false)} style={{ padding: '10px 20px' }}>
                     Past Activities
                 </button>
             </div>
-
-            {/* Display Coming Activities */}
             {showComingActivities ? (
                 <div>
-                    {comingActivities.length > 0 ? (
-                        comingActivities.map((activity) => (
-                            <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
-                                <div style={{ flex: 1 }}>
-                                    <h3>{activity.title}</h3>
-                                    <p>{activity.time}</p>
-                                    <p>{activity.description}</p>
-                                    <p>{activity.place}</p>
-
-                                    {activity.organization_id === worker.organization_id && (
+                    {comingActivities.map((activity) => (
+                        <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
+                            <div style={{ flex: 1 }}>
+                                <h3>{activity.title}</h3>
+                                <p>{activity.time}</p>
+                                <p>{activity.description}</p>
+                                <p>{activity.place}</p>
+                                {activity.organization_id === worker.organization_id && (
+                                    <>
                                         <button
                                             onClick={() => handleEditActivity(activity.id)}
                                             style={{
@@ -259,76 +261,81 @@ export default function CheckActivitiesPage({
                                         >
                                             Edit Activity
                                         </button>
-                                    )}
-
-                                    <button
-                                        onClick={() => handleActivitySelect(activity.id)}
-                                        style={{
-                                            marginTop: '10px',
-                                            padding: '5px 10px',
-                                            backgroundColor: '#17a2b8',
-                                            color: '#fff',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        Show Users
-                                    </button>
-
-                                    {selectedActivityId === activity.id && loadingUsers && (
-                                        <p>Loading users...</p>
-                                    )}
-
-                                    {selectedActivityId === activity.id && !loadingUsers && selectedUsers.length > 0 && (
-                                        <ul>
-                                            {selectedUsers.map((user) => (
-                                                <li key={user.user_id}>
-                                                    {user.full_name} ({user.organization_name})
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-
-                                {/* Right-aligned Image */}
-                                <div style={{ flexShrink: 0, marginLeft: '20px' }}>
-                                    <img
-                                        src={activity.picture_url}
-                                        alt={activity.title}
-                                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                                    />
-                                </div>
+                                        <button
+                                            onClick={() => handleDeleteActivity(activity.id)}
+                                            style={{
+                                                marginLeft: '10px',
+                                                padding: '5px 10px',
+                                                backgroundColor: '#dc3545',
+                                                color: '#fff',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            Delete Activity
+                                        </button>
+                                    </>
+                                )}
+                                <button
+                                    onClick={() => handleActivitySelect(activity.id)}
+                                    style={{
+                                        marginTop: '10px',
+                                        padding: '5px 10px',
+                                        backgroundColor: '#17a2b8',
+                                        color: '#fff',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    Show Users
+                                </button>
+                                {selectedActivityId === activity.id && (
+                                    <>
+                                        {loadingUsers ? (
+                                            <p>Loading users...</p>
+                                        ) : selectedUsers.length > 0 ? (
+                                            <ul>
+                                                {selectedUsers.map((user) => (
+                                                    <li key={user.user_id}>
+                                                        {user.full_name} ({user.organization_name})
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ) : (
+                                            <p>No user</p>
+                                        )}
+                                    </>
+                                )}
                             </div>
-                        ))
-                    ) : (
-                        <p>No upcoming activities.</p>
-                    )}
+                            <div style={{ flexShrink: 0, marginLeft: '20px' }}>
+                                <img
+                                    src={activity.picture_url}
+                                    alt={activity.title}
+                                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             ) : (
                 <div>
-                    {pastActivities.length > 0 ? (
-                        pastActivities.map((activity) => (
-                            <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
-                                <div style={{ flex: 1 }}>
-                                    <h3>{activity.title}</h3>
-                                    <p>{activity.time}</p>
-                                    <p>{activity.description}</p>
-                                    <p>{activity.place}</p>
-                                </div>
-
-                                {/* Right-aligned Image */}
-                                <div style={{ flexShrink: 0, marginLeft: '20px' }}>
-                                    <img
-                                        src={activity.picture_url}
-                                        alt={activity.title}
-                                        style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                                    />
-                                </div>
+                    {pastActivities.map((activity) => (
+                        <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
+                            <div style={{ flex: 1 }}>
+                                <h3>{activity.title}</h3>
+                                <p>{activity.time}</p>
+                                <p>{activity.description}</p>
+                                <p>{activity.place}</p>
                             </div>
-                        ))
-                    ) : (
-                        <p>No past activities.</p>
-                    )}
+                            <div style={{ flexShrink: 0, marginLeft: '20px' }}>
+                                <img
+                                    src={activity.picture_url}
+                                    alt={activity.title}
+                                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                />
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

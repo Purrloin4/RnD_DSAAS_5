@@ -1,36 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
 const supabase = createClient();
-
-interface Activity {
-    id: string;
-    title: string;
-    place: string;
-    time: string;
-    description: string;
-    picture_url: string | null;
-}
 
 interface Organization {
     id: string;
     name: string;
 }
 
-export default function EditActivityPage() {
-    const [activity, setActivity] = useState<Activity | null>(null);
+export default function CreateActivityPage() {
+    const [title, setTitle] = useState('');
+    const [place, setPlace] = useState('');
+    const [time, setTime] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [organizations, setOrganizations] = useState<Organization[]>([]);
     const [visibleOrganizations, setVisibleOrganizations] = useState<string[]>([]);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
     const [organizationId, setOrganizationId] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const router = useRouter();
-    const params = useParams();
-    const activityId = params.activityid;
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -62,30 +54,11 @@ export default function EditActivityPage() {
 
                     if (workerData) {
                         setOrganizationId(workerData.organization_id);
+                        setVisibleOrganizations([workerData.organization_id]);
                     } else {
                         console.error('Error fetching organization ID:', workerError);
                     }
                 }
-            }
-        };
-
-        fetchUserRole();
-    }, [router]);
-
-    useEffect(() => {
-        const fetchActivity = async () => {
-            if (!activityId) return;
-
-            const { data, error } = await supabase
-                .from('activities')
-                .select('*')
-                .eq('id', activityId)
-                .single();
-
-            if (data) {
-                setActivity(data);
-            } else {
-                console.error('Error fetching activity:', error);
             }
         };
 
@@ -98,32 +71,9 @@ export default function EditActivityPage() {
             }
         };
 
-        const fetchVisibleOrganizations = async () => {
-            if (!activityId) return;
-
-            const { data, error } = await supabase
-                .from('activity_organization')
-                .select('organization_id')
-                .eq('activity_id', activityId);
-
-            if (data) {
-                setVisibleOrganizations(data.map((item) => item.organization_id));
-            } else {
-                console.error('Error fetching visible organizations:', error);
-            }
-        };
-
-        if (isAdmin) {
-            fetchActivity();
-            fetchOrganizations();
-            fetchVisibleOrganizations();
-        }
-    }, [activityId, isAdmin]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setActivity((prev) => (prev ? { ...prev, [name]: value } : null));
-    };
+        fetchUserRole();
+        fetchOrganizations();
+    }, [router]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -131,58 +81,76 @@ export default function EditActivityPage() {
         }
     };
 
-    const handleOrganizationToggle = async (orgId: string) => {
+    const handleOrganizationToggle = (orgId: string) => {
         if (orgId === organizationId) return;
 
-        const isCurrentlyVisible = visibleOrganizations.includes(orgId);
-
-        if (isCurrentlyVisible) {
-            const { error } = await supabase
-                .from('activity_organization')
-                .delete()
-                .eq('activity_id', activityId)
-                .eq('organization_id', orgId);
-
-            if (!error) {
-                setVisibleOrganizations((prev) => prev.filter((id) => id !== orgId));
-            } else {
-                console.error('Error removing visibility:', error);
-            }
-        } else {
-            const { error } = await supabase
-                .from('activity_organization')
-                .insert([{ activity_id: activityId, organization_id: orgId }]);
-
-            if (!error) {
-                setVisibleOrganizations((prev) => [...prev, orgId]);
-            } else {
-                console.error('Error adding visibility:', error);
-            }
-        }
+        setVisibleOrganizations((prev) =>
+            prev.includes(orgId) ? prev.filter((id) => id !== orgId) : [...prev, orgId]
+        );
     };
 
-    const handleSelectAllOrganizations = async () => {
+    const handleSelectAllOrganizations = () => {
         const allOrgIds = organizations.map((org) => org.id);
-        const visibleOrgIds = new Set(visibleOrganizations);
+        setVisibleOrganizations((prev) =>
+            allOrgIds.every((id) => prev.includes(id)) ? [organizationId!] : allOrgIds
+        );
+    };
 
-        const orgsToAdd = allOrgIds.filter((id) => !visibleOrgIds.has(id));
+    const handleSave = async () => {
+        if (!organizationId) {
+            console.error('Organization ID not found for the user');
+            return;
+        }
 
         try {
+            const { data: activityData, error: activityError } = await supabase
+                .from('activities')
+                .insert([
+                    {
+                        title,
+                        place,
+                        time,
+                        description,
+                        organization_id: organizationId,
+                    },
+                ])
+                .select()
+                .single();
+
+            if (activityError || !activityData) {
+                console.error('Failed to create activity:', activityError);
+                return;
+            }
+
+            const activityId = activityData.id;
+
+            let pictureUrl = null;
+            if (imageFile) {
+                pictureUrl = await uploadImage(activityId);
+                if (pictureUrl) {
+                    await supabase
+                        .from('activities')
+                        .update({ picture_url: pictureUrl })
+                        .eq('id', activityId);
+                }
+            }
+
             await Promise.all(
-                orgsToAdd.map((orgId) =>
+                visibleOrganizations.map((orgId) =>
                     supabase.from('activity_organization').insert([{ activity_id: activityId, organization_id: orgId }])
                 )
             );
-            setVisibleOrganizations(allOrgIds);
+
+            router.push(`/admin/${userId}/checkactivities/${organizationId}`);
         } catch (error) {
-            console.error('Error making all organizations visible:', error);
+            console.error('Error creating activity:', error);
         }
     };
 
-    const uploadImage = async (): Promise<string | null> => {
-        if (!imageFile || !activity) return null;
+    const uploadImage = async (activityId: string): Promise<string | null> => {
+        if (!imageFile) return null;
 
-        const fileName = `${activity.id}-${Date.now()}.${imageFile.name.split('.').pop()}`;
+        const fileName = `${activityId}-${Date.now()}.${imageFile.name.split('.').pop()}`;
         try {
             const { data: uploadData, error: uploadError } = await supabase.storage
                 .from('activity')
@@ -209,28 +177,6 @@ export default function EditActivityPage() {
         }
     };
 
-    const handleSave = async () => {
-        let pictureUrl = activity?.picture_url || null;
-
-        if (imageFile) {
-            const uploadedUrl = await uploadImage();
-            if (uploadedUrl) pictureUrl = uploadedUrl;
-        }
-
-        if (activity && organizationId && userId) {
-            const { error } = await supabase
-                .from('activities')
-                .update({ ...activity, picture_url: pictureUrl })
-                .eq('id', activity.id);
-
-            if (error) {
-                console.error('Failed to update activity:', error.message);
-            } else {
-                router.push(`/admin/${userId}/checkactivities/${organizationId}`);
-            }
-        }
-    };
-
     if (isAdmin === null) {
         return <div>Loading...</div>;
     }
@@ -239,19 +185,14 @@ export default function EditActivityPage() {
         return <div>You do not have access to this page.</div>;
     }
 
-    if (!activity) {
-        return <div>Loading activity...</div>;
-    }
-
     return (
         <div style={styles.page}>
             <div style={styles.inputContainer}>
                 <label>Title:</label>
                 <input
                     type="text"
-                    name="title"
-                    value={activity.title}
-                    onChange={handleChange}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     style={styles.input}
                 />
             </div>
@@ -259,9 +200,8 @@ export default function EditActivityPage() {
                 <label>Place:</label>
                 <input
                     type="text"
-                    name="place"
-                    value={activity.place}
-                    onChange={handleChange}
+                    value={place}
+                    onChange={(e) => setPlace(e.target.value)}
                     style={styles.input}
                 />
             </div>
@@ -269,32 +209,21 @@ export default function EditActivityPage() {
                 <label>Time:</label>
                 <input
                     type="datetime-local"
-                    name="time"
-                    value={activity.time.replace(' ', 'T')}
-                    onChange={handleChange}
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
                     style={styles.input}
                 />
             </div>
             <div style={styles.inputContainer}>
                 <label>Description:</label>
                 <textarea
-                    name="description"
-                    value={activity.description}
-                    onChange={handleChange}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     style={styles.textarea}
                 />
             </div>
             <div style={styles.inputContainer}>
-                <label>Current Picture:</label>
-                {activity.picture_url ? (
-                    <img
-                        src={activity.picture_url}
-                        alt="Activity"
-                        style={{ width: '200px', height: '150px', objectFit: 'cover' }}
-                    />
-                ) : (
-                    <div>No picture uploaded</div>
-                )}
+                <label>Upload Picture:</label>
                 <input type="file" accept="image/*" onChange={handleImageChange} style={styles.fileInput} />
             </div>
             <div style={styles.inputContainer}>
@@ -320,7 +249,7 @@ export default function EditActivityPage() {
                 </button>
             </div>
             <button onClick={handleSave} style={styles.saveButton}>
-                Save
+                Create Activity
             </button>
             <div style={styles.emptySpace}></div>
         </div>
