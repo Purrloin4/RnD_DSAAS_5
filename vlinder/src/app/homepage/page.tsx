@@ -1,31 +1,39 @@
 'use client';
 
-import React from 'react';
+import EnviromentStrings from '@/src/enums/envStrings';
 import { createClient } from '@/utils/supabase/client'
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure, Slider, CheckboxGroup, Checkbox } from '@nextui-org/react';
 
-interface Profile{
+interface Hobby {
+    id: number;
+    name: string;
+    emoji: string;
+}
+
+interface ProfileHobby {
+    hobbies: Hobby;
+}
+
+interface Profile {
     id: string;
     username: string;
-    avatar_url: string,
+    avatar_url: string;
     sexual_orientation: string;
     sex_positive: boolean;
     gender: string;
     display_disability: boolean;
-    disability: string[];
+    disability: string;
+    profile_hobbies: ProfileHobby[];
 }
+
 
 
 export default function HomePage() {
     const supabase = createClient()
-    let userId: string;
-    if (process.env.NODE_ENV === 'test') {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // unicorn test user ID for testing
-    }
-    else {
-        userId = '637465ac-0729-442c-8dc8-441d2303f560'; // Hardcoded unicorn user ID for now
-    }
+    const [userId, setUserId] = useState<string | null>(null);
+    const router = useRouter();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [profiles, setProfiles] =  useState<Profile[]>([]);
     const [loverFilter, setLoverFilter] = useState(false);
@@ -35,6 +43,22 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true); 
     const {isOpen, onOpen, onOpenChange } = useDisclosure();
     const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
+
+    useEffect(() => {
+        if (process.env.NODE_ENV === EnviromentStrings.TEST){
+            setUserId('637465ac-0729-442c-8dc8-441d2303f560'); // unicorn test user ID for testing
+        } else {
+            const fetchUser = async () => {
+                const { data, error } = await supabase.auth.getUser();
+                if (error || !data?.user) {
+                    router.push('/login');
+                } else {
+                    setUserId(data.user.id);
+                }
+            };
+            fetchUser();
+        }
+    }, [router]);
 
     function calculateAge(birthday: string) {
         const birthDate = new Date(birthday);
@@ -57,7 +81,17 @@ export default function HomePage() {
         setLoading(true);
         let query = supabase
             .from('profiles')
-            .select('id, username, avatar_url, birthday, sexual_orientation, sex_positive, gender, display_disability, disability');    
+            .select(`id, 
+                username, 
+                avatar_url, 
+                birthday, 
+                sexual_orientation, 
+                sex_positive, 
+                profile_hobbies (
+                hobbies (id, name, emoji)
+            )`);
+                
+        //query = query.neq('id', userId); // fkn doesn't work for some reason
 
         if (smokerFilter == true) {
             query = query.eq('smoker', false);
@@ -93,7 +127,7 @@ export default function HomePage() {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
-
+        // @ts-expect-error intellisense is wrong, this works
         setProfiles(filteredProfiles || []);
         setLoading(false);
     }
@@ -105,9 +139,9 @@ export default function HomePage() {
             fetchProfiles();
         };
         fetchData();
-    }, []);
+    }, [userId]);
 
-    // Apply filters when user is looking for a lover
+    //Apply filters when user is looking for a lover
     useEffect(() => {
         fetchProfiles();
     }, [loverFilter]);
@@ -225,6 +259,19 @@ export default function HomePage() {
                                         <a href={`/profile/${profile.id}`}>{profile.username}</a>
                                     </h2>
                                     <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+                                    {/* Display hobbies if they exist */}
+                                    {/* Note naar fronted: dit is gwn een voorbeeld voor als we dat zouden willen gebruiken, mag verwijderd worden */}
+                                    {profile.profile_hobbies?.length > 0 ? (
+                                        <ul>
+                                            {profile.profile_hobbies.map((ph, index) => (
+                                                <li key={index}>
+                                                    {ph.hobbies.name} {ph.hobbies.emoji}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>No hobbies listed.</p>
+                                    )}
                                 </div>
                             ))}
                         </ul>
