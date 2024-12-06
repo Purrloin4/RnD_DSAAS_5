@@ -1,5 +1,6 @@
 'use client';
 
+import EnviromentStrings from '@/src/enums/envStrings';
 import { createClient } from '@/utils/supabase/client'
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
@@ -44,7 +45,7 @@ export default function HomePage() {
     const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
 
     useEffect(() => {
-        if (process.env.NODE_ENV === 'test') {
+        if (process.env.NODE_ENV === EnviromentStrings.TEST){
             setUserId('637465ac-0729-442c-8dc8-441d2303f560'); // unicorn test user ID for testing
         } else {
             const fetchUser = async () => {
@@ -86,9 +87,6 @@ export default function HomePage() {
                 birthday, 
                 sexual_orientation, 
                 sex_positive, 
-                gender, 
-                display_disability, 
-                disability, 
                 profile_hobbies (
                 hobbies (id, name, emoji)
             )`);
