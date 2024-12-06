@@ -14,7 +14,35 @@ interface HealthcareWorker {
 
 export default function GreetingPage({ params }: { params: { id: string } }) {
     const [worker, setWorker] = useState<HealthcareWorker | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+    const [accessDenied, setAccessDenied] = useState(false); // State to track if access is denied
     const router = useRouter();
+
+    const fetchUser = async () => {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) {
+            router.push('/login');
+        } else {
+            setUserId(data.user.id);
+        }
+    };
+
+    const fetchUserRole = async () => {
+        if (userId) {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', userId)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user role:', error);
+            } else {
+                setIsAdmin(data?.role === 'admin');
+            }
+        }
+    };
 
     const fetchWorkerData = async () => {
         const { data, error } = await supabase
@@ -31,27 +59,69 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
     };
 
     useEffect(() => {
-        fetchWorkerData();
+        fetchUser();
     }, []);
 
-    const handleButtonClick = () => {
+    useEffect(() => {
+        if (userId) {
+            fetchUserRole(); // Fetch the role after userId is set
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (isAdmin === false) {
+            setAccessDenied(true); // Set accessDenied to true if user is not an admin
+        } else if (isAdmin === true) {
+            fetchWorkerData();
+        }
+    }, [isAdmin]);
+
+    const handleCheckActivitiesClick = () => {
         if (worker && worker.organization_id) {
-            // Navigate to URL in the desired format
+            router.push(`/admin/${params.id}/checkactivities/${worker.organization_id}`);
+        } else {
+            alert('Organization ID not found!');
+        }
+    };
+
+    const handleProfileClick = () => {
+        if (worker && worker.organization_id) {
             router.push(`/admin/${params.id}/checkprofile/${worker.organization_id}`);
         } else {
             alert('Organization ID not found!');
         }
     };
 
-    if (!worker) {
+    const handleCreateActivityClick = () => {
+        router.push('/createactivity');
+    };
+
+    if (!worker && !accessDenied) {
         return <div style={styles.container}>Loading...</div>;
+    }
+
+    if (accessDenied) {
+        return (
+            <div style={styles.container}>
+                <p>You do not have access to this page.</p>
+            </div>
+        );
     }
 
     return (
         <div style={styles.container}>
-            <h1 style={styles.greeting}>Hello! {worker.name}</h1>
-            <button style={styles.button} onClick={handleButtonClick}>
-                Go to Organization Profile
+            <h1 style={styles.greeting}>Hello! {worker?.name}</h1>
+
+            <button style={styles.button} onClick={handleProfileClick}>
+                Check Profiles
+            </button>
+
+            <button style={styles.button} onClick={handleCheckActivitiesClick}>
+                Check Activities
+            </button>
+
+            <button style={styles.button} onClick={handleCreateActivityClick}>
+                Create Activity
             </button>
         </div>
     );
@@ -80,5 +150,6 @@ const styles = {
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
+        marginTop: '10px',
     },
 };
