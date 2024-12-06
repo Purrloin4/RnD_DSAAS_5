@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { HotJar } from '@/src/components/Hotjar';
 import ConditionalNavbar from "Components/Navbar/ConditionalNavbar"; // New Client Component
+import { Toaster } from "sonner"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <ConditionalNavbar /> {/* Render Client Component for Navbar logic */}
         {children}
       </body>
+      <Toaster/>
     </html>
   );
 }
