@@ -54,8 +54,6 @@ export default function EditProfilePage() {
     }, [router]);
 
     const fetchProfile = async () => {
-        if (!userId) return;
-
         const { data, error } = await supabase
             .from('profiles')
             .select(`id, 
@@ -413,24 +411,24 @@ export default function EditProfilePage() {
                     Needs Assistance
                 </label>
             </div>
-            <button onClick={handleSave} style={styles.saveButton}>Save</button>
-            <div style={styles.emptySpace}></div>
+            <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
         </div>
     );
 }
 
 const styles = {
     profilePage: {
-        width: '400px',
-        margin: 'auto',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        alignItems: 'center',
         padding: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        backgroundColor: '#f9f9f9',
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: '#f8e8ff',
+        minHeight: '100vh',
     },
     avatarContainer: {
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column' as const,
         alignItems: 'center',
         marginBottom: '20px',
     },
@@ -438,38 +436,37 @@ const styles = {
         width: '100px',
         height: '100px',
         borderRadius: '50%',
+        objectFit: 'cover' as const,
+        marginBottom: '10px',
     },
     placeholder: {
         width: '100px',
         height: '100px',
         borderRadius: '50%',
-        backgroundColor: '#ddd',
+        backgroundColor: '#ccc',
         display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: '10px',
     },
     fileInput: {
         marginTop: '10px',
     },
     inputContainer: {
-        marginBottom: '10px',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        marginBottom: '15px',
+        width: '300px',
     },
     input: {
-        width: '100%',
-        padding: '8px',
-        marginTop: '5px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-    },
-    select: {
-        width: '100%',
-        padding: '8px',
-        marginTop: '5px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ddd',
     },
     textarea: {
-        width: '100%',
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ddd',
         height: '80px',
         width: '300px',
     },
@@ -481,21 +478,29 @@ const styles = {
     checkboxContainer: {
         display: 'flex',
         alignItems: 'center',
-        marginBottom: '10px',
-    },
-    customCheckbox: {
-        width: '20px',
-        height: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        marginRight: '10px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        marginBottom: '15px',
         cursor: 'pointer',
     },
+    label: {
+        marginLeft: '10px',
+        cursor: 'pointer',
+    },
+    customCheckbox: {
+        position: 'relative' as const,
+        width: '20px',
+        height: '20px',
+        backgroundColor: '#fff',
+        border: '2px solid #ddd',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'inline-block',
+        flexShrink: 0,
+        marginRight: '10px',
+        transition: 'all 0.2s ease',
+    },
     customCheckboxChecked: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#ffd42f',
+        borderColor: '#ffd42f',
     },
     checkmark: {
         position: 'absolute' as const,
@@ -522,12 +527,10 @@ const styles = {
         marginBottom: '10px',
     },
     saveButton: {
-        width: '100%',
-        padding: '10px',
-        backgroundColor: '#007BFF',
-        color: '#fff',
+        padding: '10px 20px',
+        backgroundColor: '#ffd42f',
         border: 'none',
-        borderRadius: '4px',
+        borderRadius: '5px',
         cursor: 'pointer',
         marginBottom: '100px',
     },
