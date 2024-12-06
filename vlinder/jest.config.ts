@@ -29,6 +29,7 @@ module.exports = {
     '!<rootDir>/.next/**',
     '!<rootDir>/*.config.js',
     '!<rootDir>/coverage/**',
+    '!<rootDir>/supabase/**',
   ],
   moduleNameMapper: {
     // Handle CSS imports (with CSS modules)
@@ -46,6 +47,7 @@ module.exports = {
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/app/(.*)$': '<rootDir>/src/app/$1',
     '^@/utils/(.*)$': '<rootDir>/utils/$1',
+    '^@/src/enums/(.*)$': '<rootDir>/src/enums/$1',
     
     // Handle @next/font
     '@next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
@@ -57,7 +59,7 @@ module.exports = {
 
   },
   // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
   testEnvironment: 'jsdom',
   transform: {
