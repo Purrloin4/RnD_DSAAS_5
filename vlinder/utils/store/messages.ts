@@ -11,9 +11,11 @@ export type Imessage = {
 	content: string;
 	room_id:string;
 	rooms:{
-		id:string
+		id: string
+		name: string | null
 		created_at: string | null
-		name:string | null
+		chat_type: Database["public"]["Enums"]["ChatType"]|null
+	  
 	}|null;
 		profiles: {
 			avatar_url: string | null

@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Avatar } from '@nextui-org/react';

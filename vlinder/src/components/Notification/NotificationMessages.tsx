@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import InitNotifications from "@/utils/store/InitNotifications";
 // import { LIMIT_MESSAGE } from "@/utils/constant";
 
-export default async function ChatMessages() {
+export default async function NotificationMessages() {
 	const supabase = createClient();
 
 	const { data } = await supabase
