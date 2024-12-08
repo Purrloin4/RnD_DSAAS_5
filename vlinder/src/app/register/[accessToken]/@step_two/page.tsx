@@ -56,26 +56,19 @@ export default function Page() {
       router.push(`/register/${accessToken}`);
       return;
     }
-    
+
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userData.user.id)
       .single();
 
-    console.log("profileData", profileData);
 
     if (profileError || !profileData) {
       console.log("profileError", profileError);
-      if (tokenData.first_name) {
-        setFirstName(tokenData.first_name);
-      }
-
-      if (tokenData.Last_name) {
-        setLastName(tokenData.Last_name);
-      }
     }
-    else{
+ 
+    if (profileData?.full_name) {
     var first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
     var last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
 
@@ -86,6 +79,16 @@ export default function Page() {
     if (last_name) {
       setLastName(last_name);
     }
+    } else {
+      if (tokenData.first_name) {
+        setFirstName(tokenData.first_name);
+      }
+  
+      if (tokenData.Last_name) {
+        setLastName(tokenData.Last_name);
+        
+      }
+    }
 
     if (profileData.username)
       setUsername(profileData.username);
@@ -95,7 +98,7 @@ export default function Page() {
 
     if (profileData.location)
       setLocation(profileData.location);
-    }
+    
   };
 
   useEffect(() => {
@@ -132,6 +135,22 @@ export default function Page() {
 
     if (!birthDate) {
       setError("Birth Date is required");
+      return;
+    }
+
+    const { data: existingUser, error: existingUserError } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("username", username)
+      .single();
+
+    if (existingUserError && existingUserError.code !== "PGRST116") {
+      setError("Error checking username availability");
+      return;
+    }
+
+    if (existingUser) {
+      setError("Username is already in use");
       return;
     }
 

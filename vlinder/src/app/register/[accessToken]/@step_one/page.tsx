@@ -48,8 +48,9 @@ export default function Page() {
     setEmail(data.email);
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
+
     
-    if (!userError || userData) {
+    if (!userError && userData) {
       setMessage("You have already entered your credentials, please go to the next step");
       return;
     }
