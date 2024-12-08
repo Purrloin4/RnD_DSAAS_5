@@ -19,7 +19,6 @@ function Page() {
   const router = useRouter();
 
   const handleStartRegistration = async () => {
-    console.log("handleRegistration w accesstoken", accessToken);
     setError("");
 
     const { data, error } = await supabase

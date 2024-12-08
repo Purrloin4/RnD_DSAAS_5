@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 
 //Components
-import { Input, Button, DateValue } from "@nextui-org/react";
+import { Input, Button, DateValue, user } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/react";
-import { useUser } from "@/utils/store/user";
+
 
 //Icons
 import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
@@ -14,6 +14,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
 
+
 //
 //  USE `https://nominatim.openstreetmap.org/search?city=${location}&format=json` API TO SEARCH FOR STORING COORDINATES IN DATABASE (ALSO SAVE CITYNAME FOR THERE PROFILE)
 //  DONT FORGET TO CHECK IF ITS VALID (optional add "&country=Belgium")
@@ -21,7 +22,7 @@ const supabase = createClient();
 //
 
 export default function Page() {
-  const [location, setLocation] = useState<string>("");
+  const [location, setLocation] = useState("");
   const [locationError, setLocationError] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -29,9 +30,9 @@ export default function Page() {
   const pathName = usePathname();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [usernames, setUsernames] = useState("");
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
-
+  const [username, setUsername] = useState("");
+  const [birthDate, setBirthDate] = useState<DateValue | null>(null);
+  
   const handleStepTwoRegistration = async () => {
     const accessToken = pathName.split("/").pop();
   
@@ -43,41 +44,57 @@ export default function Page() {
       .single();
 
   
-    if (error || !tokenData) {
+    if (tokenError || !tokenData) {
       router.push(`/register`);
       return;
     }
-    console.log(tokenData);
-    const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    if (userError) {
-      setError("Something went wrong!");
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !userData) {
+      setMessage("PLease first enter your credentials");
+      router.push(`/register/${accessToken}`);
       return;
     }
-
+    
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userData.user.id)
       .single();
 
-    if (profileError) {
-      setError("Something went wrong!");
-      return;
-    }
+    console.log("profileData", profileData);
 
-    if (profileData.username) setUsernames(profileData.username);
-    if (profileData.birth_date) setBirthDate(new Date(profileData.birth_date));
-    
+    if (profileError || !profileData) {
+      console.log("profileError", profileError);
+      if (tokenData.first_name) {
+        setFirstName(tokenData.first_name);
+      }
 
-    if (profileData.full_name) {
-      const [first_name, last_name] = profileData.full_name.split(" ");
-      setFirstName(first_name);
-      setLastName(last_name);
+      if (tokenData.Last_name) {
+        setLastName(tokenData.Last_name);
+      }
     }
     else{
-      if (tokenData.first_name) setFirstName(tokenData.first_name);
-      if (tokenData.Last_name) setLastName(tokenData.Last_name);
+    var first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
+    var last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
+
+    if (first_name) {
+      setFirstName(first_name);
+    }
+
+    if (last_name) {
+      setLastName(last_name);
+    }
+
+    if (profileData.username)
+      setUsername(profileData.username);
+
+    if (profileData.birth_date)
+      // fuck next js with their dateValue
+
+    if (profileData.location)
+      setLocation(profileData.location);
     }
   };
 
@@ -92,9 +109,60 @@ export default function Page() {
   const handleSave = async () => {
     setError("");
     setMessage("");
-    const { data, error } = await supabase.auth.getUser();
-    console.log(data);
-    console.log(birthDate);
+
+    if (username.length < 1) {
+      setError("Username is required");
+      return;
+    }
+
+    if (firstName.length < 1) {
+      setError("First Name is required");
+      return;
+    }
+
+    if (lastName.length < 1) {
+      setError("Last Name is required");
+      return;
+    }
+
+    if (location.length < 1) {
+      setError("Location is required");
+      return;
+    }
+
+    if (!birthDate) {
+      setError("Birth Date is required");
+      return;
+    }
+
+    var birthDay = `${birthDate.year}-${birthDate.month}-${birthDate.day}`;
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (!userData.user) {
+      setError("User data is not available");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert({
+        id: userData.user.id,
+        full_name: `${firstName} ${lastName}`,
+        username: username,
+        birthday: birthDay,
+        location: location,
+        role: "user",
+      });
+
+    if (error) {
+      setError("Error saving data");
+      console.error(error);
+      return;
+    } else {
+      setMessage("Information saved successfully");
+      console.log(data);
+    }
   };
 
   const get_location = () => {
@@ -158,7 +226,8 @@ export default function Page() {
           type="text"
           label="Username"
           placeholder="Enter Username"
-          onChange={(e) => setUsernames(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
+          value={username}
         />
         <Input
           className="w-full mb-4"
@@ -181,7 +250,8 @@ export default function Page() {
         <DatePicker
           label="Birth Date"
           className="w-full mb-4"
-          onChange={(date) => setBirthDate(date ? new Date(date.toString()) : null)}
+          onChange={(date) => setBirthDate(date)}
+          value={birthDate}
         />
         <text className="text-sm text-default-400">Tip: press the location icon to get your location!</text>
         <Input
@@ -205,6 +275,8 @@ export default function Page() {
         </button>
           }
         />
+        {error && <p className="text-red-500">{error}</p>}
+        {message && <p className="text-green-500">{message}</p>}
         <Button className="w-full mt-8" color="primary" onClick={handleSave}>
           Save
         </Button>
