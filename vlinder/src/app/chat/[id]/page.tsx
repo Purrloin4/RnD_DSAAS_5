@@ -26,7 +26,7 @@ export default async function Chat({ params }: { params: { id: string } }) {
         <>
             <div className="max-w-3xl mx-auto md:py-10 h-screen">
                 <div className="h-full border rounded-md flex flex-col relative">
-                    <ChatHeader user={sessionData.session?.user} />
+                <ChatHeader user={sessionData.session?.user} roomId={params.id} />
 
                     {sessionData.session?.user ? (
                         <>
