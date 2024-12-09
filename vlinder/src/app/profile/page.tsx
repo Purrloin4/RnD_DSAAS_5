@@ -269,7 +269,7 @@ export default function EditProfilePage() {
     return (
         <>
 
-         <Button onPress={onOpen}>Open Modal</Button>
+         <Button onPress={onOpen}>Friends</Button>
       <Modal isOpen={isOpen} size='sm' onOpenChange={onOpenChange}>
         <ModalContent>
         {(onClose) => (

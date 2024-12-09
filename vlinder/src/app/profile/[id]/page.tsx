@@ -105,21 +105,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
             setFriendStatus(null);
         }
     };
-    
-    // const fetchFriends = async () => {
-    //     const { data, error } = await supabase.rpc('show_friends');
 
-    //     if (error) {
-    //         console.error('Error fetching friends:', error);
-    //     } else {
-    //         setFriends(data);
-    //     }
-    // };
     
 
     const sendFriendRequest = async () => {
         try {
             // console.log('Sending friend request from:', user?.id, 'to:', params.id);
+            if(user?.id === params.id) {
+                toast.error('You cannot send a friend request to yourself.');
+                return;
+            }else{
             const { data, error } = await supabase.rpc('send_friend_request', { profile_2_id: params.id });
 
             if (error) {
@@ -130,7 +125,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 await fetchFriendStatus(params.id); // Update the status after sending the request
                 toast.success('Friend request sent successfully!');
             }
-        } catch (error) {
+        } }catch (error) {
             console.error('Unexpected error sending friend request:', error);
         }
     };
