@@ -5,6 +5,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { Button, Input, Link } from "@nextui-org/react";
+
 
 
 const supabase = createClient();
@@ -251,7 +253,7 @@ export default function UserActivitiesPage() {
     }
 
     return (
-        <div className='p-6 md:p-10 min-h-screenmin-h-screen'>
+        <main className='p-6 md:p-10 min-h-screenmin-h-screen'>
             <h2>Activities</h2>
             <div className='-mx-6 md:-mx-10'>
             <div 
@@ -263,42 +265,52 @@ export default function UserActivitiesPage() {
                 onMouseLeave={handleMouseUp}>
                 {comingActivities.length > 0 ? (
                     comingActivities.map((activity, index) => (
-                        <Card key={activity.id} className={`flex-shrink-0 w-[85%] md:w-[45%] h-80 bg-white border border-gray-200 shadow-lg rounded-lg scroll-snap-start ${
-                            index === comingActivities.length - 1 ? "mr-0" : "mr-4"
-                          }`}>
-                            <div>
+                        <Card key={activity.id} className="relative flex-shrink-0 w-[85%] sm:w-[42.5%]  md:w-[28.33%] h-[30vh] bg-white border border-gray-200 shadow-xl rounded-lg scroll-snap-start flex flex-col justify-between">
+                            <div className='absolute top-4 right-4 bg-purple-200 text-white text-sm font-bold rounded-lg p-2  '>
+                            {activityOrganizations[activity.id] ? activityOrganizations[activity.id].join(', ') : 'Unknown Organizer'}            </div>
+
+                            <div className='w-full h-3/4 overflow-hidden p-2'>
+                                <img
+                                    src={activity.picture_url}
+                                    alt={activity.title}
+                                    className='w-full h-full object-cover rounded-lg'
+                                />
+                            </div>
+                            <div className='absolute bottom-4 right-4'>
+                                {joinedActivities.includes(activity.id) ? (
+                                <Button
+                                    size="lg"
+                                    className="w-full mt-4 bg-red-500"
+                                    aria-label="join-button"
+                                    onClick={() => handleQuitActivity(activity.id)} // Define this handler as needed
+                                >
+                                        Quit
+                                </Button>
+                                ) : (
+                                    <Button
+                                        size="lg"
+                                        className="w-full mt-4 btn-primary"
+                                        aria-label="join-button"
+                                        onClick={() => handleJoinActivity(activity.id)} // Define this handler as needed
+                                    >
+                                        Join
+                                    </Button>
+                                )}
+                            </div>
+
+
+                            {/*
                                 <h3>{activity.title}</h3>
                                 <p>{activity.time}</p>
                                 <p>{activity.description}</p>
                                 <p>{activity.place}</p>
+                                
                                 {activityOrganizations[activity.id] && (
                                     <p>
                                         Open to: {activityOrganizations[activity.id].join(', ')}
                                     </p>
-                                )}
-                                {joinedActivities.includes(activity.id) ? (
-                                    <button
-                                        onClick={() => handleQuitActivity(activity.id)}
-                                        
-                                    >
-                                        Quit
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => handleJoinActivity(activity.id)}
-                                        
-                                    >
-                                        Join
-                                    </button>
-                                )}
-                            </div>
-                            <div>
-                                <img
-                                    src={activity.picture_url}
-                                    alt={activity.title}
-                                    
-                                />
-                            </div>
+                                )}*/}
+                                
                         </Card>
                     ))
                 ) : (
@@ -306,6 +318,6 @@ export default function UserActivitiesPage() {
                 )}
             </div>
             </div>
-        </div>
+        </main>
     );
 }
