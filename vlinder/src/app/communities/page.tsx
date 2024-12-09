@@ -1,8 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+
 
 const supabase = createClient();
 
@@ -21,6 +24,46 @@ interface Organization {
 }
 
 export default function UserActivitiesPage() {
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.clientX - startX;
+    scrollRef.current.scrollLeft = scrollLeft - x;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+
+    if (!scrollRef.current) return;
+
+    const containerWidth = scrollRef.current.offsetWidth;
+    const childWidth = scrollRef.current.firstChild
+      ? (scrollRef.current.firstChild as HTMLElement).offsetWidth
+      : 0;
+
+    const currentScroll = scrollRef.current.scrollLeft;
+    const snapPoint = Math.round(currentScroll / childWidth) * childWidth;
+
+    scrollRef.current.scrollTo({
+      left: snapPoint,
+      behavior: "smooth",
+    });
+  };
+
+
     const [comingActivities, setComingActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
     const [joinedActivities, setJoinedActivities] = useState<string[]>([]);
@@ -208,13 +251,22 @@ export default function UserActivitiesPage() {
     }
 
     return (
-        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
-            <h1>Activities</h1>
-            <div>
+        <div className='p-6 md:p-10 min-h-screenmin-h-screen'>
+            <h2>Activities</h2>
+            <div className='-mx-6 md:-mx-10'>
+            <div 
+                ref={scrollRef}
+                className='flex overflow-x-scroll gap-x-4 items-start scrollbar-none scroll-snap-x-mandatory pl-6 md:pl-10'
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}>
                 {comingActivities.length > 0 ? (
-                    comingActivities.map((activity) => (
-                        <div key={activity.id} style={{ marginBottom: '15px', display: 'flex' }}>
-                            <div style={{ flex: 1 }}>
+                    comingActivities.map((activity, index) => (
+                        <Card key={activity.id} className={`flex-shrink-0 w-[85%] md:w-[45%] h-80 bg-white border border-gray-200 shadow-lg rounded-lg scroll-snap-start ${
+                            index === comingActivities.length - 1 ? "mr-0" : "mr-4"
+                          }`}>
+                            <div>
                                 <h3>{activity.title}</h3>
                                 <p>{activity.time}</p>
                                 <p>{activity.description}</p>
@@ -227,45 +279,32 @@ export default function UserActivitiesPage() {
                                 {joinedActivities.includes(activity.id) ? (
                                     <button
                                         onClick={() => handleQuitActivity(activity.id)}
-                                        style={{
-                                            marginTop: '10px',
-                                            padding: '5px 10px',
-                                            backgroundColor: '#dc3545',
-                                            color: '#fff',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                        }}
+                                        
                                     >
                                         Quit
                                     </button>
                                 ) : (
                                     <button
                                         onClick={() => handleJoinActivity(activity.id)}
-                                        style={{
-                                            marginTop: '10px',
-                                            padding: '5px 10px',
-                                            backgroundColor: '#28a745',
-                                            color: '#fff',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                        }}
+                                        
                                     >
                                         Join
                                     </button>
                                 )}
                             </div>
-                            <div style={{ flexShrink: 0, marginLeft: '20px' }}>
+                            <div>
                                 <img
                                     src={activity.picture_url}
                                     alt={activity.title}
-                                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                                    
                                 />
                             </div>
-                        </div>
+                        </Card>
                     ))
                 ) : (
                     <p>No upcoming activities.</p>
                 )}
+            </div>
             </div>
         </div>
     );
