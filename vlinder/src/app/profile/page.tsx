@@ -4,6 +4,20 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { checkbox } from '@nextui-org/react';
+import {
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    ModalProps,
+    Button,
+    useDisclosure,
+  } from "@nextui-org/react";
+  
+  import InitFriendships from '@/utils/store/InitFriendships';
+import FriendshipList from 'Components/FriendshipList';
+
 
 const supabase = createClient();
 
@@ -34,6 +48,10 @@ interface UserProfile {
 
 
 export default function EditProfilePage() {
+  
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const [friendships, setFriendships] = useState<any[]>([]); // Stores the list of friends
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [allHobbies, setHobbies] = useState<Hobby[]>([]);
@@ -91,10 +109,6 @@ export default function EditProfilePage() {
         }
     }
 
-    useEffect(() => {
-        fetchProfile();
-        fetchHobbies();
-    }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -218,12 +232,62 @@ export default function EditProfilePage() {
             router.push('/profile');
         }
     };
+    const fetchFriendships = async () => {
+        try {
+          const { data, error } = await supabase.rpc('show_friends'); // Using the Supabase function
+          if (error) {
+            console.error('Error fetching friendships:', error);
+          } else {
+            console.log("Friendships", data);
+            setFriendships(
+              data.map((friend: any) => ({
+                id: friend.id,
+                friend_id: friend.profile_id,
+                friend_username: friend.username,
+                friend_avatar: friend.avatar_url,
+              }))
+            );
+          }
+        } catch (error) {
+          console.error('Unexpected error fetching friendships:', error);
+        }
+      };
+
+
+      
+    useEffect(() => {
+        fetchProfile();
+        fetchHobbies();
+        fetchFriendships();
+    }, [userId]);
 
     if (!profile) {
         return <div>Loading profile...</div>;
     }
+    
 
     return (
+        <>
+
+         <Button onPress={onOpen}>Friends</Button>
+      <Modal isOpen={isOpen} size='sm' onOpenChange={onOpenChange}>
+        <ModalContent>
+        {(onClose) => (
+            <>
+             <ModalHeader>Friends</ModalHeader>
+              <ModalBody>
+                <FriendshipList friendships={friendships} />
+
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+              </>
+          )}
+        </ModalContent>
+      </Modal>
         <div style={styles.profilePage}>
             <div style={styles.avatarContainer}>
                 {profile.avatar_url ? (
@@ -413,6 +477,7 @@ export default function EditProfilePage() {
             </div>
             <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
         </div>
+        </>
     );
 }
 

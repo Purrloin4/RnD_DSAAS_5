@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import InitUser from "@/utils/store/InitUser";
-import NotificationMessages from "@/src/components/Notification/NotificationMessages";
+import ListNotifications from "@/src/components/Notification/ListNotifications";
 import ChatAbout from "@/src/components/Chat/ChatAbout";
 import NotificationHeader from "@/src/components/Notification/NotificationHeader";
 export default async function Chat() {
@@ -15,8 +15,8 @@ export default async function Chat() {
 
                     {sessionData.session?.user ? (
                         <>
-                            <NotificationMessages/>
-                            {/* <ChatInput /> */}
+                    <ListNotifications/>
+      {/* <ChatInput /> */}
                         </>
                     ) : (
                         <ChatAbout />
