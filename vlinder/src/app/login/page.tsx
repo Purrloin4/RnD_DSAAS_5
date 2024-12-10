@@ -1,10 +1,12 @@
 "use client";
 import { login } from './actions';
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Input} from "@nextui-org/react";
 import Logo from "Components/Logo/Logo";
 import React, { useState } from "react";
 import {EyeFilledIcon} from "Components/Icons/EyeFilledIcon";
 import {EyeSlashFilledIcon} from "Components/Icons/EyeSlashFilledIcon";
+import Link from "next/link";
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -26,7 +28,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <main className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
         <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
 
@@ -65,8 +67,7 @@ export default function LoginPage() {
         <div className="w-full flex justify-end">
           <Link
             href="/forgot-password"
-            color="primary"
-            className="text-sm font-semibold"
+            className="text-sm font-semibold text-primary"
           >
             Forgot Password?
           </Link>
@@ -74,7 +75,7 @@ export default function LoginPage() {
 
         <Button
           size="lg"
-          className="w-full md-4 btn-primary"
+          className="w-full md-4 btn-primary font-semibold"
           aria-label="login-button"
           type="submit"
           onClick={handleLogin}
@@ -83,12 +84,12 @@ export default function LoginPage() {
         </Button>
 
         <div className="w-full flex justify-center">
-          <Link href="/register" color="primary" className="text-sm font-semibold">
+          <Link href="/register" className="text-sm font-semibold text-primary">
             <span>Don't have an account?</span>
             <span className="ml-2 underline">Request access!</span>
           </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
