@@ -120,9 +120,9 @@ export default function Page() {
   };
 
   return (
-    <section className="w-full h-96 flex flex-col justify-start items-center p-4">
+    <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>Enter Your Personal Information</h2>
-      <div className="w-full max-w-md p-8 h-fit">
+      <div className="flex flex-col items-center w-full max-w-md p-8">
         <Input
           className="w-full mb-4"
           color="default"
@@ -175,7 +175,7 @@ export default function Page() {
         </button>
           }
         />
-        <Button className="w-full mt-8" color="primary" onClick={handleSave}>
+        <Button className="w-full mt-4 btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>
