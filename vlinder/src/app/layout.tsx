@@ -5,6 +5,7 @@ import { HotJar } from '@/src/components/Hotjar';
 import ConditionalNavbar from "Components/Navbar/ConditionalNavbar"; // New Client Component
 import { NextUIProvider } from "@nextui-org/react";
 
+import { Toaster } from "sonner"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,6 +39,7 @@ export default function RootLayout({
         {children}
         </NextUIProvider>
       </body>
+      <Toaster/>
     </html>
   );
 }
