@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import { useFriendships } from "@/utils/store/friendships"; // Import Zustand store
 import FriendshipList from "Components/FriendshipList"
+import InitFriendships from "@/utils/store/InitFriendships";
 
 const supabase = createClient();
 
@@ -269,7 +270,8 @@ export default function EditProfilePage() {
             <>
              <ModalHeader>Friends</ModalHeader>
               <ModalBody>
-                <FriendshipList friendships={friendships} />
+                <FriendshipList/>
+                <InitFriendships friendships={friendships} />
 
               </ModalBody>
               <ModalFooter>
