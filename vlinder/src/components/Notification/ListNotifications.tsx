@@ -2,14 +2,13 @@
 import { INotification, useNotifications } from "@/utils/store/notifications";
 import React, { useEffect, useRef, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import {ArrowUp } from "lucide-react";
 import { useUser } from "@/utils/store/user";
 import {ButtonGroup, Button, Avatar} from "@nextui-org/react";
 export default function ListNotifications() {
   const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [userScrolled, setUserScrolled] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-
   const { notifications, setNotifications } = useNotifications((state) => state);
   const user = useUser((state) => state.user);
   const supabase = createClient();
