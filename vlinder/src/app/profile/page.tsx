@@ -216,6 +216,7 @@ export default function EditProfilePage() {
             }
 
             router.push('/profile');
+            window.location.reload()
         }
     };
 
