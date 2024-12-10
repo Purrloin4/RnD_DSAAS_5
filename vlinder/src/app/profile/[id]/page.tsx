@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import ProfileDetail from 'Components/ProfileDetail';
-import { Button } from '@nextui-org/react';
+import { Button, Avatar } from '@nextui-org/react';
 import { useUser } from '@/utils/store/user';
 import toast, { Toaster } from 'react-hot-toast';
 // import {useFriendships} from '@/utils/store/friendships';
@@ -154,9 +154,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
     return (
         <div style={styles.profilePage}>
-            <div style={styles.avatarContainer}>
-                <img src={profile.avatar_url || '/default-avatar.png'} alt="Avatar" style={styles.avatar} />
-            </div>
+            {/* <div style={styles.avatarContainer}> */}
+            <Avatar isBordered
+             color='warning'
+              src={profile.avatar_url || '/default-avatar.png'}
+              alt={profile.id}
+              className="w-20 h-20 text-large"
+            //   className="cursor-pointer"
+            />
+                {/* <img src={profile.avatar_url || '/default-avatar.png'} alt="Avatar" style={styles.avatar} /> */}
+            {/* </div> */}
             <ProfileDetail label="NAME" value={profile.full_name} />
             <ProfileDetail label="USERNAME" value={profile.username} />
             <ProfileDetail label="GENDER" value={profile.gender} />
