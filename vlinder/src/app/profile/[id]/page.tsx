@@ -50,41 +50,34 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     const [friends, setFriends] = useState([]);
 
     const fetchProfile = async () => {
-        const { data: { user } } = await supabase.auth.getUser()
+        const { data, error } = await supabase
+            .from('profiles')
+            .select(`id, 
+                    username, 
+                    full_name, 
+                    avatar_url, 
+                    sexual_orientation, 
+                    display_disability, 
+                    disability, 
+                    smoker, 
+                    birthday, 
+                    gender, 
+                    need_assistance,
+                    profile_hobbies (
+                    hobbies (id, name, emoji))
+                    `)
+            .eq('id', params.id)
+            .single();
 
-        try {
-            console.log('Fetching profile data for user ID:', params.id);
-            const { data, error } = await supabase
-                .from('profiles')
-                .select(`id, 
-                        username, 
-                        full_name, 
-                        avatar_url, 
-                        sexual_orientation, 
-                        display_disability, 
-                        disability, 
-                        smoker, 
-                        birthday, 
-                        gender, 
-                        need_assistance,
-                        profile_hobbies (
-                        hobbies (id, name, emoji))
-                        `)
-                .eq('id', params.id)
-                .single();
-
-            if (error) {
-                console.error('Error fetching profile:', error);
-            } else {
-                setProfile(data);
-                console.log('Profile data fetched:', data);
-            }
-        } catch (error) {
-            console.error('Unexpected error fetching profile:', error);
+        if (data) {
+            // @ts-expect-error intellisense is wrong, this works
+            setProfile(data);
+        } else {
+            console.error('Error fetching profile:', error);
         }
     };
 
- 
+
     const fetchFriendStatus = async (otherUserId: string) => {
         try {
             console.log('Checking friendship status with profile:', otherUserId);
