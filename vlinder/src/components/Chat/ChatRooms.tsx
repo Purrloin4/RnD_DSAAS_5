@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/utils/store/user";
+import { useFriendships, IFriendship } from "@/utils/store/friendships"; // Import the Zustand store
 import { Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import {
@@ -21,12 +22,6 @@ interface Room {
   created_at: string;
 }
 
-interface Friendship {
-  profile_id: string;
-  username: string;
-  avatar_url: string | null;
-}
-
 export const ListboxWrapper = ({ children }: { children: React.ReactNode }) => (
   <div className="w-[360px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
     {children}
@@ -35,10 +30,10 @@ export const ListboxWrapper = ({ children }: { children: React.ReactNode }) => (
 
 export default function ChatRooms() {
   const user = useUser((state) => state.user);
+  const { friendships, setFriendships } = useFriendships(); // Access Zustand store
   const router = useRouter();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [selectedKeys, setSelectedKeys] = useState(new Set<string>());
   const [groupName, setGroupName] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,14 +47,15 @@ export default function ChatRooms() {
         console.error("Error fetching friendships:", error);
         return;
       }
-      console.log("Friendships fetched:", data);
-      setFriendships(
-        data.map((friend: any) => ({
-          profile_id: friend.profile_id,
-          username: friend.username,
-          avatar_url: friend.avatar_url,
-        }))
-      );
+
+      const formattedData: IFriendship[] = (data || []).map((friend: any) => ({
+        id: friend.id,
+        username: friend.username,
+        friend_id: friend.profile_id,
+        friend_avatar: friend.avatar_url || null,
+      }));
+
+      setFriendships(formattedData); // Store friendships in Zustand
     } catch (error) {
       console.error("Unexpected error fetching friendships:", error);
     }
@@ -101,28 +97,26 @@ export default function ChatRooms() {
         alert("Please provide a group name and select at least one friend.");
         return;
       }
-  
+
       const selectedFriendIds = Array.from(selectedKeys);
-  
-      // Step 1: Create the new room
+
       const { data, error: roomError } = await supabase.rpc("create_new_room", {
         room_name: groupName,
       });
-  
+
       if (roomError) {
         console.error("Error creating group chat:", roomError);
         return;
       }
-  
+
       const roomId = data[0]?.id;
       if (!roomId) {
         console.error("Room ID not found after creation.");
         return;
       }
-  
-      // Step 2: Add participants (including the authenticated user)
+
       const participantIds = [...selectedFriendIds, user?.id];
-  
+
       for (const participantId of participantIds) {
         const { error: participantError } = await supabase
           .from("room_participants")
@@ -130,24 +124,22 @@ export default function ChatRooms() {
             profile_id: participantId,
             room_id: roomId,
           });
-  
+
         if (participantError) {
           console.error(
             `Error adding participant (ID: ${participantId}) to room:`,
             participantError
           );
-        } else {
-          console.log(`Participant (ID: ${participantId}) added successfully.`);
         }
       }
-  
+
       console.log("Group chat created successfully.");
       fetchUserRooms(); // Refresh the rooms after creation
     } catch (error) {
       console.error("Unexpected error creating group chat:", error);
     }
   };
-  
+
   useEffect(() => {
     if (user?.id) {
       fetchUserRooms();
@@ -188,14 +180,14 @@ export default function ChatRooms() {
                       }
                     >
                       {friendships.map((friend) => (
-                        <ListboxItem key={friend.profile_id}>
+                        <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.avatar_url || "/default-avatar.png"}
-                              alt={friend.username}
+                              src={friend.friend_avatar || "/default-avatar.png"}
+                              alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />
-                            <span>{friend.username}</span>
+                            <span>{friend.username || "Unknown"}</span>
                           </div>
                         </ListboxItem>
                       ))}
@@ -216,31 +208,16 @@ export default function ChatRooms() {
         </ModalContent>
       </Modal>
       <div>
-        {/* <Button color="success" onPress={fetchUserRooms}>
-          Refresh Rooms
-        </Button> */}
         {rooms.length === 0 ? (
           <div>No rooms found.</div>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                <th
-                  style={{
-                    borderBottom: "1px solid #ddd",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
+                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
                   Room Name
                 </th>
-                <th
-                  style={{
-                    borderBottom: "1px solid #ddd",
-                    padding: "8px",
-                    textAlign: "left",
-                  }}
-                >
+                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
                   Actions
                 </th>
               </tr>
