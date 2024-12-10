@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
-import { checkbox } from '@nextui-org/react';
+import React, { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { useFriendships } from "@/utils/store/friendships"; // Import Zustand store
+import FriendshipList from "Components/FriendshipList"
+import InitFriendships from "@/utils/store/InitFriendships";
 
 const supabase = createClient();
 
@@ -16,7 +19,12 @@ interface Hobby {
 interface ProfileHobby {
     hobbies: Hobby;
 }
-
+interface Friendship {
+    id: string;
+    friend_id: string;
+    friend_username: string;
+    friend_avatar: string | null;
+}
 interface UserProfile {
     id: string;
     username: string;
@@ -34,13 +42,16 @@ interface UserProfile {
 
 
 export default function EditProfilePage() {
+  
+
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const { friendships, setFriendships } = useFriendships(); // Access friendships from Zustand store
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [allHobbies, setHobbies] = useState<Hobby[]>([]);
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
-
-
+  
     useEffect(() => {
         const fetchUser = async () => {
             const { data, error } = await supabase.auth.getUser();
@@ -91,10 +102,6 @@ export default function EditProfilePage() {
         }
     }
 
-    useEffect(() => {
-        fetchProfile();
-        fetchHobbies();
-    }, [userId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
@@ -219,12 +226,64 @@ export default function EditProfilePage() {
             window.location.reload()
         }
     };
+    const fetchFriendships = async () => {
+        try {
+          const { data, error } = await supabase.rpc("show_friends");
+          if (error) {
+            console.error("Error fetching friendships:", error);
+            return;
+          }
+    
+          const formattedData = data.map((friend: any) => ({
+            id: friend.id,
+            username: friend.username,
+            friend_id: friend.profile_id,
+            friend_avatar: friend.avatar_url || null,
+          }));
+    
+          setFriendships(formattedData); // Update Zustand store
+        } catch (error) {
+          console.error("Unexpected error fetching friendships:", error);
+        }
+      };
+
+
+      useEffect(() => {
+    
+            fetchProfile();
+            fetchHobbies();
+            fetchFriendships();
+        
+    }, [userId]);
 
     if (!profile) {
         return <div>Loading profile...</div>;
     }
+    
 
     return (
+        <>
+
+         <Button onPress={onOpen}>Friends</Button>
+      <Modal isOpen={isOpen} size='sm' onOpenChange={onOpenChange}>
+        <ModalContent>
+        {(onClose) => (
+            <>
+             <ModalHeader>Friends</ModalHeader>
+              <ModalBody>
+                <FriendshipList/>
+                <InitFriendships friendships={friendships} />
+
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
+              </>
+          )}
+        </ModalContent>
+      </Modal>
         <div style={styles.profilePage}>
             <div style={styles.avatarContainer}>
                 {profile.avatar_url ? (
@@ -414,6 +473,7 @@ export default function EditProfilePage() {
             </div>
             <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
         </div>
+        </>
     );
 }
 

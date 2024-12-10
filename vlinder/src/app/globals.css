@@ -31,7 +31,10 @@ body {
     @apply text-xl;
   }
 }
-
+.uppy-Dashboard-inner{
+  width:auto !important;
+  height:25rem !important;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
