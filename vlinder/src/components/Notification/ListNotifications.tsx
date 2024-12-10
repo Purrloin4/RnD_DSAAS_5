@@ -186,9 +186,7 @@ export default function ListNotifications() {
         }
       };
   return (
-        <> {notifications.map((notification) => {
-          console.log('From:', notification.from_who, 'To:', notification.to_who);
-        })}
+        <div> 
           <div
             className="flex-1 flex flex-col p-5 h-full overflow-y-auto"
             ref={scrollRef}
@@ -257,7 +255,7 @@ export default function ListNotifications() {
               )}
             </div>
           )}
-        </>
+        </div>
       );
     }
     
