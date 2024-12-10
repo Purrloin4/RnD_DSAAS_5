@@ -6,10 +6,15 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { Button, Input, Link } from "@nextui-org/react";
+import { format } from 'date-fns';
+import { Calendar } from "@nextui-org/react"; 
+
 
 
 
 const supabase = createClient();
+
+
 
 interface Activity {
     id: string;
@@ -248,6 +253,13 @@ export default function UserActivitiesPage() {
         init();
     }, [userId]);
 
+    const formatActivityTime = (isoString: string): string[] => {
+        const date = new Date(isoString);
+        const formattedDate = format(date, 'EEEE, MMM d, yyyy');
+        const formattedTime = format(date, 'HH:mm');
+        return [formattedDate, formattedTime];
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -265,59 +277,77 @@ export default function UserActivitiesPage() {
                 onMouseLeave={handleMouseUp}>
                 {comingActivities.length > 0 ? (
                     comingActivities.map((activity, index) => (
-                        <Card key={activity.id} className="relative flex-shrink-0 w-[85%] sm:w-[42.5%]  md:w-[28.33%] h-[30vh] bg-white border border-gray-200 shadow-xl rounded-lg scroll-snap-start flex flex-col justify-between">
-                            <div className='absolute top-4 right-4 bg-purple-200 text-white text-sm font-bold rounded-lg p-2  '>
-                            {activityOrganizations[activity.id] ? activityOrganizations[activity.id].join(', ') : 'Unknown Organizer'}            </div>
+                        <Card
+                            key={activity.id}
+                            className="relative flex-shrink-0 w-[85%] sm:w-[42.5%] md:w-[28.33%] h-[30vh] bg-white border border-gray-200 shadow-xl rounded-lg scroll-snap-start flex flex-col"
+                            >
+                                <div className="absolute top-4 right-4 bg-purple-500 text-white text-sm font-bold rounded-lg p-2">
+                                    {activityOrganizations[activity.id]
+                                        ? activityOrganizations[activity.id].join(", ")
+                                        : "Unknown Organizer"}
+                                </div>
 
-                            <div className='w-full h-3/4 overflow-hidden p-2'>
-                                <img
-                                    src={activity.picture_url}
-                                    alt={activity.title}
-                                    className='w-full h-full object-cover rounded-lg'
-                                />
-                            </div>
-                            <div className='absolute bottom-4 right-4'>
-                                {joinedActivities.includes(activity.id) ? (
-                                <Button
-                                    size="lg"
-                                    className="w-full mt-4 bg-red-500"
-                                    aria-label="join-button"
-                                    onClick={() => handleQuitActivity(activity.id)} // Define this handler as needed
-                                >
+                                <div className="w-full h-2/3 overflow-hidden rounded-lg">
+                                    <img
+                                        src={activity.picture_url}
+                                        alt={activity.title}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between p-4">
+                                <div className="flex flex-col flex-1">
+                                <h3 className="text-lg font-semibold truncate">{activity.title}</h3>
+                                    {(() => {
+                                        const [formattedDate, formattedTime] = formatActivityTime(activity.time);
+                                        return (
+                                            <p className="text-sm text-gray-500">
+                                                {formattedDate}
+                                                <br />
+                                                {formattedTime}
+                                            </p>
+                                        );
+                                    })()}
+                                </div>
+
+                                <div className="ml-4">
+                                    {joinedActivities.includes(activity.id) ? (
+                                        <Button
+                                            size="lg"
+                                            className="bg-red-500"
+                                            aria-label="quit-button"
+                                            onClick={() => handleQuitActivity(activity.id)}
+                                        >
                                         Quit
-                                </Button>
-                                ) : (
-                                    <Button
-                                        size="lg"
-                                        className="w-full mt-4 btn-primary"
-                                        aria-label="join-button"
-                                        onClick={() => handleJoinActivity(activity.id)} // Define this handler as needed
-                                    >
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            size="lg"
+                                            className="btn-primary"
+                                            aria-label="join-button"
+                                            onClick={() => handleJoinActivity(activity.id)}
+                                        >
                                         Join
-                                    </Button>
-                                )}
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-
-
-                            {/*
-                                <h3>{activity.title}</h3>
-                                <p>{activity.time}</p>
-                                <p>{activity.description}</p>
-                                <p>{activity.place}</p>
-                                
-                                {activityOrganizations[activity.id] && (
-                                    <p>
-                                        Open to: {activityOrganizations[activity.id].join(', ')}
-                                    </p>
-                                )}*/}
-                                
                         </Card>
+
+
                     ))
                 ) : (
                     <p>No upcoming activities.</p>
                 )}
+                
+                
             </div>
             </div>
+            <div className="mt-8">
+                    <h3>Your Calendar</h3>
+                    <Calendar   
+                    />
+                </div>
         </main>
     );
 }
