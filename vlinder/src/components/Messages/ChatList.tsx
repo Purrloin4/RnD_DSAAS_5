@@ -91,8 +91,9 @@ export default function ChatList({ children, className }: ChatListProps) {
     <div className={`flex flex-col p-4 ${className}`}>
       <h2 className="">Chats</h2>
       <div className="flex-1 max-h-screen overflow-y-auto">
-        {rooms.map((room) => (
+        {rooms.map((room, index) => (
           <ChatListItem
+            key={index}
             name={room.name || "Unnamed Chat"}
             lastMessage={""}
             time={""}
