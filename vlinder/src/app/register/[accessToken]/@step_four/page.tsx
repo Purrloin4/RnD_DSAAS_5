@@ -88,7 +88,7 @@ export default function Page() {
       return;
     }
 
-    let sex_positive = lookingFor == "Friends" ? "false" : "true";
+    const sex_positive = lookingFor == "Friends" ? "false" : "true";
 
     const { data, error } = await supabase
       .from("profiles")
