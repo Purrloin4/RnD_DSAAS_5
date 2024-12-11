@@ -69,8 +69,8 @@ export default function Page() {
     }
  
     if (profileData?.full_name) {
-    var first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
-    var last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
+    let first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
+    let last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
 
     if (first_name) {
       setFirstName(first_name);
@@ -154,7 +154,7 @@ export default function Page() {
       return;
     }
 
-    var birthDay = `${birthDate.year}-${birthDate.month}-${birthDate.day}`;
+    let birthDay = `${birthDate.year}-${birthDate.month}-${birthDate.day}`;
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
 

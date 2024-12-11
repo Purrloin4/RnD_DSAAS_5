@@ -60,7 +60,7 @@ export default function Page() {
 
 
     if (!profileError && profileData) {
-      var lookingFor = profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends;
+      let lookingFor = profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends;
       setLookingFor(lookingFor);
     }
 
@@ -88,7 +88,7 @@ export default function Page() {
       return;
     }
 
-    var sex_positive = lookingFor == "Friends" ? "false" : "true";
+    let sex_positive = lookingFor == "Friends" ? "false" : "true";
 
     const { data, error } = await supabase
       .from("profiles")
