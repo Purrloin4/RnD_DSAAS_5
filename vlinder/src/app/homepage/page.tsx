@@ -4,7 +4,7 @@ import EnviromentStrings from '@/src/enums/envStrings';
 import { createClient } from '@/utils/supabase/client'
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure, Slider, CheckboxGroup, Checkbox } from '@nextui-org/react';
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Spacer, useDisclosure, Slider, CheckboxGroup, Checkbox, Chip } from '@nextui-org/react';
 
 interface Hobby {
     id: number;
@@ -43,6 +43,8 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true); 
     const {isOpen, onOpen, onOpenChange } = useDisclosure();
     const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
+    const [allHobbies, setAllHobbies] = useState<Hobby[]>([]);
+    const [selectedHobbies, setSelectedHobbies] = useState<number[]>([]);
 
     useEffect(() => {
         if (process.env.NODE_ENV === EnviromentStrings.TEST){
@@ -123,12 +125,22 @@ export default function HomePage() {
         }
 
         const { data: profiles } = await query;
-        const filteredProfiles = profiles?.filter(profile => {
+        const filteredProfilesAge = profiles?.filter(profile => {
             const age = calculateAge(profile.birthday);
             return age >= ageFilterValue[0] && age <= ageFilterValue[1];
         });
+
+        const filteredProfilesAgeAndHobbies = filteredProfilesAge?.filter(profile => {
+            const hobbyIds = profile.profile_hobbies.flatMap(ph => {
+                const hobbies = ph.hobbies as Hobby | Hobby[];
+                return Array.isArray(hobbies) ? hobbies.map(hobby => hobby.id) : [hobbies.id];
+            });
+          
+            return hobbyIds.some(hobbyId => selectedHobbies.includes(hobbyId));
+          });
+          
         // @ts-expect-error intellisense is wrong, this works
-        setProfiles(filteredProfiles || []);
+        setProfiles(filteredProfilesAgeAndHobbies || []);
         setLoading(false);
     }
 
@@ -145,6 +157,26 @@ export default function HomePage() {
     useEffect(() => {
         fetchProfiles();
     }, [loverFilter]);
+
+    useEffect(() => {
+        const fetchHobbies = async () => {
+            const { data, error } = await supabase.from("hobbies").select("*");
+            if (data) {
+                setAllHobbies(data);
+            } else {
+                console.error("Error fetching hobbies:", error);
+            }
+        };
+        fetchHobbies();
+    }, []);
+
+    const toggleHobby = (id: number) => {
+        setSelectedHobbies((prevSelectedHobbies) =>
+            prevSelectedHobbies.includes(id)
+                ? prevSelectedHobbies.filter((hobbyId) => hobbyId !== id)
+                : [...prevSelectedHobbies, id]
+        );
+    };
 
       
     return (
@@ -219,6 +251,19 @@ export default function HomePage() {
                                         maxValue={100}
                                         step={1}
                                         />
+                                    </div>
+                                    <Spacer y={1} />
+                                    <h2>Hobbies</h2>
+                                    <div className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+                                        {allHobbies.map((hobby) => (
+                                            <Chip
+                                                key={hobby.id}
+                                                onClick={() => toggleHobby(hobby.id)}
+                                                className={`m-1 ${selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"}`}
+                                            >
+                                                {hobby.name} {hobby.emoji}
+                                            </Chip>
+                                        ))}
                                     </div>
                                 </ModalBody>
                             <ModalFooter>
