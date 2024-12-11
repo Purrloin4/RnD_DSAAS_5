@@ -10,6 +10,11 @@ import { Calendar } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { format } from 'date-fns';
 
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import dayjs, { Dayjs } from "dayjs"
+
 
 const supabase = createClient();
 
@@ -51,6 +56,11 @@ export default function UserActivitiesPage() {
     const router = useRouter();
     const defaultDate = today(getLocalTimeZone());
     const [activityDates, setActivityDates] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+    
+
+    
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!scrollRef.current) return;
@@ -414,39 +424,21 @@ export default function UserActivitiesPage() {
                     <h2>Your Calendar</h2>
                     
                     <div className="mt-8 flex flex-col items-center">
-                    <Calendar
-                            aria-label='Activities Calendar'
-                            value={defaultDate}
-                            focusedValue={defaultDate}
-                            isReadOnly
-                            className="custom-calendar"
-                        />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                        value={selectedDate}
+                        onChange={(newValue) => setSelectedDate(newValue)}
+                        shouldDisableDate={(date) => {
+
+                            const formattedDate = date?.format("YYYY-MM-DD");
+                            return !activityDates.includes(formattedDate);
+                        }}
+                    />
+                </LocalizationProvider>
 
                     </div>
 
-                    <style jsx>{`
-                        /* General styling for calendar days */
-                        .custom-calendar .day {
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 2rem;
-                            height: 2rem;
-                            border-radius: 50%;
-                        }
-                        /* Dynamically style activity dates */
-                        ${activityDates
-                            .map(
-                                (date) => `
-                            .custom-calendar .day[data-date="${date}"] {
-                                background-color: blue;
-                                color: white;
-                                border-radius: 50%;
-                            }
-                        `
-                            )
-                            .join('\n')}
-                    `}</style>
+                    
                     
 
                     
