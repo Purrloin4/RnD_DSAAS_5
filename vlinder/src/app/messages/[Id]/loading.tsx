@@ -15,10 +15,11 @@ export default function Loading() {
       loading={true}
     >
       {skeletons.map((value, index) => (
-        <div className={`flex flex-col ${Math.random() > 0.5 ? "items-end" : "items-start"} w-full overflow-hidden`}>
-          <Skeleton key={index} className={`h-10 rounded-2xl`}>
-            {value}
-          </Skeleton>
+        <div
+          key={index}
+          className={`flex flex-col ${Math.random() > 0.5 ? "items-end" : "items-start"} w-full overflow-hidden`}
+        >
+          <Skeleton className={`h-10 rounded-2xl`}>{value}</Skeleton>
         </div>
       ))}
     </ChatMessagesContainer>
