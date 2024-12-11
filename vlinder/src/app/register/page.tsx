@@ -38,21 +38,28 @@ function Page() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen px-4">
-      <div className="w-full max-w-md p-8 h-fit bg-white rounded-md shadow-md">
-        <Logo alt="logo vlinder" className="pb-8 mx-auto" />
+    <main className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
+      <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
         {error && <p className="text-red-500">{error}</p>}
         <Input
           type="text"
           label="Access Token"
           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          className="max-w-full"
+          className="w-full md-4"
           onChange={(e) => setAccessToken(e.target.value)}
         />
-        <Link className="block mt-2 text-sm text-blue-500" href="./register/request-access" replace>
-          Request an access token
+        
+        <Link className="w-full flex justify-center text-sm font-semibold text-primary" href="./register/request-access" replace>
+          <span>Request an access token!</span>
         </Link>
-        <Button className="w-full mt-8" color="primary" onClick={handleStartRegistration}>
+
+        
+
+        <Button size="lg"
+          className="w-full md-4 btn-primary font-semibold"
+          aria-label="register-button"
+          onClick={handleStartRegistration}>
           Start my registration
         </Button>
       </div>

@@ -108,20 +108,20 @@ export default function Page() {
   };
 
   return (
-    <section className="w-full h-96 flex flex-col justify-start items-center p-4">
+    <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>What Are You Looking For?</h2>
       <div className="w-full max-w-md p-8 h-fit">
       <Button
         color={lookingFor === LookingFor.Friends ? "primary" : "default"}
-        className="w-full mb-4"
+        className="w-full mb-4 text-black"
         data-gender={LookingFor.Friends}
         onClick={lookingForChange}
       >
         {LookingForDisplayNames[LookingFor.Friends]}
       </Button>
       <Button
-        color={lookingFor === LookingFor.PartnerAndFriends ? "primary" : "default"}
-        className="w-full mb-4"
+        color={lookingFor === LookingFor.PartnerAndFriends ? "secondary" : "default"}
+        className="w-full mb-4 text-black"
         data-gender={LookingFor.PartnerAndFriends}
         onClick={lookingForChange}
       >
@@ -129,7 +129,7 @@ export default function Page() {
       </Button>
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button className="w-full mt-8" color="primary" onClick={handleSave}>
+        <Button className="w-full mb-4 text-black" color="primary" onClick={handleSave}>
           Save
         </Button>
       </div>

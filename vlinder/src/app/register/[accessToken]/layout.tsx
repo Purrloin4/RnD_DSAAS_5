@@ -36,7 +36,7 @@ function RegisterLayout({
       {steps[step]}
       <div className="w-full flex justify-center gap-4 absolute bottom-4 text-center">
         {step > 0 && (
-          <Button onClick={prevStep} color="primary" className="min-w-fit w-1/3">
+          <Button onClick={prevStep} color="primary" className="min-w-fit w-1/3 font-semibold">
             Previous
           </Button>
         )}
@@ -44,11 +44,12 @@ function RegisterLayout({
           <Button
             onClick={nextStep}
             color="primary"
-            className="min-w-fit w-1/3"
+            className="min-w-fit w-1/3 font-semibold"
           >
             Next
           </Button>
         ) : null}
+
       </div>
     </main>
   );

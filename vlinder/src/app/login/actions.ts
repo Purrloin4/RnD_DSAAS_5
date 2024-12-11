@@ -20,8 +20,35 @@ export async function login(formData: FormData) {
     redirect('/login?message=Could not authenticate user')
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/profile')
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+
+  if (userError || !userData.user) {
+    redirect('/login?message=Could not fetch user information')
+    return
+  }
+  
+  const userId = userData.user.id
+
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single()
+
+  if (profileError || !profile) {
+    redirect('/login?message=Error retrieving user profile')
+    return
+  }
+
+  if (profile.role === 'admin') {
+    redirect(`/admin/${userId}`)
+  } else {
+    revalidatePath('/', 'layout')
+    redirect('/profile')
+  }
+
+  //revalidatePath('/', 'layout')
+  //redirect('/profile')
 }
 
 export async function signup(formData: FormData) {
