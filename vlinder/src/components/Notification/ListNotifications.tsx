@@ -12,12 +12,14 @@ export default function ListNotifications() {
   const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [userScrolled, setUserScrolled] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { notifications, setNotifications } = useNotifications((state) => state);
   const user = useUser((state) => state.user);
   const supabase = createClient();
 
   useEffect(() => {
     const fetchNotifications = async () => {
+      setLoading(true);
       try {
         const { data, error } = await supabase
           .from("notifications")
@@ -48,6 +50,8 @@ export default function ListNotifications() {
         }
       } catch (error) {
         console.error("Unexpected error fetching notifications:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -187,6 +191,47 @@ export default function ListNotifications() {
       };
       
       return (
+        <div
+          className="flex-1 p-5 h-full overflow-y-auto space-y-4 custom-scrollbar"
+          ref={scrollRef}
+          onScroll={handleOnScroll}
+        >
+          {loading
+            ? Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="bg-gray-100 p-4 rounded-lg">
+                  <Skeleton>
+                    <User
+                      avatarProps={{
+                        src: "/default-avatar.png",
+                      }}
+                      name="Loading..."
+                      description="Loading description..."
+                    />
+                  </Skeleton>
+                </div>
+              ))
+            : notifications.map((notification) => (
+                <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
+                  <User
+                    avatarProps={{
+                      src: notification.from_who_details?.avatar_url || "/default-avatar.png",
+                    }}
+                    name={notification.from_who_details?.username || "Unknown User"}
+                    description={notification.content || "No description available"}
+                  />
+                  <small className="text-gray-500">
+                    {new Date(notification.created_at).toLocaleString()}
+                  </small>
+                </div>
+              ))}
+        </div>
+      );
+      
+      
+      
+
+      {/*}
+      return (
         <div className="flex-1 p-5 h-full overflow-y-auto space-y-4">
           {notifications.map((notification) => (
             <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
@@ -203,7 +248,7 @@ export default function ListNotifications() {
             </div>
           ))}
         </div>
-      );
+      );*/}
 
   {/*return (
         <div> 
