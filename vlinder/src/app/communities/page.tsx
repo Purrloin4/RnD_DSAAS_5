@@ -6,14 +6,19 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
 import { Button, Input, Link } from "@nextui-org/react";
-import { format } from 'date-fns';
 import { Calendar } from "@nextui-org/react"; 
-
-
+import { today, getLocalTimeZone } from "@internationalized/date";
+import { format } from 'date-fns';
 
 
 const supabase = createClient();
 
+interface UserActivity {
+    activity_id: string;
+    activities: {
+        time: string; // ISO string for activity time
+    };
+}
 
 
 interface Activity {
@@ -30,55 +35,56 @@ interface Organization {
     name: string;
 }
 
+
+
 export default function UserActivitiesPage() {
 
     const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.clientX);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.clientX - startX;
-    scrollRef.current.scrollLeft = scrollLeft - x;
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-
-    if (!scrollRef.current) return;
-
-    const containerWidth = scrollRef.current.offsetWidth;
-    const childWidth = scrollRef.current.firstChild
-      ? (scrollRef.current.firstChild as HTMLElement).offsetWidth
-      : 0;
-
-    const currentScroll = scrollRef.current.scrollLeft;
-    const snapPoint = Math.round(currentScroll / childWidth) * childWidth;
-
-    scrollRef.current.scrollTo({
-      left: snapPoint,
-      behavior: "smooth",
-    });
-  };
-
-
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
     const [comingActivities, setComingActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
     const [joinedActivities, setJoinedActivities] = useState<string[]>([]);
-    const [activityOrganizations, setActivityOrganizations] = useState<Record<string, string[]>>(
-        {}
-    ); // Maps activity ID to organization names
+    const [activityOrganizations, setActivityOrganizations] = useState<Record<string, string[]>>({}); // Maps activity ID to organization names
     const [userId, setUserId] = useState<string | null>(null);
     const router = useRouter();
+    const defaultDate = today(getLocalTimeZone());
+    const [activityDates, setActivityDates] = useState<string[]>([]);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!scrollRef.current) return;
+        setIsDragging(true);
+        setStartX(e.clientX);
+        setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging || !scrollRef.current) return;
+        e.preventDefault();
+        const x = e.clientX - startX;
+        scrollRef.current.scrollLeft = scrollLeft - x;
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+
+        if (!scrollRef.current) return;
+
+        const containerWidth = scrollRef.current.offsetWidth;
+        const childWidth = scrollRef.current.firstChild
+        ? (scrollRef.current.firstChild as HTMLElement).offsetWidth
+        : 0;
+
+        const currentScroll = scrollRef.current.scrollLeft;
+        const snapPoint = Math.round(currentScroll / childWidth) * childWidth;
+
+        scrollRef.current.scrollTo({
+        left: snapPoint,
+        behavior: "smooth",
+        });
+    };
+
 
     const fetchUserOrganization = async () => {
         try {
@@ -212,17 +218,17 @@ export default function UserActivitiesPage() {
             const { error } = await supabase
                 .from('user_activity')
                 .insert([{ user_id: userId, activity_id: activityId }]);
-
+    
             if (error) {
                 console.error('Error joining activity:', error);
             } else {
-                setJoinedActivities((prev) => [...prev, activityId]);
+                setJoinedActivities((prev) => [...prev, activityId]); // Update the state
             }
         } catch (err) {
             console.error('Error joining activity:', err);
         }
     };
-
+    
     const handleQuitActivity = async (activityId: string) => {
         if (!userId) return;
         try {
@@ -231,16 +237,50 @@ export default function UserActivitiesPage() {
                 .delete()
                 .eq('user_id', userId)
                 .eq('activity_id', activityId);
-
+    
             if (error) {
                 console.error('Error quitting activity:', error);
             } else {
-                setJoinedActivities((prev) => prev.filter((id) => id !== activityId));
+                setJoinedActivities((prev) => prev.filter((id) => id !== activityId)); // Update the state
             }
         } catch (err) {
             console.error('Error quitting activity:', err);
         }
     };
+    
+
+    const fetchActivityDates = async (userId: string): Promise<string[]> => {
+        try {
+            // Query user_activity and join with activities table
+            const { data, error } = await supabase
+                .from('user_activity')
+                .select(`
+                    activity_id,
+                    activities (time)
+                `)
+                .eq('user_id', userId) as { data: UserActivity[] | null; error: any }; // Explicitly define the type
+    
+            if (error) {
+                console.error('Error fetching activity dates:', error);
+                return [];
+            }
+    
+            if (!data) {
+                console.warn('No activity dates found for this user.');
+                return [];
+            }
+    
+            // Extract and return only the date part of the time
+            const dates = data.map((item) => item.activities.time.split('T')[0]);
+            return dates;
+        } catch (err) {
+            console.error('Error in fetchActivityDates:', err);
+            return [];
+        }
+    };
+    
+    
+    
 
     useEffect(() => {
         const init = async () => {
@@ -252,6 +292,33 @@ export default function UserActivitiesPage() {
         };
         init();
     }, [userId]);
+
+    useEffect(() => {
+        const updateActivityDates = async () => {
+            try {
+                const { data: userData, error } = await supabase.auth.getUser();
+                if (error || !userData?.user) {
+                    console.error("Error fetching user or no user logged in:", error);
+                    return;
+                }
+    
+                const userId = userData.user.id; // Fetch user ID
+                console.log("Fetched User ID:", userId);
+    
+                // Fetch the updated list of activity dates
+                const dates = await fetchActivityDates(userId);
+                console.log("Updated Activity Dates for User:", dates);
+                setActivityDates(dates); // Update the state with new dates
+            } catch (err) {
+                console.error("Error updating activity dates:", err);
+            }
+        };
+    
+        // Run the function whenever `joinedActivities` changes
+        updateActivityDates();
+    }, [joinedActivities]); // Add joinedActivities as a dependency
+    
+    
 
     const formatActivityTime = (isoString: string): string[] => {
         const date = new Date(isoString);
@@ -344,9 +411,18 @@ export default function UserActivitiesPage() {
             </div>
             </div>
             <div className="mt-8">
-                    <h3>Your Calendar</h3>
-                    <Calendar   
-                    />
+                    <h2>Your Calendar</h2>
+                    
+                    <div className='flex justify-center items-center'>
+                        <Calendar
+                            aria-label='Activities Calendar'
+                            value={defaultDate}
+                            focusedValue={defaultDate}
+                            isReadOnly
+                        />
+
+                    </div>
+                    
                 </div>
         </main>
     );
