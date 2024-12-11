@@ -6,6 +6,9 @@ import ChatInput from "@/src/components/Chat/ChatInput";
 import ChatMessages from "@/src/components/Chat/ChatMessages";
 import ChatAbout from "@/src/components/Chat/ChatAbout";
 import ChatRooms from "@/src/components/Chat/ChatRooms"
+
+
+
 export default async function Page() {
 	const supabase = createClient();
 	const { data } = await supabase.auth.getSession();
