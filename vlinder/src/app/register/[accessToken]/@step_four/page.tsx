@@ -10,6 +10,7 @@ export default function PersonalInfoPage() {
   const [smoker, setSmoker] = useState<boolean>();
   const [disabilities, setDisabilities] = useState<string[]>([""]);
   const [displayDisability, setDisplayDisability] = useState<boolean>();
+  const [needAssistance, setNeedAssistance] = useState<boolean>();
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function PersonalInfoPage() {
       return;
     }
 
-    if (smoker === null || displayDisability === null) {
+    if (smoker === null || displayDisability === null || needAssistance === null) {
         setError("Please fill in all fields.");
         return;
       }
@@ -81,6 +82,7 @@ export default function PersonalInfoPage() {
         smoker: smoker,
         disability: disabilities.filter((d) => d.trim() !== ""),
         display_disability: displayDisability,
+        need_assistance: needAssistance,
       });
 
     if (error) {
@@ -169,6 +171,25 @@ export default function PersonalInfoPage() {
                 <Checkbox
                 isSelected={displayDisability === false}
                 onChange={() => setDisplayDisability(false)}
+                color="secondary"
+                >
+                No
+                </Checkbox>
+            </div>
+          </div>
+          <div className="w-full mb-4 text-black">
+            <p>Do you require full-time assistance for daily activities?</p>
+            <div className="flex gap-4">
+                <Checkbox
+                isSelected={needAssistance === true}
+                onChange={() => setNeedAssistance(true)}
+                color="secondary"
+                >
+                Yes
+                </Checkbox>
+                <Checkbox
+                isSelected={needAssistance === false}
+                onChange={() => setNeedAssistance(false)}
                 color="secondary"
                 >
                 No
