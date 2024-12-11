@@ -164,7 +164,9 @@ export default function HomePage() {
             if (data) {
                 setAllHobbies(data);
             } else {
-                console.error("Error fetching hobbies:", error);
+                if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error("Error fetching hobbies:", error);
+                }
             }
         };
         fetchHobbies();
