@@ -56,6 +56,9 @@ export default function HomePage() {
                     router.push('/login');
                 } else {
                     setUserId(data.user.id);
+                    if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                        console.log("UserData:", data);
+                    }
                 }
             };
             fetchUser();
