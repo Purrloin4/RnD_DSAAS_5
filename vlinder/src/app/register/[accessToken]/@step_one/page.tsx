@@ -30,6 +30,7 @@ export default function Page() {
 
 
   const handleStartRegistration = async () => {
+
   
     const { data, error } = await supabase
       .from("accessToken")
@@ -45,6 +46,15 @@ export default function Page() {
     }
 
     setEmail(data.email);
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    
+    if (!userError && userData) {
+      setMessage("You have already entered your credentials, please go to the next step");
+      return;
+    }
+
   };
 
   useEffect(() => {
@@ -72,12 +82,10 @@ export default function Page() {
 
     if (error) {
       setError("Error signing up");
-      console.error(error);
       return;
     }
     else {
       setMessage("You have successfully signed up");
-      console.log(data);
     }
 
   };
