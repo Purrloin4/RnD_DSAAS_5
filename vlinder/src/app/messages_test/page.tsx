@@ -4,7 +4,7 @@ import ChatBubbleGroup from "@/src/components/Messages/ChatBubbleGroep";
 import ChatBubble from "@/src/components/Messages/ChatBubble";
 
 export default function Page() {
-  return (
+  /*return (
     <main className="max-h-screen max-w-screen flex flex-row overflow-hidden">
       <ChatList className="w-[400px]">
         <ChatListItem
@@ -140,5 +140,5 @@ export default function Page() {
         </ChatBubbleGroup>
       </ChatMessagesContainer>
     </main>
-  );
+  );*/
 }
