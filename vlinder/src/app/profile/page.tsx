@@ -393,7 +393,7 @@ export default function EditProfilePage() {
                 <label>Disabilities:</label>
                 <textarea
                     name="disability"
-                    value={profile.disability.join(', ')}
+                    value={profile.disability?.join(', ')}
                     onChange={(e) => setProfile(prevProfile => prevProfile ? { ...prevProfile, disability: e.target.value.split(', ') } : null)}
                     style={styles.textarea}
                 />

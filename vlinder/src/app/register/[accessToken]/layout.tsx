@@ -35,12 +35,21 @@ function RegisterLayout({
       <Progress size="sm" radius="none" aria-label="steps" value={((step + 1) / numberOfSteps) * 100} />
       {steps[step]}
       <div className="w-full flex justify-center gap-4 absolute bottom-4 text-center">
-        <Button onClick={prevStep} disabled={step == 0} color="primary" className="min-w-fit w-1/3 font-semibold">
-          Previous
-        </Button>
-        <Button onClick={nextStep} color="primary" className="min-w-fit w-1/3 font-semibold">
-          {step == numberOfSteps - 1 ? "Done" : "Next"}
-        </Button>
+        {step > 0 && (
+          <Button onClick={prevStep} color="primary" className="min-w-fit w-1/3 font-semibold">
+            Previous
+          </Button>
+        )}
+        {step < numberOfSteps - 1 ? (
+          <Button
+            onClick={nextStep}
+            color="primary"
+            className="min-w-fit w-1/3 font-semibold"
+          >
+            Next
+          </Button>
+        ) : null}
+
       </div>
     </main>
   );
