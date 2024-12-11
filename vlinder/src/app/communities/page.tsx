@@ -413,15 +413,43 @@ export default function UserActivitiesPage() {
             <div className="mt-8">
                     <h2>Your Calendar</h2>
                     
-                    <div className='flex justify-center items-center'>
-                        <Calendar
+                    <div className="mt-8 flex flex-col items-center">
+                    <Calendar
                             aria-label='Activities Calendar'
                             value={defaultDate}
                             focusedValue={defaultDate}
                             isReadOnly
+                            className="custom-calendar"
                         />
 
                     </div>
+
+                    <style jsx>{`
+                        /* General styling for calendar days */
+                        .custom-calendar .day {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 2rem;
+                            height: 2rem;
+                            border-radius: 50%;
+                        }
+                        /* Dynamically style activity dates */
+                        ${activityDates
+                            .map(
+                                (date) => `
+                            .custom-calendar .day[data-date="${date}"] {
+                                background-color: blue;
+                                color: white;
+                                border-radius: 50%;
+                            }
+                        `
+                            )
+                            .join('\n')}
+                    `}</style>
+                    
+
+                    
                     
                 </div>
         </main>
