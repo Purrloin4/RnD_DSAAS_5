@@ -231,6 +231,14 @@ export default function Page() {
       }
 
       setMessage("Profile saved successfully! You will be redirected to the homepage.");
+
+      const accessToken = pathName.split("/").pop();
+
+      const { data: tokenData, error: tokenError } = await supabase
+      .from("accessToken")
+      .update({ is_used: true })
+      .eq("id", accessToken);
+
       router.push("/homepage");
     } catch (error) {
       console.error("Failed to save profile:", error);
@@ -270,7 +278,7 @@ export default function Page() {
                 <Chip
                   key={hobby.id}
                   onClick={() => toggleHobby(hobby.id)}
-                  className={`m-1 ${selectedHobbies.includes(hobby.id) ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                  className={`m-1 ${selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"}`}
                 >
                   {hobby.name} {hobby.emoji}
                 </Chip>
