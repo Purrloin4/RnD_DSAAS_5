@@ -60,7 +60,7 @@ export default function Page() {
 
 
     if (!profileError && profileData) {
-      let lookingFor = profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends;
+      const lookingFor = profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends;
       setLookingFor(lookingFor);
     }
 
