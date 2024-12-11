@@ -52,8 +52,8 @@ export default function Page() {
     const { data: userData, error: userError } = await supabase.auth.getUser();
     
     if (userError || !userData) {
-      setMessage("PLease first enter your credentials");
-      router.push(`/register/${accessToken}`);
+      setError("Please first enter your credentials");
+      router.push(`/register/${accessToken}`); // this doesn't work because of parallel routing
       return;
     }
 

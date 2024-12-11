@@ -11,14 +11,16 @@ function RegisterLayout({
   step_tree,
   step_four,
   step_five,
+  step_six,
 }: {
   step_one: React.ReactNode;
   step_two: React.ReactNode;
   step_tree: React.ReactNode;
   step_four: React.ReactNode;
   step_five: React.ReactNode;
+  step_six: React.ReactNode;
 }) {
-  const steps = [step_one, step_two, step_tree, step_four, step_five];
+  const steps = [step_one, step_two, step_tree, step_four, step_five, step_six];
   const numberOfSteps = steps.length;
   const nextStep = () => {
     setStep(step < numberOfSteps - 1 ? step + 1 : numberOfSteps - 1);
