@@ -230,7 +230,8 @@ export default function Page() {
         }
       }
 
-      setMessage("Profile saved successfully! You can now press done if you are finished with your profile setup.");
+      setMessage("Profile saved successfully! You will be redirected to the homepage.");
+      router.push("/homepage");
     } catch (error) {
       console.error("Failed to save profile:", error);
       setError("An unexpected error occurred. Please try again.");
@@ -280,7 +281,7 @@ export default function Page() {
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
         <Button className="w-full mt-8" color="primary" onClick={handleSave} disabled={loading}>
-          Save
+          Save And Finish Setup
         </Button>
       </div>
     </section>
