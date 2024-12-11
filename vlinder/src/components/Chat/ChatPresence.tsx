@@ -33,10 +33,12 @@ export default function ChatPresence() {
 		return <div className=" h-3 w-1"></div>;
 	}
 
+	const onlineText = onlineUsers === 1 ? "1 online" : `${onlineUsers} onlines`;
+
 	return (
 		<div className="flex items-center gap-1">
 			<div className="h-4 w-4 bg-green-500 rounded-full animate-pulse"></div>
-			<h1 className="text-sm text-gray-400">{onlineUsers} onlines</h1>
+			<h1 className="text-sm text-gray-400">{onlineText}</h1>
 		</div>
 	);
 }
