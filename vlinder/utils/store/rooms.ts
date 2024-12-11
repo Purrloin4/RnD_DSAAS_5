@@ -5,6 +5,8 @@ export type IRoom = {
   id: string;
   name: string | null;
   created_at: string | null;
+  chat_type: Database["public"]["Enums"]["ChatType"]|null;
+
 };
 
 interface RoomState {
