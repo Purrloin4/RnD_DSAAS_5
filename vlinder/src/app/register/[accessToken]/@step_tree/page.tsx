@@ -31,14 +31,14 @@ export default function Page() {
   };
 
   return (
-    <section className="w-full h-96 flex flex-col justify-start items-center p-4">
-      <h2>Enter Your Gender and Sexual Orientation</h2>
-      <div className="w-full max-w-md p-8 h-fit">
-        <h3>Gender</h3>
+    <section className="w-full flex flex-col justify-start items-center p-4">
+      <h2 className="text-center">Enter Your Gender and Sexual Orientation</h2>
+      <div className="flex flex-col items-center w-full max-w-md p-8">
+        <h3 className="text-gray-800 font-bold mb-2">Gender</h3>
         {Object.values(Gender).map((g) => (
           <Button
-            color={gender === g ? "primary" : "default"}
-            className="w-full mb-4"
+            color={gender === g ? "secondary" : "default"}
+            className="w-full mb-4 text-gray-800"
             data-gender={g}
             key={g}
             onClick={genderChange}
@@ -47,11 +47,11 @@ export default function Page() {
           </Button>
         ))}
 
-        <h3>Sexual Orientation</h3>
+        <h3 className="text-gray-800 font-bold mb-2">Sexual Orientation</h3>
         {Object.values(SexualOrientation).map((o) => (
           <Button
-            color={sexualOrientation === o ? "primary" : "default"}
-            className="w-full mb-4"
+            color={sexualOrientation === o ? "secondary" : "default"}
+            className="w-full mb-4 text-gray-800"
             data-sexualorientation={o}
             key={o}
             onClick={sexualOrientationChange}
