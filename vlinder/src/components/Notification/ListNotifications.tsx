@@ -5,11 +5,13 @@ import { createClient } from "@/utils/supabase/client";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useUser } from "@/utils/store/user";
 import {ButtonGroup, Button, Avatar} from "@nextui-org/react";
+import { User, Skeleton } from "@nextui-org/react";
+
+
 export default function ListNotifications() {
   const scrollRef = useRef() as React.MutableRefObject<HTMLDivElement>;
   const [userScrolled, setUserScrolled] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-
   const { notifications, setNotifications } = useNotifications((state) => state);
   const user = useUser((state) => state.user);
   const supabase = createClient();
@@ -19,21 +21,21 @@ export default function ListNotifications() {
       try {
         const { data, error } = await supabase
           .from("notifications")
-          .select(`
+          .select(
+            `
             *,
             profiles:from_who (
               id,
               username,
               avatar_url
             )
-          `)
-          // .eq("to_who", user?.id)
+          `
+          )
           .order("created_at", { ascending: false });
 
         if (error) {
           console.error("Error fetching notifications:", error);
         } else {
-          // Map notifications to include `from_who_details`
           const enrichedNotifications = data.map((notification) => ({
             ...notification,
             from_who_details: {
@@ -42,12 +44,10 @@ export default function ListNotifications() {
               avatar_url: notification.profiles?.avatar_url || null,
             },
           }));
-          setNotifications(enrichedNotifications as INotification[]);
-          console.log('notification ids:', enrichedNotifications.map((notification) => notification.id));
+          setNotifications(enrichedNotifications);
         }
       } catch (error) {
         console.error("Unexpected error fetching notifications:", error);
-        
       }
     };
 
@@ -185,7 +185,27 @@ export default function ListNotifications() {
           console.error('Unexpected error rejecting friend request:', error);
         }
       };
-  return (
+      
+      return (
+        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4">
+          {notifications.map((notification) => (
+            <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
+              <User
+                avatarProps={{
+                  src: notification.from_who_details?.avatar_url || "/default-avatar.png",
+                }}
+                name={notification.from_who_details?.username || "Unknown User"}
+                description={notification.content || "No description available"}
+              />
+              <small className="text-gray-500">
+                {new Date(notification.created_at).toLocaleString()}
+              </small>
+            </div>
+          ))}
+        </div>
+      );
+
+  {/*return (
         <div> 
           <div
             className="flex-1 flex flex-col p-5 h-full overflow-y-auto"
@@ -256,6 +276,6 @@ export default function ListNotifications() {
             </div>
           )}
         </div>
-      );
+      );*/}
     }
     
