@@ -53,16 +53,17 @@ export default function LoadMessages({ roomId, userId }: { userId: string; roomI
   return (
     <>
       {messages.map((value, index) => (
-        <ChatBubble
-          isOwnMessage={value.profiles?.id === userId}
-          timestamp={new Date(value.created_at).toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-          })}
-          key={index}
-        >
-          {value.content}
-        </ChatBubble>
+        <div key={index}>
+          <ChatBubble
+            isOwnMessage={value.profiles?.id === userId}
+            timestamp={new Date(value.created_at).toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          >
+            {value.content}
+          </ChatBubble>
+        </div>
       ))}
     </>
   );
