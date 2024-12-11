@@ -2,21 +2,25 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/utils/store/user";
 import { Imessage, useMessage } from "@/utils/store/messages";
 
-export default function ChatInput({ roomId }: { roomId: string }) {
+import { PaperAirplaneIcon } from "Components/Icons/PaperAirplaneIcon";
+
+export default function MessageInput({ roomId }: { roomId: string }) {
   const user = useUser((state) => state.user);
   const addMessage = useMessage((state) => state.addMessage);
   const setOptimisticIds = useMessage((state) => state.setOptimisticIds);
   const supabase = createClient();
 
+  const [message, setMessage] = React.useState("");
   const [suggestedMessage, setSuggestedMessage] = useState("");
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async () => {
+    const content = message;
+    setMessage("");
     if (content.trim()) {
       const id = uuidv4();
       // const room_id = uuidv4();
@@ -94,30 +98,23 @@ export default function ChatInput({ roomId }: { roomId: string }) {
   }, []);
 
   return (
-    <div>
-      <div>
-        <Input
-          placeholder={suggestedMessage || "send a message"}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage(e.currentTarget.value);
-              e.currentTarget.value = "";
-            }
-          }}
-        />
-        {suggestedMessage && (
-          <Popover>
-            <PopoverTrigger>
-              <Button>Suggested Message: {suggestedMessage}</Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <Button color="primary" onPress={() => handleSendMessage(suggestedMessage)}>
-                Send
-              </Button>
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
-    </div>
+    <>
+      <Input
+        value={message}
+        onValueChange={setMessage}
+        size="lg"
+        type="text"
+        placeholder="Type a message..."
+        className="flex-1 mr-2"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSendMessage();
+          }
+        }}
+      />
+      <Button isIconOnly onClick={handleSendMessage} color="primary" aria-label="send" className="p-2 rounded-lg">
+        <PaperAirplaneIcon />
+      </Button>
+    </>
   );
 }

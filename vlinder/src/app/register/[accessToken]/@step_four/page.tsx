@@ -21,13 +21,13 @@ export default function Page() {
   };
 
   return (
-    <section className="w-full h-96 flex flex-col justify-start items-center p-4">
+    <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>What Are You Looking For?</h2>
-      <div className="w-full max-w-md p-8 h-fit">
+      <div className="flex flex-col items-center w-full max-w-md p-8">
         {Object.values(LookingFor).map((l) => (
           <Button
-            color={lookingFor === l ? "primary" : "default"}
-            className="w-full mb-4"
+            color={lookingFor === l ? "secondary" : "default"}
+            className="w-full mb-4 text-black"
             data-gender={l}
             key={l}
             onClick={genderChange}
