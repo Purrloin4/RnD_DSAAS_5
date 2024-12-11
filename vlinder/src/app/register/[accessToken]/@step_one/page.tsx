@@ -30,6 +30,7 @@ export default function Page() {
 
 
   const handleStartRegistration = async () => {
+
   
     const { data, error } = await supabase
       .from("accessToken")
@@ -45,6 +46,15 @@ export default function Page() {
     }
 
     setEmail(data.email);
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    
+    if (!userError && userData) {
+      setMessage("You have already entered your credentials, please go to the next step");
+      return;
+    }
+
   };
 
   useEffect(() => {
@@ -72,20 +82,18 @@ export default function Page() {
 
     if (error) {
       setError("Error signing up");
-      console.error(error);
       return;
     }
     else {
       setMessage("You have successfully signed up");
-      console.log(data);
     }
 
   };
 
   return (
-    <section className="w-full h-96 flex flex-col justify-start items-center p-4">
+    <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>Enter Your Email And Password</h2>
-      <div className="w-full max-w-md p-8 h-fit">
+      <div className="flex flex-col items-center w-full max-w-md p-8">
         <Input 
           className="w-full mb-4" 
           color="default" 
@@ -106,7 +114,7 @@ export default function Page() {
               className="focus:outline-none"
               type="button"
               onClick={toggleVisibility}
-              aria-label="toggle password visibility"
+              aria-label="toggle password1 visibility"
             >
               {isVisible ? (
                 <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
@@ -120,14 +128,18 @@ export default function Page() {
         <Input
           className="w-full mb-4"
           color="default"
-          type="password"
+          type={isVisible ? "text" : "password"}
           label="Repeat Password"
           placeholder="Repeat Your Password"
+          
           onChange={(e) => setRepeatPassword(e.target.value)}
         />
-        {error && <p className="text-red-500">{error}</p>}
-        {message && <p className="text-green-500">{message}</p>}
-        <Button className="w-full mt-8" color="primary" onClick={handleSave}>
+        {error && <p className="w-full flex justify-center text-center text-sm font-semibold text-red-500">{error}</p>}
+        {message && <p className="w-full flex justify-center text-center text-sm font-semibold text-green-500">{message}</p>}
+        <Button 
+          size="lg"
+          className="w-full mt-4 btn-primary font-semibold" 
+          onClick={handleSave}>
           Save
         </Button>
       </div>
