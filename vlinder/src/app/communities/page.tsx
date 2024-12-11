@@ -8,9 +8,11 @@ import { Button, Input, Link } from "@nextui-org/react";
 import { Calendar } from "@nextui-org/react"; 
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { format } from 'date-fns';
-import EnviromentStrings from '@/src/enums/envStrings';
 
-
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import dayjs, { Dayjs } from "dayjs"
 
 
 const supabase = createClient();
@@ -54,6 +56,11 @@ export default function UserActivitiesPage() {
     const router = useRouter();
     const defaultDate = today(getLocalTimeZone());
     const [activityDates, setActivityDates] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+    
+
+    
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!scrollRef.current) return;
@@ -469,8 +476,25 @@ export default function UserActivitiesPage() {
                     <h2>Your Calendar</h2>
                     
                     <div className="mt-8 flex flex-col items-center">
-                    <Calendar/>
-                    </div>                    
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                        value={selectedDate}
+                        onChange={(newValue) => setSelectedDate(newValue)}
+                        shouldDisableDate={(date) => {
+
+                            const formattedDate = date?.format("YYYY-MM-DD");
+                            return !activityDates.includes(formattedDate);
+                        }}
+                    />
+                </LocalizationProvider>
+
+                    </div>
+
+                    
+                    
+
+                    
+                    
                 </div>
         </main>
     );

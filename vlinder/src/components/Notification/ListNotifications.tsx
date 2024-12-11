@@ -191,42 +191,27 @@ export default function ListNotifications() {
       };
       
       return (
-        <div
-          className="flex-1 p-5 h-full overflow-y-auto space-y-4 custom-scrollbar"
-          ref={scrollRef}
-          onScroll={handleOnScroll}
-        >
-          {loading
-            ? Array.from({ length: 5 }).map((_, index) => (
-                <div key={index} className="bg-gray-100 p-4 rounded-lg">
-                  <Skeleton>
-                    <User
-                      avatarProps={{
-                        src: "/default-avatar.png",
-                      }}
-                      name="Loading..."
-                      description="Loading description..."
-                    />
-                  </Skeleton>
-                </div>
-              ))
-            : notifications.map((notification) => (
-                <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
-                  <User
-                    avatarProps={{
-                      src: notification.from_who_details?.avatar_url || "/default-avatar.png",
-                    }}
-                    name={notification.from_who_details?.username || "Unknown User"}
-                    description={notification.content || "No description available"}
-                  />
-                  <small className="text-gray-500">
-                    {new Date(notification.created_at).toLocaleString()}
-                  </small>
-                </div>
-              ))}
+        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4" ref={scrollRef} onScroll={handleOnScroll}>
+          {notifications.map((notification) => (
+            <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
+              <Skeleton className="rounded-lg" isLoaded={!loading}>
+                <User
+                  avatarProps={{
+                    src: notification.from_who_details?.avatar_url || "/default-avatar.png",
+                  }}
+                  name={notification.from_who_details?.username || "Unknown User"}
+                  description={notification.content || "No description available"}
+                />
+              </Skeleton>
+              <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
+                <small className="text-gray-500">
+                  {new Date(notification.created_at).toLocaleString()}
+                </small>
+              </Skeleton>
+            </div>
+          ))}
         </div>
       );
-      
       
       
 
