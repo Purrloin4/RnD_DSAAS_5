@@ -1,11 +1,10 @@
-import ChatMessagesContainer from "Components/Chat/ChatMessagesContainer";
-import ChatList from "Components/Chat/ChatList";
-import ChatListItem from "Components/Chat/ChatListItem";
-import ChatBubbleGroup from "@/src/components/Chat/ChatBubbleGroep";
-import ChatBubble from "@/src/components/Chat/ChatBubble";
+import ChatMessagesContainer from "@/src/components/Messages/ChatMessagesContainer";
+
+import ChatBubbleGroup from "@/src/components/Messages/ChatBubbleGroep";
+import ChatBubble from "@/src/components/Messages/ChatBubble";
 
 export default function Page() {
-  return (
+  /*return (
     <main className="max-h-screen max-w-screen flex flex-row overflow-hidden">
       <ChatList className="w-[400px]">
         <ChatListItem
@@ -13,31 +12,112 @@ export default function Page() {
           lastMessage="Hey, are we meeting later?"
           time="10:45 AM"
           isOnline={false}
-          isActive={true}
+          isGroupChat={false}
         />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
-        <ChatListItem name="Jane Doe" lastMessage="Hey, are we meeting later?" time="10:45 AM" isOnline={false} />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
+        <ChatListItem
+          name="Jane Doe"
+          lastMessage="Hey, are we meeting later?"
+          time="10:45 AM"
+          isOnline={false}
+          isGroupChat={false}
+        />
         <ChatListItem
           name="Jane Doe"
           lastMessage="Hey, are we meeting later? Hey, are we meeting later? Hey, are we meeting later? "
           time="10:45 AM"
           isOnline={true}
+          isGroupChat={false}
         />
       </ChatList>
       <ChatMessagesContainer
@@ -60,5 +140,5 @@ export default function Page() {
         </ChatBubbleGroup>
       </ChatMessagesContainer>
     </main>
-  );
+  );*/
 }
