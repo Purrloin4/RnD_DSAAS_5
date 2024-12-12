@@ -9,6 +9,22 @@ import { User, Skeleton } from "@nextui-org/react";
 import dayjs from "dayjs";
 import EnviromentStrings from '@/src/enums/envStrings';
 
+interface Notification {
+  id: string;
+  created_at: string;
+  content: string;
+  notification_type: string;
+  profiles?: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
+  from_who_details?: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
+}
 
 
 
@@ -260,7 +276,7 @@ export default function ListNotifications() {
                 <p className="text-gray-500">No notifications {formatText(section)}! </p>
               ) : (
                 items.map((notification) => (
-                  <div key={notification.id} className="bg-gray-100 p-4 rounded-lg mb-2">
+                  <div key={notification.id} className="bg-white p-4 rounded-lg mb-2">
                     <Skeleton className="rounded-lg" isLoaded={!loading}>
                       <User
                         avatarProps={{
