@@ -42,8 +42,10 @@ module.exports = {
     // Handle image imports
     // https://jestjs.io/docs/webpack#handling-static-assets
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': `<rootDir>/__mocks__/fileMock.js`,
+    "^Images/(.*)$": "<rootDir>/__mocks__/fileMock.js",
  
     // Handle module aliases
+    '^@/src/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^Components/(.*)$': '<rootDir>/src/components/$1',
     '^@/app/(.*)$': '<rootDir>/src/app/$1',
@@ -76,7 +78,12 @@ module.exports = {
               },
             },
           ],
-          '@babel/preset-react',
+          [
+            '@babel/preset-react',
+            {
+              runtime: 'automatic',
+            },
+          ],
           '@babel/preset-typescript',
         ],
         plugins: ['@babel/plugin-syntax-jsx'],

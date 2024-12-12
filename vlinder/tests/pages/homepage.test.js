@@ -13,6 +13,7 @@ jest.mock('@/utils/supabase/client', () => ({
     from: jest.fn((table) => ({
       select: jest.fn().mockReturnThis(),
       eq: jest.fn().mockReturnThis(),
+      neq: jest.fn().mockReturnThis(),
       single: jest.fn().mockResolvedValue({ data: table === 'profiles' ? mockProfiles[0] : null }),
       then: jest.fn((cb) => {
         if (table === 'profiles') cb({ data: mockProfiles });
@@ -33,8 +34,14 @@ jest.mock('next/navigation', () => ({
       username: 'dragon',
       avatar_url: null,
       birthday: '1990-01-01',
+      gender: 'Male',
+      smoker: false,
       sexual_orientation: 'heterosexual',
       sex_positive: true,
+      display_disability: true,
+      disability: ['vision'],
+      description: 'Profile description',
+      need_assistance: false,
       profile_hobbies: [
         { hobbies: { id: 1, name: 'Reading', emoji: '📚' } },
         { hobbies: { id: 2, name: 'Gaming', emoji: '🎮' } }
@@ -45,8 +52,14 @@ jest.mock('next/navigation', () => ({
       username: 'unicorn',
       avatar_url: null,
       birthday: '1995-05-15',
+      gender: 'Other',
+      smoker: true,
       sexual_orientation: 'asexual',
       sex_positive: false,
+      display_disability: false,
+      disability: [],
+      description: 'Profile description',
+      need_assistance: true,
       profile_hobbies: [
         { hobbies: { id: 3, name: 'Cooking', emoji: '🍳' } },
         { hobbies: { id: 4, name: 'Hiking', emoji: '🥾' } }
@@ -57,8 +70,14 @@ jest.mock('next/navigation', () => ({
       username: 'mamaBear',
       avatar_url: null,
       birthday: '1985-10-10',
+      gender: 'Female',
+      smoker: false,
       sexual_orientation: 'heterosexual',
       sex_positive: true,
+      display_disability: true,
+      disability: ['hearing'],
+      description: 'Profile description',
+      need_assistance: false,
       profile_hobbies: [
         { hobbies: { id: 5, name: 'Swimming', emoji: '🏊' } },
         { hobbies: { id: 6, name: 'Traveling', emoji: '✈️' } }
@@ -66,50 +85,40 @@ jest.mock('next/navigation', () => ({
     }
   ];
 
-describe('HomePage', () => {
-    it('renders loading state initially', () => {
-    render(<HomePage />);
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
+  describe('HomePage', () => {
+
+
+    it('renders loading state initially with skeleton cards', () => {
+      render(<HomePage />);
+      expect(screen.getAllByTestId('skeleton-card')).toHaveLength(8);
     });
-
-  it('fetches and sets user profile on mount', async () => {
-    render(<HomePage />);
-    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-    expect(screen.getByText('User Profiles')).toBeInTheDocument();
-  });
-
-  it('renders profiles after loading', async () => {
-    render(<HomePage />);
-    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-    expect(screen.getByText('User Profiles')).toBeInTheDocument();
-  });
-
+  
+    it('renders profiles cards after loading', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getAllByTestId('profile-suggestion-card')).toHaveLength(3);
+    });
+  
     it('renders profiles after loading', async () => {
-      render(<HomePage/>);
-      await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getByText('dragon')).toBeInTheDocument();
       expect(screen.getByText('unicorn')).toBeInTheDocument();
       expect(screen.getByText('mamaBear')).toBeInTheDocument();
-  });
+    });
+  
+    it('toggles lover filter', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      fireEvent.click(screen.getByTestId('lover-switch'));
+      expect(screen.queryByText('unicorn')).not.toBeInTheDocument();
+    });
 
-
-  it('toggles lover filter', async () => {
-    render(<HomePage />);
-    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-    fireEvent.click(screen.getByTestId('lover-switch'));
-    expect(screen.getByTestId('lover-switch')).toBeChecked();
+    it('renders profile details', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getByText('Cooking')).toBeInTheDocument();
+      expect(screen.getByText('Other')).toBeInTheDocument();
+      expect(screen.getByText('Need Assistance')).toBeInTheDocument();
+    });
   });
-
-  it('fetches hobbies on mount', async () => {
-    render(<HomePage />);
-    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-    expect(screen.getByText('Hobbies')).toBeInTheDocument();
-  });
-
-  it('toggles hobby selection', async () => {
-    render(<HomePage />);
-    await waitFor(() => expect(screen.queryByText('Loading...')).not.toBeInTheDocument());
-    const hobbyChip = screen.getByText('Hobby 1');
-    fireEvent.click(hobbyChip);
-    expect(hobbyChip).toHaveClass('bg-secondary');
-  });
-});
