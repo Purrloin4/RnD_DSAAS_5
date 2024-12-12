@@ -147,6 +147,8 @@ export default function HomePage() {
     });
 
     const filteredProfilesAgeAndHobbies = filteredProfilesAge?.filter((profile) => {
+      if (!selectedHobbies || selectedHobbies.length === 0) return true;
+
       const hobbyIds = profile.profile_hobbies.flatMap((ph) => {
         const hobbies = ph.hobbies as Hobby | Hobby[];
         return Array.isArray(hobbies) ? hobbies.map((hobby) => hobby.id) : [hobbies.id];
@@ -260,12 +262,21 @@ export default function HomePage() {
                     step={1}
                   />
                 </div>
-                {profile?.sex_positive && (
-                  <div>
-                    <h4>Looking for a lover?</h4>
-                    <Switch data-testid="lover-switch" isSelected={loverFilter} onValueChange={setLoverFilter} />
-                  </div>
-                )}
+                <Spacer y={1} />
+                <h2>Hobbies</h2>
+                <div className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+                  {allHobbies.map((hobby) => (
+                    <Chip
+                      key={hobby.id}
+                      onClick={() => toggleHobby(hobby.id)}
+                      className={`m-1 ${
+                        selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"
+                      }`}
+                    >
+                      {hobby.name} {hobby.emoji}
+                    </Chip>
+                  ))}
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
