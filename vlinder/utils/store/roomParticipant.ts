@@ -5,7 +5,7 @@ export type IRoomParticipant = {
   created_at: string;
   profile_id: string;
   room_id: string;
-  profile: {
+  profiles: {
     avatar_url: string | null;
     username: string | null;
     id: string;

@@ -1,5 +1,7 @@
 "use client";
 
+// import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
+
 import { Avatar, Input, Chip } from "@nextui-org/react";
 import { ReactNode } from "react";
 import { Skeleton } from "@nextui-org/react";
@@ -11,6 +13,7 @@ import toast,{ Toaster } from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import React, { useEffect,useState} from "react";
+import RoomParticipantList from "@/src/components/RoomParticipantsList";
 import {
   Modal,
   ModalContent,
@@ -21,7 +24,8 @@ import {
 } from "@nextui-org/react";
 import { sup } from "framer-motion/client";
 import ChatPresence from "@/src/components/Chat/ChatPresence";
-
+import AddNewParticipant from "@/src/components/AddNewParticipant"; 
+import EditChatName from "@/src/components/EditChatName";
 type ChatListProps = {
   children?: ReactNode;
   className?: string;
@@ -31,6 +35,7 @@ type ChatListProps = {
   name: string;
   roomId: string;
   user:string;
+  type: string;
 
 };
 
@@ -43,12 +48,19 @@ export default function ChatMessagesContainer({
   loading,
   roomId,
   user,
+  type,
 }: ChatListProps) 
 {
+
+  const supabase = createClient();
+ 
+  const isGroupChat = type === 'gc';
+  const [chatName, setChatName] = useState(name); // Dynamically displayed chat name
+
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   const router = useRouter();
-
+  
   const handleLeaveGroup = async (roomId: string) => {
     const supabase = createClient();
 
@@ -76,6 +88,29 @@ export default function ChatMessagesContainer({
       toast.error("An error occurred while leaving the chat.");
     }
   };
+  const fetchOtherUsername = async (roomId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("get_other_username", {
+        input_room_id: roomId,
+      });
+
+      if (error) {
+        console.error("Error fetching other user's username:", error);
+        return;
+      }
+
+      if (data) {
+        setChatName(data); // Update chat name to the other user's username
+      }
+    } catch (error) {
+      console.error("Unexpected error fetching other user's username:", error);
+    }
+  };
+  useEffect(() => {
+    if (!isGroupChat) {
+      fetchOtherUsername(roomId); // Only fetch for direct messages
+    }
+  }, [roomId]);
 
 
   return (
@@ -91,7 +126,7 @@ export default function ChatMessagesContainer({
           {loading ? (
             <Skeleton className="h-4 rounded-lg">Name is Loading</Skeleton> // for some reason w-xx is not woriking...
           ) : (
-            <h3 className="font-semibold text-lg">{name}</h3>
+            <h3 className="font-semibold text-lg">{chatName}</h3>
           )}
           <p className="text-sm text-gray-500">
             {isOnline ? (
@@ -117,7 +152,7 @@ export default function ChatMessagesContainer({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Leaving "{name}"</ModalHeader>
               <ModalBody>
                 {/* Are you sure you want to leave the room? */}
                 <div className="w-full flex items-center my-3">
@@ -134,9 +169,17 @@ export default function ChatMessagesContainer({
             </>
           )}
         </ModalContent>
-      </Modal>
-       <Button> ADD OTHERS </Button>
-          </PopoverContent>
+      </Modal> 
+      {isGroupChat && (
+                <>
+                  <RoomParticipantList roomId={roomId} />
+                  <AddNewParticipant roomId={roomId} />
+                  <EditChatName roomId={roomId} roomName={name} />
+                </>
+              )}
+    
+
+      </PopoverContent>
         </Popover>
       </div>
       </div>
