@@ -4,6 +4,7 @@ import PlaceholderImage from "Images/Profile_avatar_placeholder.png";
 import { GenderChip } from "./GenderChip";
 import SexPositiveChip from "./SexPositiveChip";
 import { SexualOrientationChip } from "./SexualOrientationChip";
+import NeedAssistanceChip from "./NeedAssistanceChip";
 import SmokerChip from "./SmokerChip";
 import Link from "next/link";
 import AddFriendBtn from "./AddFriendBtn";
@@ -17,6 +18,7 @@ interface Profile {
   gender: string;
   smoker: boolean | undefined;
   display_disability: boolean;
+  need_assistance: boolean | undefined;
   disability: string[];
   description: string;
   profile_hobbies: ProfileHobby[];
@@ -54,6 +56,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
           <GenderChip gender={profile.gender} />
           <SexPositiveChip sex_positive={profile.sex_positive} />
           <SexualOrientationChip sexual_orientation={profile.sexual_orientation} />
+          <NeedAssistanceChip need_assistance={profile.need_assistance} />
           <SmokerChip Smoker={profile.smoker} />
           {profile.display_disability
             ? profile.disability.map((dis, index) => (

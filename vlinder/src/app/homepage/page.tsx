@@ -42,6 +42,7 @@ interface Profile {
   gender: string;
   smoker: boolean | undefined;
   display_disability: boolean;
+  need_assistance: boolean | undefined;
   disability: string[];
   description: string;
   profile_hobbies: ProfileHobby[];
@@ -93,11 +94,11 @@ export default function HomePage() {
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
     if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
-        console.log("profile data", data);
-      }
+      console.log("profile data", data);
+    }
 
-    if (data)  {
-    setProfile(data);
+    if (data) {
+      setProfile(data);
     }
   };
 
@@ -114,6 +115,7 @@ export default function HomePage() {
                 display_disability,  
                 disability,
                 description,
+                need_assistance,
                 profile_hobbies (
                 hobbies (id, name, emoji)
             )`);
@@ -179,8 +181,8 @@ export default function HomePage() {
     };
     fetchData();
     if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
-        console.log("profile", profile);
-      }
+      console.log("profile", profile);
+    }
   }, [userId]);
 
   //Apply filters when user is looking for a lover
@@ -215,14 +217,19 @@ export default function HomePage() {
           Open Filters
         </Button>
       </div>
-     
-     <>
-      {profile?.sex_positive && (
-        <div className="w-full px-4 mt-2 flex justify-center">
-          <h4>Looking for a lover?</h4>
-          <Switch className="ml-4" data-testid="lover-switch" isSelected={loverFilter} onValueChange={setLoverFilter} />
-        </div>
-      )}
+
+      <>
+        {profile?.sex_positive && (
+          <div className="w-full px-4 mt-2 flex justify-center">
+            <h4>Looking for a lover?</h4>
+            <Switch
+              className="ml-4"
+              data-testid="lover-switch"
+              isSelected={loverFilter}
+              onValueChange={setLoverFilter}
+            />
+          </div>
+        )}
       </>
 
       <Modal data-testid isOpen={isOpen} onOpenChange={onOpenChange}>
