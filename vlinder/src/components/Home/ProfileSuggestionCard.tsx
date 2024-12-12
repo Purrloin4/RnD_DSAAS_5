@@ -17,6 +17,7 @@ interface Profile {
   smoker: boolean | undefined;
   display_disability: boolean;
   disability: string[];
+  description: string;
   profile_hobbies: ProfileHobby[];
 }
 
@@ -66,7 +67,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
           ))}
         </div>
         <p className="text-gray-600 line-clamp-3 overflow-hidden text-ellipsis text-wrap truncate break-all mb-4">
-          description
+          {profile.description}
         </p>
       </div>
       <Button className="justify-self-end bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition-colors mb-2">

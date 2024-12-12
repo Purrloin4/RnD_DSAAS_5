@@ -42,6 +42,7 @@ interface Profile {
   smoker: boolean | undefined;
   display_disability: boolean;
   disability: string[];
+  description: string;
   profile_hobbies: ProfileHobby[];
 }
 
@@ -100,6 +101,7 @@ export default function HomePage() {
                 sex_positive,
                 display_disability,  
                 disability,
+                description,
                 profile_hobbies (
                 hobbies (id, name, emoji)
             )`);
