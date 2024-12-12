@@ -1,17 +1,21 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "target" :"es2015",
+    "target": "es2015",
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "plugins": [
       {
@@ -19,12 +23,27 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "Components/*": ["./src/components/*"],
-      "Images/*": ["./src/images/*"]
-
+      "@/*": [
+        "./*"
+      ],
+      "Components/*": [
+        "./src/components/*"
+      ],
+      "Images/*": [
+        "./src/images/*"
+      ]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "__mocks__/next/navigation.js", "__mocks__/supabase/client.js", "src/components/Icons/EllipsisIcon.jsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "__mocks__/next/navigation.js",
+    "__mocks__/supabase/client.js",
+    "src/components/Icons/EllipsisIcon.jsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

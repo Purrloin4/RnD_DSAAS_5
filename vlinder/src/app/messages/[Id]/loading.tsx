@@ -14,6 +14,7 @@ export default function Loading() {
       name={""}
       loading={true}
       user={""}
+      type=""
     >
       {skeletons.map((value, index) => (
         <div
