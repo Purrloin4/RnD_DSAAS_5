@@ -25,6 +25,7 @@ import {
 import { sup } from "framer-motion/client";
 import ChatPresence from "@/src/components/Chat/ChatPresence";
 import AddNewParticipant from "@/src/components/AddNewParticipant"; 
+import EditChatName from "@/src/components/EditChatName";
 type ChatListProps = {
   children?: ReactNode;
   className?: string;
@@ -54,6 +55,7 @@ export default function ChatMessagesContainer({
   const supabase = createClient();
  
   const isGroupChat = type === 'gc';
+  const [chatName, setChatName] = useState(name); // Dynamically displayed chat name
 
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
@@ -86,6 +88,29 @@ export default function ChatMessagesContainer({
       toast.error("An error occurred while leaving the chat.");
     }
   };
+  const fetchOtherUsername = async (roomId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("get_other_username", {
+        input_room_id: roomId,
+      });
+
+      if (error) {
+        console.error("Error fetching other user's username:", error);
+        return;
+      }
+
+      if (data) {
+        setChatName(data); // Update chat name to the other user's username
+      }
+    } catch (error) {
+      console.error("Unexpected error fetching other user's username:", error);
+    }
+  };
+  useEffect(() => {
+    if (!isGroupChat) {
+      fetchOtherUsername(roomId); // Only fetch for direct messages
+    }
+  }, [roomId]);
 
 
   return (
@@ -101,7 +126,7 @@ export default function ChatMessagesContainer({
           {loading ? (
             <Skeleton className="h-4 rounded-lg">Name is Loading</Skeleton> // for some reason w-xx is not woriking...
           ) : (
-            <h3 className="font-semibold text-lg">{name}</h3>
+            <h3 className="font-semibold text-lg">{chatName}</h3>
           )}
           <p className="text-sm text-gray-500">
             {isOnline ? (
@@ -144,13 +169,17 @@ export default function ChatMessagesContainer({
             </>
           )}
         </ModalContent>
-      </Modal>
-      {/* <Button isDisabled={!isGroupChat}  onPress={onOpen}> VIEW PARTICIPANTS </Button> */}
-      <RoomParticipantList roomId={roomId} />
+      </Modal> 
+      {isGroupChat && (
+                <>
+                  <RoomParticipantList roomId={roomId} />
+                  <AddNewParticipant roomId={roomId} />
+                  <EditChatName roomId={roomId} roomName={name} />
+                </>
+              )}
+    
 
-      <AddNewParticipant roomId={roomId} />
-
-          </PopoverContent>
+      </PopoverContent>
         </Popover>
       </div>
       </div>

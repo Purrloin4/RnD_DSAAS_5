@@ -8,6 +8,7 @@ import { useFriendships } from "@/utils/store/friendships";
 import InitFriendships from "@/utils/store/InitFriendships";
 import { createClient } from "@/utils/supabase/client";
 import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
+import { toast } from "sonner";
 import {
     Button,
     Modal,
@@ -18,18 +19,22 @@ import {
     ModalProps,
     useDisclosure,
   } from "@nextui-org/react";
+
   export const ListboxWrapper = ({ children }: { children: React.ReactNode }) => (
     <div className="w-[360px] border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
       {children}
     </div>
   );
-export default function roomParticipant({ roomId }: { roomId: string }) {
+export default function AddNewParticipant({ roomId }: { roomId: string }) {
 const supabase = createClient();
   const router = useRouter();
+  
   const {participants, setParticipants,
     addParticipant, removeParticipant} = 
     useRoomParticipant((state) => state
   );
+  const disabledKeys = new Set(participants.map((participant) => participant.profile_id));
+
   const [scrollBehavior, setScrollBehavior] =
   React.useState<ModalProps["scrollBehavior"]>("inside");
   const { friendships, setFriendships } = useFriendships(); // Access Zustand store
@@ -40,12 +45,14 @@ const supabase = createClient();
   
   const addToGroupChat = async (): Promise<void> => {
     try {
+      toast.success("Adding member...");
+      console.log("participants", participants);  
       const selectedFriendIds = Array.from(selectedKeys);
 
       const participantIds = [...selectedFriendIds];
 
       for (const participantId of participantIds) {
-        const { error: participantError } = await supabase
+        const { data:participant, error: participantError } = await supabase
           .from("room_participants")
           .insert({
             profile_id: participantId,
@@ -59,34 +66,15 @@ const supabase = createClient();
           );
         }
       }
-
+      toast.success("Member added successfully!");
       console.log("Member added successfully!");
+      onOpenChange(); // Close modal
+      router.push(`/messages/${roomId}`);
     //   fetchUserRooms(); // Refresh the rooms after creation
     } catch (error) {
-      console.error("Unexpected error creating group chat:", error);
+      toast.error("Unexpected error adding member");
     }
   };
-  // Fetch friendships (optional, if not already initialized)
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      const { data, error } = await supabase
-        .from('room_participants')
-        .select('*,profiles(avatar_url,username,id)')
-        .eq('room_id', roomId);
-
-      if (error) {
-        console.error('Error fetching participants:', error);
-      } else {
-        console.log('Participants:', data); 
-        setParticipants(data);
-      }
-    };
-
-    fetchParticipants();
-  }, [roomId]);
-
-
-
 
   return (
     <>
@@ -102,6 +90,7 @@ const supabase = createClient();
                   <ListboxWrapper>
                     <Listbox
                       disallowEmptySelection
+                      disabledKeys={disabledKeys}
                       aria-label="Select friends"
                       selectedKeys={selectedKeys}
                       selectionMode="multiple"
@@ -127,12 +116,13 @@ const supabase = createClient();
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onPress={addToGroupChat}>
-                  Create
-                </Button>
-                <Button color="danger" variant="light" onPress={onClose}>
+              <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
+                <Button color="primary" onPress={addToGroupChat}>
+                  Add
+                </Button>
+               
               </ModalFooter>
             </>
           )}

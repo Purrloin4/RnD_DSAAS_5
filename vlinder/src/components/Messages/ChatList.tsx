@@ -28,6 +28,7 @@ interface Room {
   id: string;
   name: string | null;
   created_at: string;
+  chat_type: string;
 }
 
 interface User {
@@ -88,7 +89,7 @@ const fetchFriendships = async () => {
       if (data.length > 0) {
         const { data: roomData, error: roomError } = await supabase
           .from("rooms")
-          .select("id, name, created_at")
+          .select("id, name, created_at,chat_type")
           .in(
             "id",
             data.map((room: { room_id: string }) => room.room_id)
@@ -150,9 +151,10 @@ const fetchFriendships = async () => {
           );
         }
       }
-
+  
       console.log("Group chat created successfully.");
       fetchUserRooms(); // Refresh the rooms after creation
+      onOpenChange(); // Close modal
     } catch (error) {
       console.error("Unexpected error creating group chat:", error);
     }
@@ -234,8 +236,8 @@ const fetchFriendships = async () => {
             time={""}
             isOnline={false}
             isActive={room.id === Id}
-            isGroupChat={false}
             id={room.id}
+            type={room.chat_type}
           />
         ))}
       </div>
