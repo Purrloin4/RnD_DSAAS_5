@@ -6,6 +6,7 @@ import SexPositiveChip from "./SexPositiveChip";
 import { SexualOrientationChip } from "./SexualOrientationChip";
 import SmokerChip from "./SmokerChip";
 import Link from "next/link";
+import AddFriendBtn from "./AddFriendBtn";
 
 interface Profile {
   id: string;
@@ -33,6 +34,7 @@ interface ProfileHobby {
 
 export default function ProfileSuggestionCard({ className, profile }: { className?: string; profile: Profile }) {
   //console.log(profile);
+
   return (
     <Card
       className={`flex flex-col p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
@@ -70,9 +72,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
           {profile.description}
         </p>
       </div>
-      <Button className="justify-self-end bg-blue-500 text-white w-full py-2 rounded-md hover:bg-blue-600 transition-colors mb-2">
-        Add Friend
-      </Button>
+      <AddFriendBtn isFriend={false} />
       <Link href={`/profile/${profile.id}`} replace>
         <Button className="justify-self-end w-full py-2 rounded-md">See Profile</Button>
       </Link>
