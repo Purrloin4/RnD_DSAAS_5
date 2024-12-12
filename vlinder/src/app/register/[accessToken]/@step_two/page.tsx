@@ -155,14 +155,33 @@ export default function Page() {
       return;
     }
 
-    const { data, error } = await supabase.from("profiles").upsert({
-      id: userData.user.id,
-      full_name: `${firstName} ${lastName}`,
-      username: username,
-      birthday: birthDay,
-      location: location,
-      role: "user",
-    });
+    const accessToken = pathName.split("/").pop();
+    const { data: tokenData, error: tokenError } = await supabase
+    .from("accessToken")
+    .select("organization_id")
+    .eq("id", accessToken)
+    .single();
+
+    if (tokenError || !tokenData) {
+      setError("Error retrieving organization ID");
+      console.error(tokenError);
+      return;
+    }
+
+    const { organization_id } = tokenData;
+
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .upsert({
+        id: userData.user.id,
+        full_name: `${firstName} ${lastName}`,
+        username: username,
+        birthday: birthDay,
+        location: location,
+        organization_id: organization_id,
+        role: "user",
+      });
 
     if (error) {
       setError("Error saving data");

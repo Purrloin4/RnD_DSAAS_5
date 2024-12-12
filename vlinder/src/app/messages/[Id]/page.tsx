@@ -14,7 +14,7 @@ export default async function Page({ params }: { params: { Id: string } }) {
 
   const { data: roomData, error: roomError } = await supabase
     .from("rooms")
-    .select("id, name")
+    .select("id, name,chat_type")
     .eq("id", params.Id)
     .single();
 
@@ -43,6 +43,7 @@ export default async function Page({ params }: { params: { Id: string } }) {
         className="flex-1 h-screen max-h-screen overflow-x-hidden"
         name={roomData.name || "Unnamed Chat"}
         user = {userData.user?.id || ""}
+        type={roomData.chat_type}
       >
         <LoadMessages userId={userData.user?.id || ""} roomId={roomData.id} />
         <InitMessages messages={messageData?.reverse() || []} />
