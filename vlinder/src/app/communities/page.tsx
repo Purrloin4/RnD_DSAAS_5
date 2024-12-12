@@ -1,14 +1,20 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Card, CardHeader, CardBody, Image } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, Image, Skeleton } from "@nextui-org/react";
 import { Button, Input, Link } from "@nextui-org/react";
 import { Calendar } from "@nextui-org/react"; 
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { format } from 'date-fns';
+
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
+import dayjs, { Dayjs } from "dayjs"
+
+import EnviromentStrings from '@/src/enums/envStrings';
 
 
 const supabase = createClient();
@@ -16,10 +22,9 @@ const supabase = createClient();
 interface UserActivity {
     activity_id: string;
     activities: {
-        time: string; // ISO string for activity time
+        time: string;
     };
 }
-
 
 interface Activity {
     id: string;
@@ -45,12 +50,19 @@ export default function UserActivitiesPage() {
     const [scrollLeft, setScrollLeft] = useState(0);
     const [comingActivities, setComingActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
+    const [loading1, setLoading1] = useState(true);
+    const [loading2, setLoading2] = useState(true);
     const [joinedActivities, setJoinedActivities] = useState<string[]>([]);
     const [activityOrganizations, setActivityOrganizations] = useState<Record<string, string[]>>({}); // Maps activity ID to organization names
     const [userId, setUserId] = useState<string | null>(null);
     const router = useRouter();
     const defaultDate = today(getLocalTimeZone());
     const [activityDates, setActivityDates] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+    
+
+    
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!scrollRef.current) return;
@@ -101,16 +113,20 @@ export default function UserActivitiesPage() {
                 .single();
 
             if (profileError || !profileData) {
-                console.error('Error fetching organization:', profileError);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching organization:', profileError);
+                }
                 return null;
             }
 
             setUserId(userData.user.id);
             return profileData.organization_id;
         } catch (err) {
-            console.error('Error fetching user organization:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error fetching user organization:', err);
+            }
             return null;
-        }
+        }   
     };
 
     const fetchActivities = async (organizationId: string) => {
@@ -121,7 +137,9 @@ export default function UserActivitiesPage() {
                 .eq('organization_id', organizationId);
 
             if (activityOrgError || !activityOrgData) {
-                console.error('Error fetching activity IDs:', activityOrgError);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching activity IDs:', activityOrgError);
+                }
                 return;
             }
 
@@ -137,10 +155,14 @@ export default function UserActivitiesPage() {
                 setComingActivities(comingActivitiesData);
                 fetchActivityOrganizations(comingActivitiesData.map((a) => a.id));
             } else {
-                console.error('Error fetching coming activities:', comingActivitiesError);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching coming activities:', comingActivitiesError);
+                }
             }
         } catch (err) {
-            console.error('Error fetching activities:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error fetching activities:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -154,7 +176,9 @@ export default function UserActivitiesPage() {
                 .in('activity_id', activityIds);
 
             if (activityOrgError || !activityOrgData) {
-                console.error('Error fetching activity organizations:', activityOrgError);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching activity organizations:', activityOrgError);
+                }
                 return;
             }
 
@@ -168,7 +192,9 @@ export default function UserActivitiesPage() {
                 .in('id', organizationIds);
 
             if (organizationsError || !organizationsData) {
-                console.error('Error fetching organizations:', organizationsError);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching organizations:', organizationsError);
+                }
                 return;
             }
 
@@ -190,7 +216,9 @@ export default function UserActivitiesPage() {
 
             setActivityOrganizations(activityToOrganizations);
         } catch (err) {
-            console.error('Error fetching activity organizations:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error fetching activity organizations:', err);
+            }
         }
     };
 
@@ -202,13 +230,17 @@ export default function UserActivitiesPage() {
                 .eq('user_id', userId);
 
             if (error) {
-                console.error('Error fetching joined activities:', error);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching joined activities:', error);
+                }
                 return;
             }
 
             setJoinedActivities(data.map((item) => item.activity_id));
         } catch (err) {
-            console.error('Error fetching joined activities:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error fetching joined activities:', err);
+            }
         }
     };
 
@@ -220,12 +252,16 @@ export default function UserActivitiesPage() {
                 .insert([{ user_id: userId, activity_id: activityId }]);
     
             if (error) {
-                console.error('Error joining activity:', error);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error joining activity:', error);
+                }
             } else {
                 setJoinedActivities((prev) => [...prev, activityId]); // Update the state
             }
         } catch (err) {
-            console.error('Error joining activity:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error joining activity:', err);
+            }
         }
     };
     
@@ -239,86 +275,113 @@ export default function UserActivitiesPage() {
                 .eq('activity_id', activityId);
     
             if (error) {
-                console.error('Error quitting activity:', error);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error quitting activity:', error);
+                }
             } else {
-                setJoinedActivities((prev) => prev.filter((id) => id !== activityId)); // Update the state
+                setJoinedActivities((prev) => prev.filter((id) => id !== activityId)); 
             }
         } catch (err) {
-            console.error('Error quitting activity:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error quitting activity:', err);
+            }
         }
     };
     
 
     const fetchActivityDates = async (userId: string): Promise<string[]> => {
         try {
-            // Query user_activity and join with activities table
             const { data, error } = await supabase
                 .from('user_activity')
                 .select(`
                     activity_id,
                     activities (time)
                 `)
-                .eq('user_id', userId) as { data: UserActivity[] | null; error: any }; // Explicitly define the type
+                .eq('user_id', userId) as { data: UserActivity[] | null; error: any }; 
     
             if (error) {
-                console.error('Error fetching activity dates:', error);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error('Error fetching activity dates:', error);
+                }
                 return [];
             }
     
             if (!data) {
-                console.warn('No activity dates found for this user.');
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.warn('No activity dates found for this user.');
+                }
                 return [];
             }
     
-            // Extract and return only the date part of the time
             const dates = data.map((item) => item.activities.time.split('T')[0]);
             return dates;
         } catch (err) {
-            console.error('Error in fetchActivityDates:', err);
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                console.error('Error in fetchActivityDates:', err);
+            }
             return [];
         }
     };
     
-    
-    
-
     useEffect(() => {
+
         const init = async () => {
-            const organizationId = await fetchUserOrganization();
+            setLoading1(true);
+            try{
+                const organizationId = await fetchUserOrganization();
             if (organizationId) {
                 fetchActivities(organizationId);
                 fetchJoinedActivities(userId!);
             }
+
+            }catch(error){
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error("Unexpected error fetching activities:", error);
+                }
+            }finally{
+                setLoading1(false);
+
+            }
+            
         };
         init();
     }, [userId]);
 
     useEffect(() => {
         const updateActivityDates = async () => {
+            setLoading2(true);
             try {
                 const { data: userData, error } = await supabase.auth.getUser();
                 if (error || !userData?.user) {
-                    console.error("Error fetching user or no user logged in:", error);
+                    if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                        console.error("Error fetching user or no user logged in:", error);
+                    }
                     return;
                 }
     
-                const userId = userData.user.id; // Fetch user ID
-                console.log("Fetched User ID:", userId);
+                const userId = userData.user.id; 
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.log("Fetched User ID:", userId);
+                }
     
-                // Fetch the updated list of activity dates
                 const dates = await fetchActivityDates(userId);
-                console.log("Updated Activity Dates for User:", dates);
-                setActivityDates(dates); // Update the state with new dates
+
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.log("Updated Activity Dates for User:", dates);
+                }
+                setActivityDates(dates); 
             } catch (err) {
-                console.error("Error updating activity dates:", err);
+                if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+                    console.error("Error updating activity dates:", err);
+                }
+            }finally{
+                setLoading2(false);
             }
         };
     
-        // Run the function whenever `joinedActivities` changes
+        
         updateActivityDates();
-    }, [joinedActivities]); // Add joinedActivities as a dependency
-    
-    
+    }, [joinedActivities]); 
 
     const formatActivityTime = (isoString: string): string[] => {
         const date = new Date(isoString);
@@ -348,6 +411,7 @@ export default function UserActivitiesPage() {
                             key={activity.id}
                             className="relative flex-shrink-0 w-[85%] sm:w-[42.5%] md:w-[28.33%] h-[30vh] bg-white border border-gray-200 shadow-xl rounded-lg scroll-snap-start flex flex-col"
                             >
+                                
                                 <div className="absolute top-4 right-4 bg-purple-500 text-white text-sm font-bold rounded-lg p-2">
                                     {activityOrganizations[activity.id]
                                         ? activityOrganizations[activity.id].join(", ")
@@ -414,39 +478,21 @@ export default function UserActivitiesPage() {
                     <h2>Your Calendar</h2>
                     
                     <div className="mt-8 flex flex-col items-center">
-                    <Calendar
-                            aria-label='Activities Calendar'
-                            value={defaultDate}
-                            focusedValue={defaultDate}
-                            isReadOnly
-                            className="custom-calendar"
-                        />
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                        value={selectedDate}
+                        onChange={(newValue) => setSelectedDate(newValue)}
+                        shouldDisableDate={(date) => {
+
+                            const formattedDate = date?.format("YYYY-MM-DD");
+                            return !activityDates.includes(formattedDate);
+                        }}
+                    />
+                </LocalizationProvider>
 
                     </div>
 
-                    <style jsx>{`
-                        /* General styling for calendar days */
-                        .custom-calendar .day {
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            width: 2rem;
-                            height: 2rem;
-                            border-radius: 50%;
-                        }
-                        /* Dynamically style activity dates */
-                        ${activityDates
-                            .map(
-                                (date) => `
-                            .custom-calendar .day[data-date="${date}"] {
-                                background-color: blue;
-                                color: white;
-                                border-radius: 50%;
-                            }
-                        `
-                            )
-                            .join('\n')}
-                    `}</style>
+                    
                     
 
                     
