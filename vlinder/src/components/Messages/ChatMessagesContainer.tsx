@@ -1,5 +1,7 @@
 "use client";
 
+// import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
+
 import { Avatar, Input, Chip } from "@nextui-org/react";
 import { ReactNode } from "react";
 import { Skeleton } from "@nextui-org/react";
@@ -11,6 +13,7 @@ import toast,{ Toaster } from "react-hot-toast";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import React, { useEffect,useState} from "react";
+import RoomParticipantList from "@/src/components/RoomParticipantsList";
 import {
   Modal,
   ModalContent,
@@ -21,7 +24,7 @@ import {
 } from "@nextui-org/react";
 import { sup } from "framer-motion/client";
 import ChatPresence from "@/src/components/Chat/ChatPresence";
-
+import AddNewParticipant from "@/src/components/AddNewParticipant"; 
 type ChatListProps = {
   children?: ReactNode;
   className?: string;
@@ -31,6 +34,7 @@ type ChatListProps = {
   name: string;
   roomId: string;
   user:string;
+  type: string;
 
 };
 
@@ -43,12 +47,18 @@ export default function ChatMessagesContainer({
   loading,
   roomId,
   user,
+  type,
 }: ChatListProps) 
 {
+
+  const supabase = createClient();
+ 
+  const isGroupChat = type === 'gc';
+
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   const router = useRouter();
-
+  
   const handleLeaveGroup = async (roomId: string) => {
     const supabase = createClient();
 
@@ -117,7 +127,7 @@ export default function ChatMessagesContainer({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Leaving "{name}"</ModalHeader>
               <ModalBody>
                 {/* Are you sure you want to leave the room? */}
                 <div className="w-full flex items-center my-3">
@@ -135,7 +145,11 @@ export default function ChatMessagesContainer({
           )}
         </ModalContent>
       </Modal>
-       <Button> ADD OTHERS </Button>
+      {/* <Button isDisabled={!isGroupChat}  onPress={onOpen}> VIEW PARTICIPANTS </Button> */}
+      <RoomParticipantList roomId={roomId} />
+
+      <AddNewParticipant roomId={roomId} />
+
           </PopoverContent>
         </Popover>
       </div>
