@@ -16,10 +16,12 @@ async function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <main className="max-h-screen max-w-screen flex flex-row overflow-hidden">
-      <ChatList className="w-[400px]" />
+      
+      <ChatList className="w-[400px] border-r-8 h-screen border-violet-200" />
       {children}
       <InitUser user={userData.user} />
     </main>
+
   );
 }
 

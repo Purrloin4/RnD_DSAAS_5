@@ -15,7 +15,7 @@ export default function ListMessages({ roomId }: { roomId: string }) {
   const { messages, addMessage, optimisticIds, optimisticDeleteMessage, optimisticUpdateMessage } = useMessage(
     (state) => state
   );
-  console.log("ListMessages:", roomId);
+  // console.log("ListMessages:", roomId);
   const supabase = createClient();
   useEffect(() => {
     const channel = supabase

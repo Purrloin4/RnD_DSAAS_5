@@ -1,6 +1,6 @@
 "use client";
 import { login } from '@/src/app/login/actions';
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Input} from "@nextui-org/react";
 import Logo from "Components/Logo/Logo";
 import React, { useState } from "react";
 import { createClient } from '@/utils/supabase/client';
@@ -26,6 +26,8 @@ export default function ForgotPasswordPage() {
     } catch (error) {
       console.log(error);
       toast.error('Failed to send password reset email.');
+      
+
     }
   };
 
