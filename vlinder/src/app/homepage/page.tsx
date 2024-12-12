@@ -119,9 +119,9 @@ export default function HomePage() {
                 profile_hobbies (
                 hobbies (id, name, emoji)
             )`);
-
-    //query = query.neq('id', userId); // fkn doesn't work for some reason
-
+    query = query.neq('username', null);
+    // query = query.neq('id', userId); // fkn doesn't work for some reason
+    query = query.neq("role", 'admin');
     if (smokerFilter == true) {
       query = query.eq("smoker", false);
     }
