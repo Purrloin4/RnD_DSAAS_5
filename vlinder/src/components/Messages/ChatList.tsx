@@ -52,8 +52,7 @@ export default function ChatList({ children, className }: ChatListProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedKeys, setSelectedKeys] = useState(new Set<string>());
   const [groupName, setGroupName] = useState("");
-;
-const fetchFriendships = async () => {
+  const fetchFriendships = async () => {
     try {
       const { data, error } = await supabase.rpc("show_friends");
       if (error) {
@@ -73,8 +72,6 @@ const fetchFriendships = async () => {
       console.error("Unexpected error fetching friendships:", error);
     }
   };
-
-  
 
   const fetchUserRooms = async (): Promise<void> => {
     try {
@@ -108,8 +105,6 @@ const fetchFriendships = async () => {
     }
   };
 
-
-  
   const createGroupChat = async (): Promise<void> => {
     try {
       if (!groupName.trim() || selectedKeys.size === 0) {
@@ -137,21 +132,16 @@ const fetchFriendships = async () => {
       const participantIds = [...selectedFriendIds, user?.id];
 
       for (const participantId of participantIds) {
-        const { error: participantError } = await supabase
-          .from("room_participants")
-          .insert({
-            profile_id: participantId,
-            room_id: roomId,
-          });
+        const { error: participantError } = await supabase.from("room_participants").insert({
+          profile_id: participantId,
+          room_id: roomId,
+        });
 
         if (participantError) {
-          console.error(
-            `Error adding participant (ID: ${participantId}) to room:`,
-            participantError
-          );
+          console.error(`Error adding participant (ID: ${participantId}) to room:`, participantError);
         }
       }
-  
+
       console.log("Group chat created successfully.");
       fetchUserRooms(); // Refresh the rooms after creation
       onOpenChange(); // Close modal
@@ -172,8 +162,10 @@ const fetchFriendships = async () => {
 
   return (
     <div className={`flex flex-col p-4 ${className}`}>
-      <h2 className="">Chats</h2>
-      <Button onPress={onOpen}>Create Group Chat</Button>
+      <h2 className="mb-4">Chats</h2>
+      <Button className="mb-2" onPress={onOpen}>
+        Create Group Chat
+      </Button>
       <Modal isOpen={isOpen} size="sm" onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
@@ -195,9 +187,7 @@ const fetchFriendships = async () => {
                       selectedKeys={selectedKeys}
                       selectionMode="multiple"
                       variant="flat"
-                      onSelectionChange={(keys) =>
-                        setSelectedKeys(new Set<string>(keys as Set<string>))
-                      }
+                      onSelectionChange={(keys) => setSelectedKeys(new Set<string>(keys as Set<string>))}
                     >
                       {friendships.map((friend) => (
                         <ListboxItem key={friend.friend_id}>
@@ -216,11 +206,9 @@ const fetchFriendships = async () => {
                 </div>
               </ModalBody>
               <ModalFooter>
+                <Button onPress={onClose}>Cancel</Button>
                 <Button color="primary" onPress={createGroupChat}>
                   Create
-                </Button>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
                 </Button>
               </ModalFooter>
             </>

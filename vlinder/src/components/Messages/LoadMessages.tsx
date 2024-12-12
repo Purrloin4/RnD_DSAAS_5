@@ -73,33 +73,15 @@ export default function LoadMessages({ roomId, userId }: { userId: string; roomI
   };
   return (
     <>
-          <div className="flex-1 flex flex-col p-5 h-full overflow-y-auto" ref={scrollRef} onScroll={handleOnScroll}>
-
-     <div className="flex-1 pb-5 ">
-          <LoadMoreMessages />
-        </div>
-      {messages.map((value, index) => (
-        <ChatBubble
-          key={index}
-          isOwnMessage={value.profiles?.id === userId}
-          timestamp={new Date(value.created_at).toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
-          })}
-        >
-          {value.content}
-        </ChatBubble>
-      ))}
-      </div>
       {userScrolled && (
-        <div className=" absolute bottom-20 w-full">
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
           {notification ? (
-            <div className="w-36 mx-auto bg-indigo-500 p-1 rounded-md cursor-pointer" onClick={scrollDown}>
+            <div className="w-36 mx-auto bg-primary p-1 rounded-md cursor-pointer" onClick={scrollDown}>
               <h1>New {notification} messages</h1>
             </div>
           ) : (
             <div
-              className="w-10 h-10 bg-blue-500 rounded-full justify-center items-center flex mx-auto border cursor-pointer hover:scale-110 transition-all"
+              className="w-10 h-10 bg-primary text-white rounded-full justify-center items-center flex mx-auto border cursor-pointer hover:scale-110 transition-all"
               onClick={scrollDown}
             >
               <ArrowDown />
@@ -107,7 +89,24 @@ export default function LoadMessages({ roomId, userId }: { userId: string; roomI
           )}
         </div>
       )}
-      
+      <div className="flex-1 flex flex-col p-5 h-full overflow-y-auto" ref={scrollRef} onScroll={handleOnScroll}>
+        <div className="flex-1 pb-5 ">
+          <LoadMoreMessages />
+        </div>
+        {messages.map((value, index) => (
+          <ChatBubble
+            key={index}
+            type="bt"
+            isOwnMessage={value.profiles?.id === userId}
+            timestamp={new Date(value.created_at).toLocaleTimeString([], {
+              hour: "numeric",
+              minute: "2-digit",
+            })}
+          >
+            {value.content}
+          </ChatBubble>
+        ))}
+      </div>
     </>
   );
 }
