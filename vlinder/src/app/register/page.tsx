@@ -3,13 +3,10 @@ import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 
-//Next-ui components
 import { Input, Button } from "@nextui-org/react";
 
-//Components
 import Logo from "Components/Logo/Logo";
 
-//backend
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
 
@@ -33,14 +30,13 @@ function Page() {
       return;
     }
 
-    // Redirect to the registration page
     router.push(`/register/${accessToken}`);
   };
 
   return (
     <main className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
-      <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
+        <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
         {error && <p className="text-red-500">{error}</p>}
         <Input
           type="text"
@@ -49,17 +45,21 @@ function Page() {
           className="w-full md-4"
           onChange={(e) => setAccessToken(e.target.value)}
         />
-        
-        <Link className="w-full flex justify-center text-sm font-semibold text-primary" href="./register/request-access" replace>
+
+        <Link
+          className="w-full flex justify-center text-sm font-semibold text-primary"
+          href="./register/request-access"
+          replace
+        >
           <span>Request an access token!</span>
         </Link>
 
-        
-
-        <Button size="lg"
+        <Button
+          size="lg"
           className="w-full md-4 btn-primary font-semibold"
           aria-label="register-button"
-          onClick={handleStartRegistration}>
+          onClick={handleStartRegistration}
+        >
           Start my registration
         </Button>
       </div>
