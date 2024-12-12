@@ -6,6 +6,10 @@ import {ArrowUp } from "lucide-react";
 import { useUser } from "@/utils/store/user";
 import {ButtonGroup, Button, Avatar} from "@nextui-org/react";
 import { User, Skeleton } from "@nextui-org/react";
+import dayjs from "dayjs";
+import EnviromentStrings from '@/src/enums/envStrings';
+
+
 
 
 export default function ListNotifications() {
@@ -16,6 +20,24 @@ export default function ListNotifications() {
   const { notifications, setNotifications } = useNotifications((state) => state);
   const user = useUser((state) => state.user);
   const supabase = createClient();
+
+  const groupedNotifications = notifications.reduce(
+    (acc: Record<string, any[]>, notification) => {
+      const createdAt = dayjs(notification.created_at);
+      const now = dayjs();
+
+      if (createdAt.isSame(now, "day")) {
+        acc.Today.push(notification);
+      } else if (createdAt.isSame(now, "week")) {
+        acc.ThisWeek.push(notification);
+      } else if (createdAt.isSame(now, "month")) {
+        acc.ThisMonth.push(notification);
+      }
+
+      return acc;
+    },
+    { Today: [], ThisWeek: [], ThisMonth: [] }
+  );
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -36,7 +58,9 @@ export default function ListNotifications() {
           .order("created_at", { ascending: false });
 
         if (error) {
-          console.error("Error fetching notifications:", error);
+          if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+            console.error("Error fetching notifications:", error);
+          }
         } else {
           const enrichedNotifications = data.map((notification) => ({
             ...notification,
@@ -49,7 +73,9 @@ export default function ListNotifications() {
           setNotifications(enrichedNotifications);
         }
       } catch (error) {
-        console.error("Unexpected error fetching notifications:", error);
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+          console.error("Unexpected error fetching notifications:", error);
+        }
       } finally {
         setLoading(false);
       }
@@ -87,7 +113,9 @@ export default function ListNotifications() {
   };
   const handleAcceptRequest = async (fromWhoId: string, toWhoId: string, notificationId: string) => {
     try {
-      console.log('notificaitonId:', notificationId);
+      if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+        console.log('notificaitonId:', notificationId);
+      }
       // Accept the friend request
       const { error: acceptError } = await supabase.rpc('accept_friend_request', {
         requester: fromWhoId,
@@ -95,8 +123,11 @@ export default function ListNotifications() {
       });
   
       if (acceptError) {
-        console.error('Error accepting friend request:', acceptError);
-        return;
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
+          console.error('Error accepting friend request:', acceptError);
+        }
+          return;
       }
   
       // Retrieve the username of the requester (fromWhoId)
@@ -107,7 +138,10 @@ export default function ListNotifications() {
         .single();
   
       if (userError || !userData) {
-        console.error('Error fetching user details:', userError);
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
+          console.error('Error fetching user details:', userError);
+        }
         return;
       }
   
@@ -122,11 +156,15 @@ export default function ListNotifications() {
       })
       .eq('id', notificationId);
       if (updateError) {
-        console.error('Error updating notification:', updateError);
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+          console.error('Error updating notification:', updateError);
+        }
         return;
       }
-  
+      if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
       console.log('Notification updated successfully.');
+      }
   
       // Create a DM room
       const roomName = `DM_${fromWhoId}_${toWhoId}`;
@@ -136,12 +174,21 @@ export default function ListNotifications() {
       });
   
       if (roomError) {
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
         console.error('Error creating DM room:', roomError);
+      }
       } else {
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
         console.log('DM room created successfully:', roomData);
       }
+      }
     } catch (error) {
+      if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
       console.error('Unexpected error accepting friend request:', error);
+    }
     }
   };
   
@@ -153,9 +200,15 @@ export default function ListNotifications() {
           });
           
           if (error) {
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
             console.error('Error rejecting friend request:', error);
+            }
           } else {
+            if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
             console.log('Friend request rejected:', data);
+          }
           }
           const { data: userData, error: userError } = await supabase
           .from('profiles')
@@ -180,34 +233,51 @@ export default function ListNotifications() {
       })
       .eq('id', notificationId);
       if (updateError) {
+        if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
         console.error('Error updating notification:', updateError);
+      }
         return;
       }
   
       console.log('Notification updated successfully.');
         } catch (error) {
+          if(process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT){
+
           console.error('Unexpected error rejecting friend request:', error);
+        }
         }
       };
       
+      const formatText = (text: string): string => text.replace(/([a-z])([A-Z])/g, "$1 $2");
+
       return (
-        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4" ref={scrollRef} onScroll={handleOnScroll}>
-          {notifications.map((notification) => (
-            <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
-              <Skeleton className="rounded-lg" isLoaded={!loading}>
-                <User
-                  avatarProps={{
-                    src: notification.from_who_details?.avatar_url || "/default-avatar.png",
-                  }}
-                  name={notification.from_who_details?.username || "Unknown User"}
-                  description={notification.content || "No description available"}
-                />
-              </Skeleton>
-              <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
-                <small className="text-gray-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </small>
-              </Skeleton>
+        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4 scrollbar-none" ref={scrollRef} >
+          {Object.entries(groupedNotifications).map(([section, items]) => (
+            <div key={section}>
+              <h2 className="text-lg font-bold mb-4">{formatText(section)}</h2>
+              {items.length === 0 ? (
+                <p className="text-gray-500">No notifications {formatText(section)}! </p>
+              ) : (
+                items.map((notification) => (
+                  <div key={notification.id} className="bg-gray-100 p-4 rounded-lg mb-2">
+                    <Skeleton className="rounded-lg" isLoaded={!loading}>
+                      <User
+                        avatarProps={{
+                          src: notification.from_who_details?.avatar_url || "/default-avatar.png",
+                        }}
+                        name={notification.from_who_details?.username || "Unknown User"}
+                        description={notification.content || "No description available"}
+                      />
+                    </Skeleton>
+                    <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
+                      <small className="text-gray-500">
+                        {new Date(notification.created_at).toLocaleString()}
+                      </small>
+                    </Skeleton>
+                  </div>
+                ))
+              )}
             </div>
           ))}
         </div>

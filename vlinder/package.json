@@ -47,6 +47,7 @@
     "resend": "^4.0.1",
     "rimraf": "^6.0.1",
     "sonner": "^1.7.0",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "uuid": "^11.0.3",
     "zustand": "^5.0.1"
   },

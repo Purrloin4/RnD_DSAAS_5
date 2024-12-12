@@ -10,13 +10,12 @@ export default async function Chat() {
     return (
         <>
             <div className="max-w-3xl mx-auto md:py-10 h-screen">
-                <div className="h-full border rounded-md flex flex-col relative">
+                <div className="h-full rounded-md flex flex-col relative">
                     {<NotificationHeader />}
 
                     {sessionData.session?.user ? (
                         <>
                     <ListNotifications />
-      {/* <ChatInput /> */}
                         </>
                     ) : (
                         <ChatAbout />
