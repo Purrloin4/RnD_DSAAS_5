@@ -163,6 +163,22 @@ export default function Page() {
       return;
     }
 
+    const accessToken = pathName.split("/").pop();
+    const { data: tokenData, error: tokenError } = await supabase
+    .from("accessToken")
+    .select("organization_id")
+    .eq("id", accessToken)
+    .single();
+
+    if (tokenError || !tokenData) {
+      setError("Error retrieving organization ID");
+      console.error(tokenError);
+      return;
+    }
+
+    const { organization_id } = tokenData;
+
+
     const { data, error } = await supabase
       .from("profiles")
       .upsert({
@@ -171,6 +187,7 @@ export default function Page() {
         username: username,
         birthday: birthDay,
         location: location,
+        organization_id: organization_id,
         role: "user",
       });
 

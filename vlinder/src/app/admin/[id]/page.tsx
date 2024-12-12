@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 const supabase = createClient();
 
@@ -22,7 +22,7 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
     const fetchUser = async () => {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
-            router.push('/login');
+            router.push("/login");
         } else {
             setUserId(data.user.id);
         }
@@ -31,30 +31,30 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
     const fetchUserRole = async () => {
         if (userId) {
             const { data, error } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', userId)
+                .from("profiles")
+                .select("role")
+                .eq("id", userId)
                 .single();
 
             if (error) {
-                console.error('Error fetching user role:', error);
+                console.error("Error fetching user role:", error);
             } else {
-                setIsAdmin(data?.role === 'admin');
+                setIsAdmin(data?.role === "admin");
             }
         }
     };
 
     const fetchWorkerData = async () => {
         const { data, error } = await supabase
-            .from('healthcare_workers')
-            .select('name, organization_id') // Fetch name and organization_id
-            .eq('id', params.id)
+            .from("healthcare_workers")
+            .select("name, organization_id") // Fetch name and organization_id
+            .eq("id", params.id)
             .single();
 
         if (data) {
             setWorker({ id: params.id, ...data }); // Add 'id' manually
         } else {
-            console.error('Error fetching healthcare worker data:', error);
+            console.error("Error fetching healthcare worker data:", error);
         }
     };
 
@@ -80,7 +80,7 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
         if (worker && worker.organization_id) {
             router.push(`/admin/${params.id}/checkactivities/${worker.organization_id}`);
         } else {
-            alert('Organization ID not found!');
+            alert("Organization ID not found!");
         }
     };
 
@@ -88,12 +88,16 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
         if (worker && worker.organization_id) {
             router.push(`/admin/${params.id}/checkprofile/${worker.organization_id}`);
         } else {
-            alert('Organization ID not found!');
+            alert("Organization ID not found!");
         }
     };
 
     const handleCreateActivityClick = () => {
-        router.push('/createactivity');
+        router.push("/createactivity");
+    };
+
+    const handleInviteUserClick = () => {
+        router.push("/invite");
     };
 
     if (!worker && !accessDenied) {
@@ -123,33 +127,37 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
             <button style={styles.button} onClick={handleCreateActivityClick}>
                 Create Activity
             </button>
+
+            <button style={styles.button} onClick={handleInviteUserClick}>
+                Invite User
+            </button>
         </div>
     );
 }
 
 const styles = {
     container: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#f0f8ff',
-        fontFamily: 'Arial, sans-serif',
+        display: "flex",
+        flexDirection: "column" as const,
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        backgroundColor: "#f0f8ff",
+        fontFamily: "Arial, sans-serif",
     },
     greeting: {
-        fontSize: '24px',
-        color: '#333',
-        marginBottom: '20px',
+        fontSize: "24px",
+        color: "#333",
+        marginBottom: "20px",
     },
     button: {
-        padding: '10px 20px',
-        fontSize: '16px',
-        color: '#fff',
-        backgroundColor: '#007bff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        marginTop: '10px',
+        padding: "10px 20px",
+        fontSize: "16px",
+        color: "#fff",
+        backgroundColor: "#007bff",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        marginTop: "10px",
     },
 };
