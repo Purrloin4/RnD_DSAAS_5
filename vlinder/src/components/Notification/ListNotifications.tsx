@@ -9,6 +9,22 @@ import { User, Skeleton } from "@nextui-org/react";
 import dayjs from "dayjs";
 import EnviromentStrings from '@/src/enums/envStrings';
 
+interface Notification {
+  id: string;
+  created_at: string;
+  content: string;
+  notification_type: string;
+  profiles?: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
+  from_who_details?: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
+}
 
 
 
