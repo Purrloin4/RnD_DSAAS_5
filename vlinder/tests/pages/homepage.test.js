@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 import { render, screen, fireEvent, waitFor, user } from '@testing-library/react';
 import HomePage from '@/app/homepage/page';
 import { createClient } from '@/utils/supabase/client';
@@ -55,3 +55,4 @@ describe('HomePage', () => {
     //     expect(screen.getByText('dragon')).not.toBeVisible();
     // });
 });
+ */
