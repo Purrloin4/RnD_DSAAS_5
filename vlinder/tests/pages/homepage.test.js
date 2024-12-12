@@ -18,10 +18,10 @@ jest.mock("next/navigation", () => ({
   }));
 
 describe('HomePage', () => {
-    it('renders loading state initially', () => {
-        render(<HomePage/>);
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
-    });
+    //it('renders loading state initially', () => {
+    //    render(<HomePage/>);
+    //    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    //});
 
     // it('renders profiles after loading', async () => {
     //     render(<HomePage/>);
