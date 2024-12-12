@@ -3,10 +3,21 @@
 import React, { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input } from "@nextui-org/react";
 import { useFriendships } from "@/utils/store/friendships"; // Import Zustand store
 import FriendshipList from "Components/FriendshipList"
 import InitFriendships from "@/utils/store/InitFriendships";
+import {Select, SelectSection, SelectItem} from "@nextui-org/select";
+import { DatePicker } from "@nextui-org/react";
+import { parseDate } from "@internationalized/date";
+import { Checkbox } from "@nextui-org/react";
+import { Textarea } from "@nextui-org/react";
+import { logout } from '@/src/app/logout/actions';
+
+
+
+
+
 
 const supabase = createClient();
 
@@ -51,6 +62,19 @@ export default function EditProfilePage() {
     const [allHobbies, setHobbies] = useState<Hobby[]>([]);
     const router = useRouter();
     const [userId, setUserId] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+
+
+    const handleLogout = async () => {
+        const success = await logout(); // Await the return value from logout
+        if (success) {
+          router.push("/login"); // Redirect on success
+        } else {
+          console.error("Logout failed. Please try again.");
+        }
+      };
+    
+
   
     useEffect(() => {
         const fetchUser = async () => {
@@ -262,340 +286,248 @@ export default function EditProfilePage() {
     
 
     return (
-        <>
+        <main className="flex items-start justify-center min-h-screen">
+            <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
+                    {/* Profile Image */}
+                    {profile.avatar_url ? (
+                        <img
+                            src={profile.avatar_url}
+                            alt="Avatar"
+                            className="w-24 h-24 rounded-full object-cover mb-4"
+                        />
+                    ) : (
+                        <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
+                            <span className="text-sm text-gray-700">No Avatar</span>
+                        </div>
+                    )}
 
-         <Button onPress={onOpen}>Friends</Button>
-      <Modal isOpen={isOpen} size='sm' onOpenChange={onOpenChange}>
-        <ModalContent>
-        {(onClose) => (
-            <>
-             <ModalHeader>Friends</ModalHeader>
-              <ModalBody>
-                <FriendshipList/>
-                <InitFriendships friendships={friendships} />
+                    {/* File Input */}
+                    <div className="flex flex-col items-center space-y-2">
+                        {/* File Upload Button */}
+                        <Button
+                            onClick={() => document.getElementById('file-upload')?.click()}
+                            className="bg-primary text-white px-4 py-2 rounded"
+                        >
+                            Choose File
+                        </Button>
+                        
+                        {/* Hidden File Input */}
+                        <input
+                            id="file-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                        />
+                        
+                        {/* File Name Display */}
+                        {avatarFile && (
+                            <p className="text-sm text-gray-600">{avatarFile.name}</p>
+                        )}
+                    </div>
+                    <div className="w-full">
+                    <Input
+                        label="Full Name"
+                        placeholder="Enter your full name"
+                        value={profile.full_name}
+                        onChange={(e) =>
+                            setProfile((prev) => prev ? { ...prev, full_name: e.target.value } : null)
+                        }
+                        className="w-full"
+                    />
 
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-              </ModalFooter>
-              </>
-          )}
-        </ModalContent>
-      </Modal>
-        <div style={styles.profilePage}>
-            <div style={styles.avatarContainer}>
-                {profile.avatar_url ? (
-                    <img src={profile.avatar_url} alt="Avatar" style={styles.avatar} />
-                ) : (
-                    <div style={styles.placeholder}>No Avatar</div>
-                )}
-                <input type="file" accept="image/*" onChange={handleAvatarChange} style={styles.fileInput} />
-            </div>
-            <div style={styles.inputContainer}>
-                <label>Full Name:</label>
-                <input
-                    type="text"
-                    name="full_name"
-                    value={profile.full_name}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-            </div>
-            <div style={styles.inputContainer}>
-                <label>Gender:</label>
-                <select
-                    name="gender"
-                    value={profile.gender}
-                    onChange={handleChange}
-                    style={styles.select}
-                >
-                    <option value="" disabled>
-                        Select your gender
-                    </option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div style={styles.inputContainer}>
-                <label>Birthday:</label>
-                <input
-                    type="date"
-                    name="birthday"
-                    value={profile.birthday}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-            </div>
-            <div style={styles.inputContainer}>
-                <label>Sexual Orientation:</label>
-                <input
-                    type="text"
-                    name="sexual_orientation"
-                    value={profile.sexual_orientation}
-                    onChange={handleChange}
-                    style={styles.input}
-                />
-            </div>
-            <div style={styles.checkboxContainer}>
-                <div
-                    style={{
-                        ...styles.customCheckbox,
-                        ...(profile.smoker ? styles.customCheckboxChecked : {}),
-                    }}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, smoker: !prev.smoker } : null
-                        )
-                    }
-                >
-                    {profile.smoker && <span style={styles.checkmark}></span>}
-                </div>
-                <label
-                    style={styles.label}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, smoker: !prev.smoker } : null
-                        )
-                    }
-                >
-                    Smoker
-                </label>
-            </div>
-            <div style={styles.checkboxContainer}>
-                <div
-                    style={{
-                        ...styles.customCheckbox,
-                        ...(profile.display_disability ? styles.customCheckboxChecked : {}),
-                    }}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, display_disability: !prev.display_disability } : null
-                        )
-                    }
-                >
-                    {profile.display_disability && <span style={styles.checkmark}></span>}
-                </div>
-                <label
-                    style={styles.label}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, display_disability: !prev.display_disability } : null
-                        )
-                    }
-                >
-                    Display Disability
-                </label>
-            </div>
-            <div style={styles.inputContainer}>
-                <label>Disabilities:</label>
-                <textarea
-                    name="disability"
-                    value={profile.disability?.join(', ')}
-                    onChange={(e) => setProfile(prevProfile => prevProfile ? { ...prevProfile, disability: e.target.value.split(', ') } : null)}
-                    style={styles.textarea}
-                />
-            </div>
-            <div>
-                <label>Hobbies:<br/></label>
-                <textarea
-                    readOnly
-                    name="hobbies"
-                    value={profile.profile_hobbies.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`).join(', ')}
-                    style={styles.textarea}
-                />
-            </div>
-            <div style={styles.inputContainer}>
-    <label>Add Hobbies:</label>
-    <div style={styles.scrollableContainer}>
-        {allHobbies.map((hobby) => (
-            <div key={hobby.id} style={styles.checkboxItem}>
-                <input
-                    type="checkbox"
-                    value={hobby.id}
-                    checked={profile.profile_hobbies?.some(ph => ph.hobbies.id === hobby.id) || false}
-                    onChange={(e) => {
-                        const { checked, value } = e.target;
-                        const hobbyId = parseInt(value);
-    
-                        setProfile((prevProfile) => {
-                            if (!prevProfile) return null;
+                    </div>
 
-                            const updatedHobbies = checked
-                                ? [
-                                    ...prevProfile.profile_hobbies,
-                                    { hobbies: allHobbies.find(h => h.id === hobbyId) as Hobby }
-                                ]
-                                : prevProfile.profile_hobbies.filter(ph => ph.hobbies.id !== hobbyId);
+                    <div className="w-full">
+                        <Select
+                            label="Gender"
+                            placeholder="Select your gender"
+                            selectedKeys={profile.gender ? new Set([profile.gender]) : new Set()}
+                            onSelectionChange={(selectedKey) => {
+                            const selectedValue = Array.from(selectedKey).join(", ");
+                            setProfile((prev) => (prev ? { ...prev, gender: selectedValue } : null));
+                            }}
+                            className="w-full"
+                        >
+                            <SelectItem key="Male">Male</SelectItem>
+                            <SelectItem key="Female">Female</SelectItem>
+                            <SelectItem key="Other">Other</SelectItem>
+                        </Select>
+                    </div>
 
-                            return {
-                                ...prevProfile,
-                                profile_hobbies: updatedHobbies,
-                            };
-                        });
-                    }}
-                />
-                <label style={styles.checkboxLabel}>
-                    {hobby.name} {hobby.emoji}
-                </label>
-            </div>
-        ))}
-    </div>
+                    
+                    <div className="w-full">
+                        <DatePicker
+                            label="Birthday"
+                            className="w-full"
+                            value={profile.birthday ? parseDate(profile.birthday) : undefined}
+                            onChange={(selectedDate) => {
+                            const isoDate = selectedDate?.toString(); // Convert to string
+                            setProfile((prev) => (prev ? { ...prev, birthday: isoDate } : null));
+                            }}
+                        />
+                    </div>
+
+                    <div className="w-full">
+                        <Input
+                            label="Sexual Orientation"
+                            placeholder="Enter your sexual orientation"
+                            value={profile.sexual_orientation}
+                            onChange={(e) =>
+                            setProfile((prev) =>
+                                prev ? { ...prev, sexual_orientation: e.target.value } : null
+                            )
+                            }
+                            className="w-full"
+                        />
+                    </div>
+
+                    <div className="w-full">
+                        <Checkbox
+                            isSelected={!!profile?.smoker}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            const isSelected = event.target.checked; 
+                            setProfile((prev) => (prev ? { ...prev, smoker: isSelected } : null));
+                            }}
+                        >
+                            Smoker
+                        </Checkbox>
+                    </div>
+
+                    <div className="w-full">
+                        <Checkbox
+                            isSelected={!!profile?.display_disability} 
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            const isSelected = event.target.checked;
+                            setProfile((prev) =>
+                                prev ? { ...prev, display_disability: isSelected } : null
+                            );
+                            }}
+                        >
+                            Display Disability
+                        </Checkbox>
+                    </div>
+
+                    <div className="w-full">
+                        <Checkbox
+                            isSelected={!!profile?.need_assistance} 
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            const isSelected = event.target.checked;
+                            setProfile((prev) =>
+                                prev ? { ...prev, need_assistance: isSelected } : null
+                            );
+                            }}
+                        >
+                            Need Assistance
+                        </Checkbox>
+                    </div>
+
+                    <div className="w-full">
+                        <Textarea
+                            label="Disabilities"
+                            placeholder="Enter disabilities separated by commas"
+                            value={profile.disability?.join(", ") || ""}
+                            onChange={(e) => {
+                            const value = e.target.value.split(",").map((d) => d.trim());
+                            setProfile((prev) => (prev ? { ...prev, disability: value } : null));
+                            }}
+                            className="w-full"
+                            rows={3} // Define the height of the Textarea
+                        />
+                    </div>
+
+                    <div className="w-full space-y-4">
+                    {/* Hobbies Display */}
+                    <div>
+                        <Textarea
+                        label="Hobbies"
+                        readOnly
+                        value={profile.profile_hobbies
+                            ?.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`)
+                            .join(", ") || ""}
+                        className="w-full h-24 overflow-y-auto resize-none"
+                        />
+                    </div>
+
+                    {/* Add/Remove Hobbies with Search */}
+                    <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                        Add/Remove Hobbies
+                        </label>
+
+                        <Input
+                        label="Search Hobbies"
+                        placeholder="Type to filter hobbies"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full mb-2"
+                        />
+
+                        <div className="flex flex-wrap gap-2 border p-4 rounded-md bg-gray-50 max-h-32 overflow-y-auto scrollbar-none">
+                        {allHobbies
+                            .filter((hobby) =>
+                            hobby.name.toLowerCase().includes(searchTerm.toLowerCase())
+                            )
+                            .map((hobby) => {
+                            const isSelected = profile.profile_hobbies.some(
+                                (ph) => ph.hobbies.id === hobby.id
+                            );
+                            return (
+                                <Button
+                                key={hobby.id}
+                                onClick={() => {
+                                    setProfile((prevProfile) => {
+                                    if (!prevProfile) return null;
+
+                                    const updatedHobbies = isSelected
+                                        ? prevProfile.profile_hobbies.filter(
+                                            (ph) => ph.hobbies.id !== hobby.id
+                                        )
+                                        : [
+                                            ...prevProfile.profile_hobbies,
+                                            { hobbies: hobby },
+                                        ];
+
+                                    return { ...prevProfile, profile_hobbies: updatedHobbies };
+                                    });
+                                }}
+                                size="sm"
+                                className={isSelected ? "bg-red-500 text-white" : "bg-purple-500 text-white"}
+                                >
+                                {isSelected ? `Remove ${hobby.name}` : `Add ${hobby.name}`} {hobby.emoji}
+                                </Button>
+                            );
+                            })}
+                        </div>
+                    </div>
+                    </div>
+
+
+                    <div className="w-full flex flex-col items-center mt-4 space-y-4">
+  {/* Save Changes Button */}
+  <Button
+    onClick={handleSave}
+    className="w-full max-w-sm btn-primary font-semibold"
+  >
+    Save Changes
+  </Button>
+
+  {/* Logout Button */}
+  <Button
+    onClick={handleLogout}
+    color="danger"
+    className="w-full max-w-sm font-semibold"
+  >
+    Logout
+  </Button>
+
+  {/* Spacer */}
+  <div className="h-32"></div>
 </div>
 
-
-            <div style={styles.checkboxContainer}>
-                <div
-                    style={{
-                        ...styles.customCheckbox,
-                        ...(profile.need_assistance ? styles.customCheckboxChecked : {}),
-                    }}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, need_assistance: !prev.need_assistance } : null
-                        )
-                    }
-                >
-                    {profile.need_assistance && <span style={styles.checkmark}></span>}
                 </div>
-                <label
-                    style={styles.label}
-                    onClick={() =>
-                        setProfile((prev) =>
-                            prev ? { ...prev, need_assistance: !prev.need_assistance } : null
-                        )
-                    }
-                >
-                    Needs Assistance
-                </label>
-            </div>
-            <button onClick={handleSave} style={styles.saveButton}>Save Changes</button>
-        </div>
-        </>
+        </main>
+        
     );
 }
 
-const styles = {
-    profilePage: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        alignItems: 'center',
-        padding: '20px',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f8e8ff',
-        minHeight: '100vh',
-    },
-    avatarContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        alignItems: 'center',
-        marginBottom: '20px',
-    },
-    avatar: {
-        width: '100px',
-        height: '100px',
-        borderRadius: '50%',
-        objectFit: 'cover' as const,
-        marginBottom: '10px',
-    },
-    placeholder: {
-        width: '100px',
-        height: '100px',
-        borderRadius: '50%',
-        backgroundColor: '#ccc',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '10px',
-    },
-    fileInput: {
-        marginTop: '10px',
-    },
-    inputContainer: {
-        display: 'flex',
-        flexDirection: 'column' as const,
-        marginBottom: '15px',
-        width: '300px',
-    },
-    input: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-    },
-    textarea: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-        height: '80px',
-        width: '300px',
-    },
-    select: {
-        padding: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-    },
-    checkboxContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '15px',
-        cursor: 'pointer',
-    },
-    label: {
-        marginLeft: '10px',
-        cursor: 'pointer',
-    },
-    customCheckbox: {
-        position: 'relative' as const,
-        width: '20px',
-        height: '20px',
-        backgroundColor: '#fff',
-        border: '2px solid #ddd',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        display: 'inline-block',
-        flexShrink: 0,
-        marginRight: '10px',
-        transition: 'all 0.2s ease',
-    },
-    customCheckboxChecked: {
-        backgroundColor: '#ffd42f',
-        borderColor: '#ffd42f',
-    },
-    checkmark: {
-        position: 'absolute' as const,
-        content: '""',
-        width: '8px',
-        height: '14px',
-        border: 'solid #fff',
-        borderWidth: '0 2px 2px 0',
-        transform: 'rotate(45deg)',
-        top: '2px',
-        left: '6px',
-    },
-    scrollableContainer: {
-        maxHeight: '150px',
-        overflowY: 'auto' as const,
-        border: '1px solid #ddd',
-        borderRadius: '5px',
-        padding: '10px',
-        backgroundColor: '#fff',
-    },
-    checkboxItem: {
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '10px',
-    },
-    saveButton: {
-        padding: '10px 20px',
-        backgroundColor: '#ffd42f',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        marginBottom: '100px',
-    },
-    checkboxLabel: {
-        marginLeft: '10px',
-    },
-};

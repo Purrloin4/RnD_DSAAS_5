@@ -260,7 +260,7 @@ export default function ListNotifications() {
                 <p className="text-gray-500">No notifications {formatText(section)}! </p>
               ) : (
                 items.map((notification) => (
-                  <div key={notification.id} className="bg-gray-100 p-4 rounded-lg mb-2">
+                  <div key={notification.id} className="bg-white p-4 rounded-lg mb-2">
                     <Skeleton className="rounded-lg" isLoaded={!loading}>
                       <User
                         avatarProps={{
