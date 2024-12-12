@@ -60,8 +60,8 @@ export default function Page() {
 
 
     if (!profileError && profileData) {
-      const lookingFor = profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends;
-      setLookingFor(lookingFor);
+      const lookingFor = profileData.sex_positive === null ? null : (profileData.sex_positive === true ? LookingFor.PartnerAndFriends : LookingFor.Friends);
+      if (lookingFor) setLookingFor(lookingFor);
     }
 
         
@@ -112,7 +112,7 @@ export default function Page() {
       <h2>What Are You Looking For?</h2>
       <div className="w-full max-w-md p-8 h-fit">
       <Button
-        color={lookingFor === LookingFor.Friends ? "primary" : "default"}
+        color={lookingFor === LookingFor.Friends ? "secondary" : "default"}
         className="w-full mb-4 text-black"
         data-gender={LookingFor.Friends}
         onClick={lookingForChange}
