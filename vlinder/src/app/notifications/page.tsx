@@ -16,7 +16,6 @@ export default async function Chat() {
                     {sessionData.session?.user ? (
                         <>
                     <ListNotifications />
-      {/* <ChatInput /> */}
                         </>
                     ) : (
                         <ChatAbout />

@@ -6,6 +6,8 @@ import { ArrowDown, ArrowUp } from "lucide-react";
 import { useUser } from "@/utils/store/user";
 import {ButtonGroup, Button, Avatar} from "@nextui-org/react";
 import { User, Skeleton } from "@nextui-org/react";
+import dayjs from "dayjs";
+
 
 
 export default function ListNotifications() {
@@ -16,6 +18,24 @@ export default function ListNotifications() {
   const { notifications, setNotifications } = useNotifications((state) => state);
   const user = useUser((state) => state.user);
   const supabase = createClient();
+
+  const groupedNotifications = notifications.reduce(
+    (acc: Record<string, any[]>, notification) => {
+      const createdAt = dayjs(notification.created_at);
+      const now = dayjs();
+
+      if (createdAt.isSame(now, "day")) {
+        acc.Today.push(notification);
+      } else if (createdAt.isSame(now, "week")) {
+        acc.ThisWeek.push(notification);
+      } else if (createdAt.isSame(now, "month")) {
+        acc.ThisMonth.push(notification);
+      }
+
+      return acc;
+    },
+    { Today: [], ThisWeek: [], ThisMonth: [] }
+  );
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -191,23 +211,32 @@ export default function ListNotifications() {
       };
       
       return (
-        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4" ref={scrollRef} onScroll={handleOnScroll}>
-          {notifications.map((notification) => (
-            <div key={notification.id} className="bg-gray-100 p-4 rounded-lg">
-              <Skeleton className="rounded-lg" isLoaded={!loading}>
-                <User
-                  avatarProps={{
-                    src: notification.from_who_details?.avatar_url || "/default-avatar.png",
-                  }}
-                  name={notification.from_who_details?.username || "Unknown User"}
-                  description={notification.content || "No description available"}
-                />
-              </Skeleton>
-              <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
-                <small className="text-gray-500">
-                  {new Date(notification.created_at).toLocaleString()}
-                </small>
-              </Skeleton>
+        <div className="flex-1 p-5 h-full overflow-y-auto space-y-4" ref={scrollRef}>
+          {Object.entries(groupedNotifications).map(([section, items]) => (
+            <div key={section}>
+              <h2 className="text-lg font-bold mb-4">{section}</h2>
+              {items.length === 0 ? (
+                <p className="text-gray-500">No notifications in this section.</p>
+              ) : (
+                items.map((notification) => (
+                  <div key={notification.id} className="bg-gray-100 p-4 rounded-lg mb-2">
+                    <Skeleton className="rounded-lg" isLoaded={!loading}>
+                      <User
+                        avatarProps={{
+                          src: notification.from_who_details?.avatar_url || "/default-avatar.png",
+                        }}
+                        name={notification.from_who_details?.username || "Unknown User"}
+                        description={notification.content || "No description available"}
+                      />
+                    </Skeleton>
+                    <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
+                      <small className="text-gray-500">
+                        {new Date(notification.created_at).toLocaleString()}
+                      </small>
+                    </Skeleton>
+                  </div>
+                ))
+              )}
             </div>
           ))}
         </div>
