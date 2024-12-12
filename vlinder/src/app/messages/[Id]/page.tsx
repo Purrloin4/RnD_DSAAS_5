@@ -8,7 +8,8 @@ import Loading from "./loading";
 
 export default async function Page({ params }: { params: { Id: string } }) {
   const supabase = createClient();
-  const { data: sessionData } = await supabase.auth.getSession();
+  // const { data: sessionData } = await supabase.auth.getSession();
+
   const { data: userData } = await supabase.auth.getUser();
 
   const { data: roomData, error: roomError } = await supabase
@@ -41,6 +42,7 @@ export default async function Page({ params }: { params: { Id: string } }) {
         roomId={roomData.id}
         className="flex-1 h-screen max-h-screen overflow-x-hidden"
         name={roomData.name || "Unnamed Chat"}
+        user = {userData.user?.id || ""}
       >
         <LoadMessages userId={userData.user?.id || ""} roomId={roomData.id} />
         <InitMessages messages={messageData?.reverse() || []} />

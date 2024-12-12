@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@/utils/store/user";
 import { Imessage, useMessage } from "@/utils/store/messages";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 
 import { PaperAirplaneIcon } from "Components/Icons/PaperAirplaneIcon";
 
@@ -16,14 +17,15 @@ export default function MessageInput({ roomId }: { roomId: string }) {
   const setOptimisticIds = useMessage((state) => state.setOptimisticIds);
   const supabase = createClient();
 
-  const [message, setMessage] = React.useState("");
-  const [suggestedMessage, setSuggestedMessage] = useState("");
-  const handleSendMessage = async () => {
-    const content = message;
+  const [message, setMessage] = useState("");
+  const [suggestedMessage, setSuggestedMessage] = useState<string>("");
+
+  const handleSendMessage = async (overrideMessage?: string) => {
+    const content = overrideMessage || message; // Use overrideMessage if provided
     setMessage("");
+
     if (content.trim()) {
       const id = uuidv4();
-      // const room_id = uuidv4();
       const newMessage = {
         id,
         content,
@@ -56,46 +58,60 @@ export default function MessageInput({ roomId }: { roomId: string }) {
       };
       addMessage(newMessage as Imessage);
       setOptimisticIds(newMessage.id);
-      const { error } = await supabase.from("messages").insert({ content, id, profile_id: user?.id, room_id: roomId });
+      const { error } = await supabase
+        .from("messages")
+        .insert({ content, id, profile_id: user?.id, room_id: roomId });
       if (error) {
         toast.error(error.message);
       }
     } else {
-      toast.error("Message can not be empty!!");
+      toast.error("Message cannot be empty!");
     }
   };
 
-  // Function to fetch the last message and calculate time difference
   const fetchLastMessage = async () => {
-    const { data: messages, error } = await supabase
-      .from("messages")
-      .select("id, created_at, content")
-      .order("created_at", { ascending: false })
-      .limit(1);
+    try {
 
-    if (error) {
-      console.error("Error fetching last message: ", error);
-      return;
-    }
-    if (messages && messages.length > 0) {
-      const lastMessage = messages[0];
-      const lastMessageTime = new Date(lastMessage.created_at);
-      const currentTime = new Date();
-      const timeDifference = (currentTime.getTime() - lastMessageTime.getTime()) / (1000 * 60 * 60 * 24); // time difference in days
-      console.log("Time difference: ", timeDifference);
-      // Suggest message based on time difference
-      if (timeDifference > 1) {
-        // More than a day
-        setSuggestedMessage("It's been a while, how have you been?");
-      } else if (timeDifference > 0.5 && timeDifference < 1) {
-        // Within a day
-        setSuggestedMessage("That sounds great! How do you feel about it?");
+      const { data: messages, error } = await supabase
+        .from("messages")
+        .select("id, created_at")
+        .eq("room_id", roomId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if(messages && messages.length === 0){
+        console.log("No messages found");
       }
+      if (error) {
+        console.error("Error fetching last message: ", error);
+        return;
+      }
+
+      if (messages && messages.length > 0) {
+        const lastMessage = messages[0];
+        const lastMessageTime = new Date(lastMessage.created_at);
+        const currentTime = new Date();
+        const timeDifference =
+          (currentTime.getTime() - lastMessageTime.getTime()) / (1000 * 60 * 60 * 24); // Time difference in days
+
+        if (timeDifference > 1) {
+          setSuggestedMessage("It's been a while, how have you been?");
+        } else if (timeDifference > 0.5 && timeDifference <= 1) {
+          setSuggestedMessage("That sounds great! How do you feel about it?");
+        } else {
+          setSuggestedMessage(""); // Clear suggestion if no condition is met
+        }
+      } else {
+        setSuggestedMessage("Hello! How are you doing?");
+      }
+    } catch (error) {
+      console.error("Error fetching last message: ", error);
     }
   };
+
   useEffect(() => {
     fetchLastMessage();
-  }, []);
+  }, [roomId]);
 
   return (
     <>
@@ -112,7 +128,28 @@ export default function MessageInput({ roomId }: { roomId: string }) {
           }
         }}
       />
-      <Button isIconOnly onClick={handleSendMessage} color="primary" aria-label="send" className="p-2 rounded-lg">
+      {suggestedMessage && (
+        <Popover>
+          <PopoverTrigger>
+            <Button>{suggestedMessage}</Button>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Button
+              color="primary"
+              onPress={() => handleSendMessage(suggestedMessage)}
+            >
+              Send Suggested Message
+            </Button>
+          </PopoverContent>
+        </Popover>
+      )}
+      <Button
+        isIconOnly
+        onClick={() => handleSendMessage()}
+        color="primary"
+        aria-label="send"
+        className="p-2 rounded-lg"
+      >
         <PaperAirplaneIcon />
       </Button>
     </>
