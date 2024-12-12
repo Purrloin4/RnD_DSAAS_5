@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect,useState} from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, user } from "@nextui-org/react";
 import { Listbox, ListboxItem } from "@nextui-org/listbox";
@@ -19,17 +19,16 @@ import {
     useDisclosure,
   } from "@nextui-org/react";
 import {useUser} from "@/utils/store/user";
-import { u } from "framer-motion/client";
-export default function roomParticipant({ roomId }: { roomId: string }) {
+
+export default function RoomParticipantsList({ roomId }: { roomId: string }) {
 const supabase = createClient();
 
 const [scrollBehavior, setScrollBehavior] =
 React.useState<ModalProps["scrollBehavior"]>("inside");
 
-const user = useUser((state) => state.user);
+  const user = useUser((state) => state.user);
   const router = useRouter();
-  const {participants, setParticipants,
-    addParticipant, removeParticipant} = 
+  const {participants, setParticipants} = 
     useRoomParticipant((state) => state
   );
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
