@@ -58,7 +58,8 @@ module.exports = {
     'next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
     // Disable server-only
     'server-only': `<rootDir>/__mocks__/empty.js`,
-
+    // Handle mock files
+    '@/__mocks__/(.*)': '<rootDir>/__mocks__/$1',
 
   },
   // Add more setup options before each test is run
