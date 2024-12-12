@@ -1,5 +1,6 @@
 # Welcome to the disOrderly SaaS Project of team 5
 
+[![codecov](https://codecov.io/github/Purrloin4/RnD_DSAAS_5/graph/badge.svg?token=T51QTPMZ50)](https://codecov.io/github/Purrloin4/RnD_DSAAS_5)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Deployed website

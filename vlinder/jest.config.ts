@@ -21,6 +21,8 @@ module.exports = {
   collectCoverage: true,
   // on node 14.x coverage provider v8 offers good speed and more or less good report
   coverageProvider: 'v8',
+  coverageDirectory: 'coverage',
+  coverageReporters: ['json', 'lcov', 'text', 'clover'],
   collectCoverageFrom: [
     '**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
@@ -42,8 +44,10 @@ module.exports = {
     // Handle image imports
     // https://jestjs.io/docs/webpack#handling-static-assets
     '^.+\\.(png|jpg|jpeg|gif|webp|avif|ico|bmp|svg)$/i': `<rootDir>/__mocks__/fileMock.js`,
+    "^Images/(.*)$": "<rootDir>/__mocks__/fileMock.js",
  
     // Handle module aliases
+    '^@/src/components/(.*)$': '<rootDir>/src/components/$1',
     '^@/components/(.*)$': '<rootDir>/src/components/$1',
     '^Components/(.*)$': '<rootDir>/src/components/$1',
     '^@/app/(.*)$': '<rootDir>/src/app/$1',
@@ -56,7 +60,8 @@ module.exports = {
     'next/font/(.*)': `<rootDir>/__mocks__/nextFontMock.js`,
     // Disable server-only
     'server-only': `<rootDir>/__mocks__/empty.js`,
-
+    // Handle mock files
+    '@/__mocks__/(.*)': '<rootDir>/__mocks__/$1',
 
   },
   // Add more setup options before each test is run
@@ -76,7 +81,12 @@ module.exports = {
               },
             },
           ],
-          '@babel/preset-react',
+          [
+            '@babel/preset-react',
+            {
+              runtime: 'automatic',
+            },
+          ],
           '@babel/preset-typescript',
         ],
         plugins: ['@babel/plugin-syntax-jsx'],

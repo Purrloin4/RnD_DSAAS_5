@@ -83,7 +83,7 @@ export default function ChatHeader({ user, roomId }: ChatHeaderProps) {
       <div className="p-5 border-b flex items-center justify-between h-full">
         <div>
           <h1 className="text-xl font-bold">{roomName || "Chat Room"}</h1>
-          <ChatPresence />
+          <ChatPresence/>
         </div>
         {user ? (
           <Button

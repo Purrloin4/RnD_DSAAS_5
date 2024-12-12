@@ -2,7 +2,7 @@
 import { INotification, useNotifications } from "@/utils/store/notifications";
 import React, { useEffect, useRef, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import {ArrowUp } from "lucide-react";
 import { useUser } from "@/utils/store/user";
 import {ButtonGroup, Button, Avatar} from "@nextui-org/react";
 import { User, Skeleton } from "@nextui-org/react";

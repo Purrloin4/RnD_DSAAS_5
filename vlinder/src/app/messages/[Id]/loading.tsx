@@ -13,6 +13,7 @@ export default function Loading() {
       className="flex-1 h-screen max-h-screen overflow-x-hidden"
       name={""}
       loading={true}
+      user={""}
     >
       {skeletons.map((value, index) => (
         <div
