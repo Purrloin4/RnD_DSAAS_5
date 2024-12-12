@@ -1,57 +1,68 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, user } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import HomePage from '@/app/homepage/page';
-import { createClient } from '@/utils/supabase/client';
+import { mockProfiles } from '@/__mocks__/supabaseClientMock';
 
-import { useRouter } from 'next/router';
+jest.mock('@/utils/supabase/client', () => {
+  const createClientMock = () => ({
+    auth: {
+      getUser: jest.fn().mockResolvedValue({ data: { user: { id: 'test-user-id' } } })
+    },
+    from: jest.fn((table) => ({
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      neq: jest.fn().mockReturnThis(),
+      single: jest.fn().mockResolvedValue({ data: table === 'profiles' ? mockProfiles[0] : null }),
+      then: jest.fn((cb) => {
+        if (table === 'profiles') cb({ data: mockProfiles });
+      })
+    }))
+  });
+  return { createClient: createClientMock };
+});
 
-
-const supabase = createClient();
-export default supabase;
-
-jest.mock("next/navigation", () => ({
-    useRouter() {
-      return {
-        prefetch: () => null
-      };
-    }
-  }));
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
 
 describe('HomePage', () => {
-    it('renders loading state initially', () => {
-        render(<HomePage/>);
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+    it('renders loading state initially with skeleton cards', () => {
+      render(<HomePage />);
+      expect(screen.getAllByTestId('skeleton-card')).toHaveLength(8);
+    });
+  
+    it('renders profiles cards after loading', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getAllByTestId('profile-suggestion-card')).toHaveLength(3);
+    });
+  
+    it('renders profiles after loading', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getByText('dragon')).toBeInTheDocument();
+      expect(screen.getByText('unicorn')).toBeInTheDocument();
+      expect(screen.getByText('mamaBear')).toBeInTheDocument();
+    });
+  
+    it('toggles lover filter', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      fireEvent.click(screen.getByTestId('lover-switch'));
+      expect(screen.queryByText('unicorn')).not.toBeInTheDocument();
     });
 
-    // it('renders profiles after loading', async () => {
-    //     render(<HomePage/>);
-    //     await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
-    //     expect(screen.getByText('unicorn')).toBeInTheDocument();
-    //     expect(screen.getByText('mamaBear')).toBeInTheDocument();
-    // });
-
-    // it('test lover switch/filter', async () => {
-    //     render(<HomePage/>);
-    //     await waitFor(() => expect(screen.getByText('dragon')).toBeInTheDocument());
-    //     await waitFor(() => fireEvent.click(screen.getByTestId('lover-switch')));
-    //     expect(screen.queryByText('dragon')).not.toBeInTheDocument();
-    //     await waitFor(() => expect(screen.getByText('mamaBear')).toBeInTheDocument());
-    // });
-
-    // it('opens and closes filters modal', () => {
-    //     render(<HomePage />);
-    //     fireEvent.click(screen.getByTestId('open-filters-button'));
-    //     expect(screen.getByText('Apply Filters')).toHaveStyle('transform: translateX(0px) translateY(0.18967%) translateZ(0);');
-    //     fireEvent.click(screen.getByText('Close'));
-    //     expect(screen.queryByText('Apply Filters')).not.toBeVisible();
-    // });
-
-    // it('applies filters and fetches profiles', async () => {
-    //     render(<HomePage />);
-    //     fireEvent.click(screen.getByText('Open Filters'));
-    //     fireEvent.click(screen.getByTestId('smoker-switch'));
-    //     fireEvent.click(screen.getByText('Apply Filters'));
-    //     await waitFor(() => expect(screen.getByText('unicorn')).toBeInTheDocument());
-    //     expect(screen.getByText('dragon')).not.toBeVisible();
-    // });
-});
+    it('renders profile details', async () => {
+      render(<HomePage />);
+      await waitFor(() => expect(screen.queryByTestId('skeleton-card')).not.toBeInTheDocument());
+      expect(screen.getByText('Cooking')).toBeInTheDocument();
+      expect(screen.getByText('Other')).toBeInTheDocument();
+      expect(screen.getByText('Need Assistance')).toBeInTheDocument();
+    });
+  });

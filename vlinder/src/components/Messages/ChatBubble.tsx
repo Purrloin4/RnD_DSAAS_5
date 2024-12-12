@@ -7,14 +7,14 @@ type ChatListProps = {
   children: ReactNode;
   timestamp: string;
   type?: "t" | "b" | "bt" | undefined;
-  sendByUser: boolean;
+  isOwnMessage: boolean;
 };
 
-export default function ChatBubble({ children, timestamp, type, sendByUser }: ChatListProps) {
+export default function ChatBubble({ children, timestamp, type, isOwnMessage }: ChatListProps) {
   const [isInFocus, setIsInFocus] = useState<boolean>(false);
 
   const getRoundings = () => {
-    if (sendByUser) {
+    if (isOwnMessage) {
       if (type == "bt") return "rounded-2xl";
       if (type == "t") return "rounded-tl-2xl rounded-bl-2xl rounded-tr-2xl";
       if (type == "b") return "rounded-tl-2xl rounded-bl-2xl rounded-br-2xl";
@@ -28,11 +28,11 @@ export default function ChatBubble({ children, timestamp, type, sendByUser }: Ch
   };
 
   return (
-    <div className={`flex flex-col ${sendByUser ? "items-end" : "items-start"} w-full`}>
+    <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"} w-full`}>
       <div
         onClick={() => setIsInFocus(!isInFocus)}
         className={`${
-          sendByUser ? "bg-primary-500 text-white" : "bg-gray-300 text-black"
+          isOwnMessage ? "bg-primary-500 text-white" : "bg-gray-300 text-black"
         } py-3 px-6 ${getRoundings()} max-w-[75%] w-fit relative cursor-pointer text-wrap break-words`}
       >
         {children}

@@ -7,6 +7,7 @@ export default function InitNotifications({ notifications }: { notifications: IN
   const initState = useRef(false);
   const hasMore = notifications.length >= LIMIT_MESSAGE;
 
+  
   useEffect(() => {
     if (!initState.current) {
       useNotifications.setState({ notifications,hasMore});

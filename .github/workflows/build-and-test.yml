@@ -46,20 +46,19 @@ jobs:
             npm run build
         working-directory: vlinder
 
-      - name: Run tests
+      - name: Run tests w coverage
         run: |
             echo "Running tests"
-            npm run test
+            npm run coverage
         working-directory: vlinder
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Run linter
         run: |
             echo "Running linter"
             npm run lint
-        working-directory: vlinder
-
-      - name: Coverage
-        run: |
-            echo "Running coverage"
-            npm run coverage
         working-directory: vlinder
