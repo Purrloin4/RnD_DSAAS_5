@@ -3,6 +3,7 @@
 // import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
 
 import { Avatar, Input, Chip } from "@nextui-org/react";
+import useScreenSize from "./useScreenSize";
 import { ReactNode } from "react";
 import { Skeleton } from "@nextui-org/react";
 import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
@@ -19,7 +20,8 @@ import { sup } from "framer-motion/client";
 import ChatPresence from "@/src/components/Chat/ChatPresence";
 import AddNewParticipant from "@/src/components/Messages/AddNewParticipant";
 import EditChatName from "@/src/components/Messages/EditChatName";
-import { EllipsisIcon } from "../Icons/EllipsisIcon";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 type ChatListProps = {
   children?: ReactNode;
@@ -48,6 +50,7 @@ export default function ChatMessagesContainer({
 
   const isGroupChat = type === "gc";
   const [chatName, setChatName] = useState(name); // Dynamically displayed chat name
+  const { width, height } = useScreenSize();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -106,7 +109,12 @@ export default function ChatMessagesContainer({
 
   return (
     <div className={`flex flex-col pr-4 ${className}`}>
-      <div className="flex items-center justify-start p-4 border-b border-gray-300 overflow-x-hidden">
+      <div className="flex gap-2 items-center justify-start p-4 border-b border-gray-300 overflow-x-hidden">
+        {width <= 1024 && roomId && (
+          <Link className="w-10 text-primary flex justify-center" href="/messages" replace>
+            <ArrowLeft className="" />
+          </Link>
+        )}
         <Avatar size="md" color="success" className="mr-4" />
 
         <div className="flex-grow">

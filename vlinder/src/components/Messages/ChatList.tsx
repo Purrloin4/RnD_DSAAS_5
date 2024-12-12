@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import useScreenSize from "@/src/components/Messages/useScreenSize";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/utils/store/user";
 import { useRouter, useParams } from "next/navigation";
@@ -44,7 +45,6 @@ export default function ChatList({ children, className }: ChatListProps) {
   const supabase = createClient();
 
   const user = useUser((state) => state.user);
-  const router = useRouter();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { Id } = useParams();
@@ -52,6 +52,7 @@ export default function ChatList({ children, className }: ChatListProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedKeys, setSelectedKeys] = useState(new Set<string>());
   const [groupName, setGroupName] = useState("");
+  const { width, height } = useScreenSize();
   const fetchFriendships = async () => {
     try {
       const { data, error } = await supabase.rpc("show_friends");
@@ -159,6 +160,8 @@ export default function ChatList({ children, className }: ChatListProps) {
   if (loading) {
     return <ChatListSuspense className={className} />;
   }
+
+  if (width <= 1024 && Id) return;
 
   return (
     <div className={`flex flex-col p-4 ${className}`}>
