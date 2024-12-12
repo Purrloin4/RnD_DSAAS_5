@@ -207,9 +207,9 @@ export default function UserActivitiesPage() {
 
       const activityToOrganizations: Record<string, string[]> =
         activityOrgData.reduce((map, item) => {
-          //@ts-expect-error 
+          //@ts-expect-error err
           if (!map[item.activity_id]) map[item.activity_id] = [];
-          //@ts-expect-error
+          //@ts-expect-error err
           map[item.activity_id].push(organizationMap[item.organization_id]);
           return map;
         }, {});

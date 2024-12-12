@@ -123,7 +123,7 @@ export default function EditProfilePage() {
       .single();
 
     if (data) {
-      // @ts-expect-error
+      // @ts-expect-error err
       setProfile(data);
     } else {
       if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
