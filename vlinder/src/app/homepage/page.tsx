@@ -330,7 +330,7 @@ export default function HomePage() {
         {loading ? (
           <>
             {Array.from({ length: 8 }).map((_, index) => (
-              <ProfileSuggestionCardSuspense key={index} />
+              <ProfileSuggestionCardSuspense key={index}/>
             ))}
           </>
         ) : (
@@ -343,148 +343,148 @@ export default function HomePage() {
       </div>
     </main>
   );
-
-  return (
-    <div style={{ padding: "2rem", overflowY: "auto", maxHeight: "100vh" }}>
-      <h1>User Profiles</h1>
-
-      <Button data-testid="open-filters-button" color="primary" onPress={onOpen}>
-        Open Filters
-      </Button>
-
-      <Modal data-testid isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader>
-                <h3>Filters</h3>
-              </ModalHeader>
-              <ModalBody>
-                <Spacer y={1} />
-                <div>
-                  <h4>Not A Smoker</h4>
-                  <Switch data-testid="smoker-switch" isSelected={smokerFilter} onValueChange={setSmokerFilter} />
-                </div>
-                <Spacer y={1} />
-                <div>
-                  <h4>Does Not Need Assistance</h4>
-                  <Switch
-                    data-testid="assistance-switch"
-                    isSelected={assistanceFilter}
-                    onValueChange={setAssistanceFilter}
-                  />
-                </div>
-                <Spacer y={1} />
-                <div>
-                  <CheckboxGroup
-                    label="Gender"
-                    orientation="horizontal"
-                    value={genderFilter}
-                    onValueChange={setGenderFilter}
-                    isDisabled={loverFilter}
-                  >
-                    {!loverFilter ? (
-                      <>
-                        <Checkbox value="Male">Male</Checkbox>
-                        <Checkbox value="Female">Female</Checkbox>
-                        <Checkbox value="Other">Other</Checkbox>
-                      </>
-                    ) : (
-                      <text>Gender filter is applied based on your sexual orientation</text>
-                    )}
-                  </CheckboxGroup>
-                </div>
-                <Spacer y={1} />
-                <div>
-                  <Slider
-                    data-testid="age-slider"
-                    label="Age"
-                    value={[ageFilterValue[0], ageFilterValue[1]]}
-                    onChange={(value) => {
-                      if (Array.isArray(value)) {
-                        setAgeFilterValue([value[0], value[1]]);
-                      }
-                    }}
-                    minValue={18}
-                    maxValue={100}
-                    step={1}
-                  />
-                </div>
-                <Spacer y={1} />
-                <h2>Hobbies</h2>
-                <div className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto">
-                  {allHobbies.map((hobby) => (
-                    <Chip
-                      key={hobby.id}
-                      onClick={() => toggleHobby(hobby.id)}
-                      className={`m-1 ${
-                        selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"
-                      }`}
-                    >
-                      {hobby.name} {hobby.emoji}
-                    </Chip>
-                  ))}
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button
-                  color="success"
-                  onPress={() => {
-                    fetchProfiles();
-                    onClose();
-                  }}
-                >
-                  Apply Filters
-                </Button>
-                {/* TODO: Need help understanding filters button to have it in a more question like format */}
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-
-      {profile?.sex_positive && (
-        <div>
-          <h4>Looking for a lover?</h4>
-          <Switch data-testid="lover-switch" isSelected={loverFilter} onValueChange={setLoverFilter} />
-        </div>
-      )}
-
-      <div>
-        <h3>Results</h3>
-        {loading ? (
-          <p>Loading...</p> // Display loading state while fetching profiles
-        ) : (
-          <>
-            <ul>
-              {profiles.map((profile) => (
-                <div key={profile.id}>
-                  <h2>
-                    <a href={`/profile/${profile.id}`}>{profile.username}</a>
-                  </h2>
-                  <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
-                  {/* Display hobbies if they exist */}
-                  {/* Note naar fronted: dit is gwn een voorbeeld voor als we dat zouden willen gebruiken, mag verwijderd worden */}
-                  {profile.profile_hobbies?.length > 0 ? (
-                    <ul>
-                      {profile.profile_hobbies.map((ph, index) => (
-                        <li key={index}>
-                          {ph.hobbies.name} {ph.hobbies.emoji}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No hobbies listed.</p>
-                  )}
-                </div>
-              ))}
-            </ul>
-          </>
-        )}
-      </div>
-    </div>
-  );
 }
+//   return (
+//     <div style={{ padding: "2rem", overflowY: "auto", maxHeight: "100vh" }}>
+//       <h1>User Profiles</h1>
+
+//       <Button data-testid="open-filters-button" color="primary" onPress={onOpen}>
+//         Open Filters
+//       </Button>
+
+//       <Modal data-testid isOpen={isOpen} onOpenChange={onOpenChange}>
+//         <ModalContent>
+//           {(onClose) => (
+//             <>
+//               <ModalHeader>
+//                 <h3>Filters</h3>
+//               </ModalHeader>
+//               <ModalBody>
+//                 <Spacer y={1} />
+//                 <div>
+//                   <h4>Not A Smoker</h4>
+//                   <Switch data-testid="smoker-switch" isSelected={smokerFilter} onValueChange={setSmokerFilter} />
+//                 </div>
+//                 <Spacer y={1} />
+//                 <div>
+//                   <h4>Does Not Need Assistance</h4>
+//                   <Switch
+//                     data-testid="assistance-switch"
+//                     isSelected={assistanceFilter}
+//                     onValueChange={setAssistanceFilter}
+//                   />
+//                 </div>
+//                 <Spacer y={1} />
+//                 <div>
+//                   <CheckboxGroup
+//                     label="Gender"
+//                     orientation="horizontal"
+//                     value={genderFilter}
+//                     onValueChange={setGenderFilter}
+//                     isDisabled={loverFilter}
+//                   >
+//                     {!loverFilter ? (
+//                       <>
+//                         <Checkbox value="Male">Male</Checkbox>
+//                         <Checkbox value="Female">Female</Checkbox>
+//                         <Checkbox value="Other">Other</Checkbox>
+//                       </>
+//                     ) : (
+//                       <text>Gender filter is applied based on your sexual orientation</text>
+//                     )}
+//                   </CheckboxGroup>
+//                 </div>
+//                 <Spacer y={1} />
+//                 <div>
+//                   <Slider
+//                     data-testid="age-slider"
+//                     label="Age"
+//                     value={[ageFilterValue[0], ageFilterValue[1]]}
+//                     onChange={(value) => {
+//                       if (Array.isArray(value)) {
+//                         setAgeFilterValue([value[0], value[1]]);
+//                       }
+//                     }}
+//                     minValue={18}
+//                     maxValue={100}
+//                     step={1}
+//                   />
+//                 </div>
+//                 <Spacer y={1} />
+//                 <h2>Hobbies</h2>
+//                 <div className="mt-2 flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+//                   {allHobbies.map((hobby) => (
+//                     <Chip
+//                       key={hobby.id}
+//                       onClick={() => toggleHobby(hobby.id)}
+//                       className={`m-1 ${
+//                         selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"
+//                       }`}
+//                     >
+//                       {hobby.name} {hobby.emoji}
+//                     </Chip>
+//                   ))}
+//                 </div>
+//               </ModalBody>
+//               <ModalFooter>
+//                 <Button color="danger" variant="light" onPress={onClose}>
+//                   Close
+//                 </Button>
+//                 <Button
+//                   color="success"
+//                   onPress={() => {
+//                     fetchProfiles();
+//                     onClose();
+//                   }}
+//                 >
+//                   Apply Filters
+//                 </Button>
+//                 {/* TODO: Need help understanding filters button to have it in a more question like format */}
+//               </ModalFooter>
+//             </>
+//           )}
+//         </ModalContent>
+//       </Modal>
+
+//       {profile?.sex_positive && (
+//         <div>
+//           <h4>Looking for a lover?</h4>
+//           <Switch data-testid="lover-switch" isSelected={loverFilter} onValueChange={setLoverFilter} />
+//         </div>
+//       )}
+
+//       <div>
+//         <h3>Results</h3>
+//         {loading ? (
+//           <p>Loading...</p> // Display loading state while fetching profiles
+//         ) : (
+//           <>
+//             <ul>
+//               {profiles.map((profile) => (
+//                 <div key={profile.id}>
+//                   <h2>
+//                     <a href={`/profile/${profile.id}`}>{profile.username}</a>
+//                   </h2>
+//                   <img src={profile.avatar_url} alt={`${profile.username}'s avatar`} />
+//                   {/* Display hobbies if they exist */}
+//                   {/* Note naar fronted: dit is gwn een voorbeeld voor als we dat zouden willen gebruiken, mag verwijderd worden */}
+//                   {profile.profile_hobbies?.length > 0 ? (
+//                     <ul>
+//                       {profile.profile_hobbies.map((ph, index) => (
+//                         <li key={index}>
+//                           {ph.hobbies.name} {ph.hobbies.emoji}
+//                         </li>
+//                       ))}
+//                     </ul>
+//                   ) : (
+//                     <p>No hobbies listed.</p>
+//                   )}
+//                 </div>
+//               ))}
+//             </ul>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }

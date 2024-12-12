@@ -40,6 +40,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
   return (
     <Card
       className={`flex flex-col p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
+      data-testid="profile-suggestion-card"
     >
       <div className="flex-grow">
         <div className="relative w-full aspect-square overflow-hidden rounded-md mb-4">
@@ -53,7 +54,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
         </div>
         <h3 className="text-lg font-semibold text-gray-800">{profile.username || "Unnamed User"}</h3>
         <div className="flex flex-wrap gap-2 w-full mb-2">
-          <GenderChip gender={profile.gender} />
+          <GenderChip gender={profile.gender} data-testid = "gender-chip"/>
           <SexPositiveChip sex_positive={profile.sex_positive} />
           <SexualOrientationChip sexual_orientation={profile.sexual_orientation} />
           <NeedAssistanceChip need_assistance={profile.need_assistance} />
@@ -66,7 +67,8 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
               ))
             : ""}
           {profile.profile_hobbies.map((ph, index) => (
-            <Chip key={index} size="sm">
+            <Chip key={index} size="sm"
+            data-testid = "hobby-chip">
               {ph.hobbies.name}
             </Chip>
           ))}
