@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const { data, error } = await resend.emails.send({
       from: 'onboarding@mothim.com',
       to: email,
-      subject: 'Hello world',
+      subject: 'Vlinder Invitation',
       react: Welcome({ firstName, accessTokenId }), // Pass both firstName and accessTokenId
     });
 
