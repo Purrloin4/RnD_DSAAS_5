@@ -1,4 +1,4 @@
-/* import React from 'react';
+import React from 'react';
 import { render, screen, fireEvent, waitFor, user } from '@testing-library/react';
 import HomePage from '@/app/homepage/page';
 import { createClient } from '@/utils/supabase/client';
@@ -18,10 +18,10 @@ jest.mock("next/navigation", () => ({
   }));
 
 describe('HomePage', () => {
-    //it('renders loading state initially', () => {
-    //    render(<HomePage/>);
-    //    expect(screen.getByText('Loading...')).toBeInTheDocument();
-    //});
+    it('renders loading state initially', () => {
+        render(<HomePage/>);
+        expect(screen.getByText('Loading...')).toBeInTheDocument();
+    });
 
     // it('renders profiles after loading', async () => {
     //     render(<HomePage/>);
@@ -55,4 +55,3 @@ describe('HomePage', () => {
     //     expect(screen.getByText('dragon')).not.toBeVisible();
     // });
 });
- */
