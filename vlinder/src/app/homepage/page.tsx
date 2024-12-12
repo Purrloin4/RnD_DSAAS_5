@@ -53,7 +53,7 @@ export default function HomePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loverFilter, setLoverFilter] = useState(false);
+  const [loverFilter, setLoverFilter] = useState<boolean>();
   const [smokerFilter, setSmokerFilter] = useState(false);
   const [assistanceFilter, setAssistanceFilter] = useState(false);
   const [ageFilterValue, setAgeFilterValue] = useState<[number, number]>([18, 100]);
@@ -73,11 +73,14 @@ export default function HomePage() {
           router.push("/login");
         } else {
           setUserId(data.user.id);
+          if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+            console.log("data.user.id", data.user.id);
+          }
         }
       };
       fetchUser();
     }
-  }, [router]);
+  }, []);
 
   function calculateAge(birthday: string) {
     const birthDate = new Date(birthday);
@@ -89,7 +92,13 @@ export default function HomePage() {
   const fetchProfile = async () => {
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
-    setProfile(data || null);
+    if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log("profile data", data);
+      }
+
+    if (data)  {
+    setProfile(data);
+    }
   };
 
   async function fetchProfiles() {
@@ -169,6 +178,9 @@ export default function HomePage() {
       fetchProfiles();
     };
     fetchData();
+    if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log("profile", profile);
+      }
   }, [userId]);
 
   //Apply filters when user is looking for a lover
@@ -203,6 +215,15 @@ export default function HomePage() {
           Open Filters
         </Button>
       </div>
+     
+     <>
+      {profile?.sex_positive && (
+        <div className="w-full px-4 mt-2 flex justify-center">
+          <h4>Looking for a lover?</h4>
+          <Switch className="ml-4" data-testid="lover-switch" isSelected={loverFilter} onValueChange={setLoverFilter} />
+        </div>
+      )}
+      </>
 
       <Modal data-testid isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
