@@ -1,5 +1,6 @@
 # Welcome to the disOrderly SaaS Project of team 5
 
+[![codecov](https://codecov.io/github/Purrloin4/RnD_DSAAS_5/graph/badge.svg?token=T51QTPMZ50)](https://codecov.io/github/Purrloin4/RnD_DSAAS_5)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ## Deployed website
@@ -16,7 +17,7 @@ The project serves real-world use cases, particularly the **V(l)inder** project,
 ## Team Members
 - **Cédric Josse**: DevOps, backend
 - **Eltaj Amirli**: 
-- **Kobe_Casaer**:
+- **Kobe_Casaer**: Front end developer
 - **Thiewout_Bekaert**: 
 - **Wensui Li**:
 - **Yixuan Li**:
@@ -66,6 +67,17 @@ To start developing on this project please refer to [here](vlinder/README.md).
 - CI: a workflow that builds and tests your code before allowing merge
 - CD: workflow that deploys the development branch to a development location and deploys the main branch to a production location
 - Testing with Jest 
+- Private acces to the site with access code
+- Multistep registration form
+- User authentication
+- Find new friends/lovers with adaptive filters
+- User profile page (other users)
+- User profile editing
+- Admin page
+- Community/activity pages and
+- Chat functionality between users and groups
+- Message suggestions
+- Notifications
 
 
 

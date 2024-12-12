@@ -31,7 +31,10 @@ body {
     @apply text-xl;
   }
 }
-
+.uppy-Dashboard-inner{
+  width:auto !important;
+  height:25rem !important;
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -55,6 +58,15 @@ body {
     @apply bg-button-secondary-hover !important;
   }
 
+}
+
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
 }
 
 

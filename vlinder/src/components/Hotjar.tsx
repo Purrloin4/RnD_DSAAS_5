@@ -2,9 +2,10 @@
  
 "use client";
 import Script from "next/script";
+import EnviromentStrings from "@/src/enums/envStrings";
  
 const HotJar = () => {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.VERCEL_ENV === EnviromentStrings.PRODUCTION) {
     return (
       <Script id="hotjar">
         {`
