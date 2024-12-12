@@ -13,7 +13,7 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react";
-import { useFriendships } from "@/utils/store/friendships"; 
+import { useFriendships } from "@/utils/store/friendships";
 import FriendshipList from "Components/FriendshipList";
 import InitFriendships from "@/utils/store/InitFriendships";
 import { Select, SelectSection, SelectItem } from "@nextui-org/select";
@@ -23,6 +23,7 @@ import { Checkbox } from "@nextui-org/react";
 import { Textarea } from "@nextui-org/react";
 import { logout } from "@/src/app/logout/actions";
 import { Skeleton } from "@nextui-org/react";
+import EnviromentStrings from "@/src/enums/envStrings";
 
 const supabase = createClient();
 
@@ -58,7 +59,7 @@ interface UserProfile {
 
 export default function EditProfilePage() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const { friendships, setFriendships } = useFriendships(); 
+  const { friendships, setFriendships } = useFriendships();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [allHobbies, setHobbies] = useState<Hobby[]>([]);
@@ -68,17 +69,19 @@ export default function EditProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const handleLogout = async () => {
-    const success = await logout(); 
+    const success = await logout();
     if (success) {
-      router.push("/login"); 
+      router.push("/login");
     } else {
-      console.error("Logout failed. Please try again.");
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error("Logout failed. Please try again.");
+      }
     }
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      setIsLoading(true); 
+      setIsLoading(true);
       try {
         const { data, error } = await supabase.auth.getUser();
         if (error || !data?.user) {
@@ -87,9 +90,11 @@ export default function EditProfilePage() {
           setUserId(data.user.id);
         }
       } catch (err) {
-        console.error("Error fetching user:", err);
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Error fetching user:", err);
+        }
       } finally {
-        setIsLoading(false); 
+        setIsLoading(false);
       }
     };
     fetchUser();
@@ -118,10 +123,12 @@ export default function EditProfilePage() {
       .single();
 
     if (data) {
-      // @ts-expect-error 
+      // @ts-expect-error
       setProfile(data);
     } else {
-      console.error("Error fetching profile:", error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error("Error fetching profile:", error);
+      }
     }
   };
 
@@ -131,7 +138,9 @@ export default function EditProfilePage() {
     if (data) {
       setHobbies(data);
     } else {
-      console.error("Error fetching hobbies:", error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error("Error fetching hobbies:", error);
+      }
     }
   };
 
@@ -166,7 +175,9 @@ export default function EditProfilePage() {
         .upload(fileName, avatarFile);
 
       if (uploadError) {
-        console.error("Failed to upload avatar:", uploadError.message);
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Failed to upload avatar:", uploadError.message);
+        }
         return null;
       }
 
@@ -175,13 +186,17 @@ export default function EditProfilePage() {
         .getPublicUrl(fileName);
 
       if (!publicUrlData || !publicUrlData.publicUrl) {
-        console.error("Failed to retrieve public URL");
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Failed to retrieve public URL");
+        }
         return null;
       }
 
       return publicUrlData.publicUrl;
     } catch (err) {
-      console.error("Unexpected error during avatar upload:", err);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error("Unexpected error during avatar upload:", err);
+      }
       return null;
     }
   };
@@ -206,7 +221,9 @@ export default function EditProfilePage() {
         .eq("id", profile.id);
 
       if (error) {
-        console.error("Failed to update profile:", error.message);
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Failed to update profile:", error.message);
+        }
       }
 
       const { data: currentHobbies, error: fetchError } = await supabase
@@ -215,7 +232,9 @@ export default function EditProfilePage() {
         .eq("profile_id", profile.id);
 
       if (fetchError) {
-        console.error("Failed to fetch current hobbies:", fetchError.message);
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Failed to fetch current hobbies:", fetchError.message);
+        }
         return;
       }
 
@@ -234,7 +253,9 @@ export default function EditProfilePage() {
           .eq("profile_id", profile.id);
 
         if (deleteError) {
-          console.error("Failed to delete hobbies:", deleteError.message);
+          if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+            console.error("Failed to delete hobbies:", deleteError.message);
+          }
           return;
         }
       }
@@ -254,7 +275,9 @@ export default function EditProfilePage() {
           );
 
         if (insertError) {
-          console.error("Failed to add hobbies:", insertError.message);
+          if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+            console.error("Failed to add hobbies:", insertError.message);
+          }
           return;
         }
       }
@@ -267,7 +290,9 @@ export default function EditProfilePage() {
     try {
       const { data, error } = await supabase.rpc("show_friends");
       if (error) {
-        console.error("Error fetching friendships:", error);
+        if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+          console.error("Error fetching friendships:", error);
+        }
         return;
       }
 
@@ -278,9 +303,11 @@ export default function EditProfilePage() {
         friend_avatar: friend.avatar_url || null,
       }));
 
-      setFriendships(formattedData); 
+      setFriendships(formattedData);
     } catch (error) {
-      console.error("Unexpected error fetching friendships:", error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error("Unexpected error fetching friendships:", error);
+      }
     }
   };
 
