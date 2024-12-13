@@ -72,7 +72,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
                 display_disability, 
                 disability, 
                 smoker, 
-                birthday, 
+                birthday,
+                description, 
                 gender, 
                 need_assistance,
                 profile_hobbies (
