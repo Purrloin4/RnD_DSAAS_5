@@ -21,7 +21,7 @@ export default function Loading() {
           key={index}
           className={`flex flex-col ${Math.random() > 0.5 ? "items-end" : "items-start"} w-full overflow-hidden`}
         >
-          <Skeleton className={`h-10 rounded-2xl`}>{value}</Skeleton>
+          <Skeleton className={`h-10 rounded-2xl mb-2`}>{value}</Skeleton>
         </div>
       ))}
     </ChatMessagesContainer>

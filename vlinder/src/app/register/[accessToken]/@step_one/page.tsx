@@ -2,19 +2,15 @@
 import React, { use } from "react";
 import { useState, useEffect } from "react";
 
-//Components
 import { Input } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 
-//Icons
 import { EyeFilledIcon } from "Components/Icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "Components/Icons/EyeSlashFilledIcon";
 
-//backend
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 const supabase = createClient();
-
 
 export default function Page() {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -28,10 +24,7 @@ export default function Page() {
   const pathName = usePathname();
   const accessToken = pathName.split("/").pop();
 
-
   const handleStartRegistration = async () => {
-
-  
     const { data, error } = await supabase
       .from("accessToken")
       .select("*")
@@ -39,7 +32,6 @@ export default function Page() {
       .eq("is_used", false)
       .single();
 
-  
     if (error || !data) {
       router.push(`/register`);
       return;
@@ -49,12 +41,12 @@ export default function Page() {
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
-    
     if (!userError && userData) {
-      setMessage("You have already entered your credentials, please go to the next step");
+      setMessage(
+        "You have already entered your credentials, please go to the next step"
+      );
       return;
     }
-
   };
 
   useEffect(() => {
@@ -83,26 +75,24 @@ export default function Page() {
     if (error) {
       setError("Error signing up");
       return;
-    }
-    else {
+    } else {
       setMessage("You have successfully signed up");
     }
-
   };
 
   return (
     <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>Enter Your Email And Password</h2>
       <div className="flex flex-col items-center w-full max-w-md p-8">
-        <Input 
-          className="w-full mb-4" 
-          color="default" 
-          type="email" 
-          label="Email" 
-          placeholder="Enter Your Email" 
-          value={email} 
+        <Input
+          className="w-full mb-4"
+          color="default"
+          type="email"
+          label="Email"
+          placeholder="Enter Your Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
-          />
+        />
         <Input
           className="w-full mb-4"
           color="default"
@@ -131,15 +121,23 @@ export default function Page() {
           type={isVisible ? "text" : "password"}
           label="Repeat Password"
           placeholder="Repeat Your Password"
-          
           onChange={(e) => setRepeatPassword(e.target.value)}
         />
-        {error && <p className="w-full flex justify-center text-center text-sm font-semibold text-red-500">{error}</p>}
-        {message && <p className="w-full flex justify-center text-center text-sm font-semibold text-green-500">{message}</p>}
-        <Button 
+        {error && (
+          <p className="w-full flex justify-center text-center text-sm font-semibold text-red-500">
+            {error}
+          </p>
+        )}
+        {message && (
+          <p className="w-full flex justify-center text-center text-sm font-semibold text-green-500">
+            {message}
+          </p>
+        )}
+        <Button
           size="lg"
-          className="w-full mt-4 btn-primary font-semibold" 
-          onClick={handleSave}>
+          className="w-full mt-4 btn-primary font-semibold"
+          onClick={handleSave}
+        >
           Save
         </Button>
       </div>

@@ -1,29 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-//Components
 import { Input, Button, DateValue, user } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/react";
 
-
-//Icons
 import { LocationPinIcon } from "Components/Icons/LocationPinIcon";
 
-///backend
+///bckend
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import EnviromentStrings from "@/src/enums/envStrings";
+
 const supabase = createClient();
-
-
-//
-//  USE `https://nominatim.openstreetmap.org/search?city=${location}&format=json` API TO SEARCH FOR STORING COORDINATES IN DATABASE (ALSO SAVE CITYNAME FOR THERE PROFILE)
-//  DONT FORGET TO CHECK IF ITS VALID (optional add "&country=Belgium")
-//  We can also request for location every time they log on
-//
 
 export default function Page() {
   const [location, setLocation] = useState("");
-  const [locationError, setLocationError] = useState<string | undefined>(undefined);
+  const [locationError, setLocationError] = useState<string | undefined>(
+    undefined
+  );
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -32,10 +26,10 @@ export default function Page() {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [birthDate, setBirthDate] = useState<DateValue | null>(null);
-  
+
   const handleStepTwoRegistration = async () => {
     const accessToken = pathName.split("/").pop();
-  
+
     const { data: tokenData, error: tokenError } = await supabase
       .from("accessToken")
       .select("*")
@@ -43,17 +37,16 @@ export default function Page() {
       .eq("is_used", false)
       .single();
 
-  
     if (tokenError || !tokenData) {
       router.push(`/register`);
       return;
     }
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !userData) {
       setError("Please first enter your credentials");
-      router.push(`/register/${accessToken}`); // this doesn't work because of parallel routing
+      router.push(`/register/${accessToken}`);
       return;
     }
 
@@ -63,42 +56,41 @@ export default function Page() {
       .eq("id", userData.user.id)
       .single();
 
-
     if (profileError || !profileData) {
-      console.log("profileError", profileError);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log("profileError", profileError);
+      }
     }
- 
+
     if (profileData?.full_name) {
-    const first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
-    const last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
+      const first_name = profileData?.full_name
+        ? profileData.full_name.split(" ")[0]
+        : "";
+      const last_name = profileData?.full_name
+        ? profileData.full_name.split(" ")[1]
+        : "";
 
-    if (first_name) {
-      setFirstName(first_name);
-    }
+      if (first_name) {
+        setFirstName(first_name);
+      }
 
-    if (last_name) {
-      setLastName(last_name);
-    }
+      if (last_name) {
+        setLastName(last_name);
+      }
     } else {
       if (tokenData.first_name) {
         setFirstName(tokenData.first_name);
       }
-  
+
       if (tokenData.Last_name) {
         setLastName(tokenData.Last_name);
-        
       }
     }
 
-    if (profileData.username)
-      setUsername(profileData.username);
+    if (profileData.username) setUsername(profileData.username);
 
     if (profileData.birth_date)
-      // fuck next js with their dateValue
-
-    if (profileData.location)
-      setLocation(profileData.location);
-    
+      if (profileData.location) setLocation(profileData.location);
   };
 
   useEffect(() => {
@@ -163,6 +155,22 @@ export default function Page() {
       return;
     }
 
+    const accessToken = pathName.split("/").pop();
+    const { data: tokenData, error: tokenError } = await supabase
+    .from("accessToken")
+    .select("organization_id")
+    .eq("id", accessToken)
+    .single();
+
+    if (tokenError || !tokenData) {
+      setError("Error retrieving organization ID");
+      console.error(tokenError);
+      return;
+    }
+
+    const { organization_id } = tokenData;
+
+
     const { data, error } = await supabase
       .from("profiles")
       .upsert({
@@ -171,16 +179,21 @@ export default function Page() {
         username: username,
         birthday: birthDay,
         location: location,
+        organization_id: organization_id,
         role: "user",
       });
 
     if (error) {
       setError("Error saving data");
-      console.error(error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.error(error);
+      }
       return;
     } else {
       setMessage("Information saved successfully");
-      console.log(data);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log(data);
+      }
     }
   };
 
@@ -200,35 +213,44 @@ export default function Page() {
             if (!response.ok) {
               setLocationError("Something went wrong!");
               throw new Error(`HTTP error! Status: ${response.status}`);
-              //Handel error here
             }
             return response.json();
           })
           .then((data) => {
-            console.log(data);
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.log(data);
+            }
             setLocation(data.address.town || data.address.city || "");
           })
           .catch((error) => {
-            console.error("Error fetching data:", error);
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.error("Error fetching data:", error);
+            }
             setLocationError("Something went wrong!");
-            //Handel error here
           });
       },
       (error) => {
-        //Handel errors here
         setLocationError("Something went wrong!");
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            console.error("User denied the request for Geolocation.");
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.error("User denied the request for Geolocation.");
+            }
             break;
           case error.POSITION_UNAVAILABLE:
-            console.error("Location information is unavailable.");
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.error("Location information is unavailable.");
+            }
             break;
           case error.TIMEOUT:
-            console.error("The request to get user location timed out.");
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.error("The request to get user location timed out.");
+            }
             break;
           default:
-            console.error("An unknown error occurred.");
+            if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+              console.error("An unknown error occurred.");
+            }
         }
       },
       options
@@ -272,7 +294,9 @@ export default function Page() {
           onChange={(date) => setBirthDate(date)}
           value={birthDate}
         />
-        <text className="text-sm text-default-400">Tip: press the location icon to get your location!</text>
+        <text className="text-sm text-default-400">
+          Tip: press the location icon to get your location!
+        </text>
         <Input
           className="w-full"
           color="default"
@@ -284,19 +308,22 @@ export default function Page() {
           isInvalid={locationError !== undefined}
           errorMessage={locationError || ""}
           endContent={
-        <button
-          className="focus:outline-none"
-          type="button"
-          onClick={get_location}
-          aria-label="toggle password visibility"
-        >
-          <LocationPinIcon className="text-2xl text-default-400 pointer-events-none" />
-        </button>
+            <button
+              className="focus:outline-none"
+              type="button"
+              onClick={get_location}
+              aria-label="toggle password visibility"
+            >
+              <LocationPinIcon className="text-2xl text-default-400 pointer-events-none" />
+            </button>
           }
         />
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button className="w-full mt-4 btn-primary font-semibold" onClick={handleSave}>
+        <Button
+          className="w-full mt-4 btn-primary font-semibold"
+          onClick={handleSave}
+        >
           Save
         </Button>
       </div>
