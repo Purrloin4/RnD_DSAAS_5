@@ -50,7 +50,6 @@ interface Profile {
 }
 
 export default function HomePage() {
-  
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
