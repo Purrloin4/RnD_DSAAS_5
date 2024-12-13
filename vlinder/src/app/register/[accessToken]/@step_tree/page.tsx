@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 
 import Gender, { GenderDisplayNames } from "@/src/enums/Gender";
 import EnviromentStrings from "@/src/enums/envStrings";
-import SexualOrientation, {
-  SexualOrientationDisplayNames,
-} from "@/src/enums/SexualOrientation";
+import SexualOrientation, { SexualOrientationDisplayNames } from "@/src/enums/SexualOrientation";
 
 import { Input } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
@@ -22,9 +20,7 @@ const supabase = createClient();
 
 export default function Page() {
   const [gender, setGender] = React.useState<Gender | undefined>(undefined);
-  const [sexualOrientation, setSexualOrientation] = React.useState<
-    SexualOrientation | undefined
-  >(undefined);
+  const [sexualOrientation, setSexualOrientation] = React.useState<SexualOrientation | undefined>(undefined);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -36,13 +32,9 @@ export default function Page() {
     setGender(dataValue);
   };
 
-  const sexualOrientationChange = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const sexualOrientationChange = (event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.target as HTMLButtonElement;
-    const dataValue = button.getAttribute(
-      "data-sexualOrientation"
-    ) as SexualOrientation;
+    const dataValue = button.getAttribute("data-sexualOrientation") as SexualOrientation;
     setSexualOrientation(dataValue);
   };
 
@@ -81,8 +73,7 @@ export default function Page() {
     if (!profileError && profileData) {
       if (profileData.gender) setGender(profileData.gender);
 
-      if (profileData.sexual_orientation)
-        setSexualOrientation(profileData.sexual_orientation);
+      if (profileData.sexual_orientation) setSexualOrientation(profileData.sexual_orientation);
     }
   };
 
@@ -137,9 +128,7 @@ export default function Page() {
           <Button
             color={gender === g ? "primary" : "default"}
             className={`w-full mb-4 ${
-              gender === g
-                ? "bg-primary text-white"
-                : "text-gray-800 bg-gray-200"
+              gender === g ? "bg-primary text-white" : "text-gray-800 bg-gray-200"
             } active:text-white active:bg-primary-dark`}
             data-gender={g}
             key={g}
@@ -154,9 +143,7 @@ export default function Page() {
           <Button
             color={sexualOrientation === o ? "primary" : "default"}
             className={`w-full mb-4 ${
-              sexualOrientation === o
-                ? "bg-primary text-white"
-                : "text-gray-800 bg-gray-200"
+              sexualOrientation === o ? "bg-primary text-white" : "text-gray-800 bg-gray-200"
             } active:text-white active:bg-primary-dark`}
             data-sexualorientation={o}
             key={o}
@@ -167,10 +154,7 @@ export default function Page() {
         ))}
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button
-          className="w-full mt-8 btn-primary font-semibold"
-          onClick={handleSave}
-        >
+        <Button className="w-full mt-8 btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

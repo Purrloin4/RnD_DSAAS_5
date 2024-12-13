@@ -17,7 +17,7 @@ interface ChatListItemProps {
   id: string;
   type: string;
 }
-interface Participants{
+interface Participants {
   created_at: string;
   profile_id: string;
   room_id: string;
@@ -26,34 +26,32 @@ interface Participants{
     username: string | null;
     id: string;
   } | null;
-};
-
-
+}
 
 export default function ChatListItem({ name, lastMessage, time, isOnline, isActive, id, type }: ChatListItemProps) {
   const isGroupChat = type === "gc";
   const supabase = createClient();
   const [chatName, setChatName] = useState(name);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [ participants, setParticipants ] = useState<Participants[] | null>(null);
+  const [participants, setParticipants] = useState<Participants[] | null>(null);
 
   // const [ participants, setParticipants ] = useRoomParticipant((state) => state);
 
   // Fetch friendships (optional, if not already initialized)
   const fetchParticipants = async (roomId: string) => {
     const { data, error } = await supabase
-        .from("room_participants")
-        .select("*,profiles(avatar_url,username,id)")
-        .eq("room_id", roomId);
+      .from("room_participants")
+      .select("*,profiles(avatar_url,username,id)")
+      .eq("room_id", roomId);
 
-      if (error) {
-        console.error("Error fetching participants:", error);
-      } else {
-        setParticipants(data as Participants[]);
-      }
-    };
+    if (error) {
+      console.error("Error fetching participants:", error);
+    } else {
+      setParticipants(data as Participants[]);
+    }
+  };
 
-    const fetchOtherUsername = async (roomId: string) => {
+  const fetchOtherUsername = async (roomId: string) => {
     try {
       const { data, error } = await supabase.rpc("get_other_username", {
         input_room_id: roomId,
@@ -92,11 +90,7 @@ export default function ChatListItem({ name, lastMessage, time, isOnline, isActi
 
   const fetchAvatarUrl = async (roomId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", roomId)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("avatar_url").eq("id", roomId).single();
 
       if (error) {
         console.error("Error fetching avatar URL:", error);
@@ -113,13 +107,10 @@ export default function ChatListItem({ name, lastMessage, time, isOnline, isActi
 
   useEffect(() => {
     if (!isGroupChat) {
-
       fetchOtherAvatar(id);
       fetchOtherUsername(id); // Only fetch for direct messages
-    }
-    else{
+    } else {
       fetchParticipants(id);
-
     }
   }, [id, isGroupChat]);
 
@@ -130,19 +121,13 @@ export default function ChatListItem({ name, lastMessage, time, isOnline, isActi
       >
         {isGroupChat ? (
           <AvatarGroup size="sm" max={3} className="mr-4 flex-shrink-0">
-                {participants && participants.map((participant) => (
-            <Avatar key={participant.profile_id} size="sm" src={participant.profiles?.avatar_url || undefined}/>
-          ))}
-
-
-
+            {participants &&
+              participants.map((participant) => (
+                <Avatar key={participant.profile_id} size="sm" src={participant.profiles?.avatar_url || undefined} />
+              ))}
           </AvatarGroup>
         ) : (
-          <Avatar
-            size="md"
-            src={avatarUrl || undefined}
-            className="mr-4 flex-shrink-0"
-          />
+          <Avatar size="md" src={avatarUrl || undefined} className="mr-4 flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-lg truncate">{chatName}</h3>

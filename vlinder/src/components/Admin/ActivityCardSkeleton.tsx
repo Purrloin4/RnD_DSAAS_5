@@ -2,7 +2,7 @@ import { Card, Button, Skeleton } from "@nextui-org/react";
 import { format } from "date-fns";
 import Image from "next/image";
 
-export default function ActivityCard() {
+export default function ActivityCardSkeleton() {
   const formatActivityTime = (isoString: string): string[] => {
     const date = new Date(isoString);
     const formattedDate = format(date, "EEEE, MMM d, yyyy");

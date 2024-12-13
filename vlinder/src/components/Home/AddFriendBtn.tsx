@@ -1,18 +1,16 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/utils/store/user";
 import toast, { Toaster } from "react-hot-toast";
 
-
-export default function AddFriendBtn({profile_id}: {profile_id:string}) {
+export default function AddFriendBtn({ profile_id }: { profile_id: string }) {
   const supabase = createClient();
   const [friendStatus, setFriendStatus] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const user = useUser((state) => state.user);
 
-
-const fetchFriendStatus = async (otherUserId: string) => {
+  const fetchFriendStatus = async (otherUserId: string) => {
     try {
       const { data, error } = await supabase.rpc("get_friend_status", {
         other_user_id: otherUserId,
@@ -38,11 +36,7 @@ const fetchFriendStatus = async (otherUserId: string) => {
     }
 
     const userId = userResponse.data.user.id;
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
+    const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
 
     if (data?.role === "admin") {
       setIsAdmin(true);
@@ -76,39 +70,34 @@ const fetchFriendStatus = async (otherUserId: string) => {
       console.error("Unexpected error sending friend request:", error);
     }
   };
-useEffect(() => {
+  useEffect(() => {
     fetchFriendStatus(profile_id);
     checkAdminStatus();
   }, [user?.id, profile_id]);
 
- 
-
   return (
     <>
-        {!isAdmin && (
-            <div className="w-full max-w-md mt-8">
-              {friendStatus === 'accepted' ? (
-                <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
-                  Connected
-                </Button>
-              ) : friendStatus === 'pending' ? (
-                <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
-                  Pending
-                </Button>
-              ) : friendStatus === 'rejected' ? (
-                <Button disabled className="w-full bg-red-500 text-white py-2 rounded-md">
-                  Rejected
-                </Button>
-              ) : (
-                <Button
-                  className="w-full bg-purple-500 text-white py-2 rounded-md"
-                  onClick={sendFriendRequest}
-                >
-                  Connect
-                </Button>
-              )}
-            </div>
+      {!isAdmin && (
+        <div className="w-full max-w-md mt-8 mb-2">
+          {friendStatus === "accepted" ? (
+            <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
+              Connected
+            </Button>
+          ) : friendStatus === "pending" ? (
+            <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
+              Pending
+            </Button>
+          ) : friendStatus === "rejected" ? (
+            <Button disabled className="w-full bg-red-500 text-white py-2 rounded-md">
+              Rejected
+            </Button>
+          ) : (
+            <Button className="w-full bg-purple-500 text-white py-2 rounded-md" onClick={sendFriendRequest}>
+              Connect
+            </Button>
           )}
-          </>
+        </div>
+      )}
+    </>
   );
 }

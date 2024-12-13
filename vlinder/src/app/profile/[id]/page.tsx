@@ -41,16 +41,13 @@ interface UserProfile {
   profile_hobbies: ProfileHobby[];
   description: string;
   sex_positive: boolean;
-
 }
 
 function calculateAge(birthday: string) {
   const birthDate = new Date(birthday);
   const age = new Date().getFullYear() - birthDate.getFullYear();
   const m = new Date().getMonth() - birthDate.getMonth();
-  return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate())
-    ? age - 1
-    : age;
+  return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate()) ? age - 1 : age;
 }
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
@@ -118,11 +115,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     }
 
     const userId = userResponse.data.user.id;
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
+    const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
 
     if (data?.role === "admin") {
       setIsAdmin(true);
@@ -171,7 +164,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     <main className="flex flex-col items-center justify-start p-6 min-h-screen bg-purple-50">
       <div className="flex flex-col items-center space-y-4">
         <Avatar
-          src={profile.avatar_url || '/default-avatar.png'}
+          src={profile.avatar_url || "/default-avatar.png"}
           alt="Profile Avatar"
           className="w-24 h-24 rounded-full"
         />
@@ -182,7 +175,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
       <div className="w-full max-w-md mt-6">
         <h3 className="text-lg font-semibold text-gray-800">Description</h3>
-        <p className="text-gray-700 mt-2">{profile.description || 'No description provided.'}</p>
+        <p className="text-gray-700 mt-2">{profile.description || "No description provided."}</p>
       </div>
 
       <div className="w-full max-w-md mt-6 flex flex-wrap gap-3">
@@ -197,10 +190,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         <h3 className="text-lg font-semibold text-gray-800">Hobbies</h3>
         <div className="mt-4 flex flex-wrap gap-2">
           {profile.profile_hobbies.map((hobby) => (
-            <span
-              key={hobby.hobbies.id}
-              className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-            >
+            <span key={hobby.hobbies.id} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
               {hobby.hobbies.name} {hobby.hobbies.emoji}
             </span>
           ))}
@@ -209,23 +199,20 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
       {!isAdmin && (
         <div className="w-full max-w-md mt-8">
-          {friendStatus === 'accepted' ? (
+          {friendStatus === "accepted" ? (
             <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
               Connected
             </Button>
-          ) : friendStatus === 'pending' ? (
+          ) : friendStatus === "pending" ? (
             <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
               Pending
             </Button>
-          ) : friendStatus === 'rejected' ? (
+          ) : friendStatus === "rejected" ? (
             <Button disabled className="w-full bg-red-500 text-white py-2 rounded-md">
               Rejected
             </Button>
           ) : (
-            <Button
-              className="w-full bg-purple-500 text-white py-2 rounded-md"
-              onClick={sendFriendRequest}
-            >
+            <Button className="w-full bg-purple-500 text-white py-2 rounded-md" onClick={sendFriendRequest}>
               Connect
             </Button>
           )}

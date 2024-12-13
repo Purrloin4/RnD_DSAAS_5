@@ -1,20 +1,20 @@
 "use client";
-import { login } from '@/src/app/login/actions';
-import { Button, Input} from "@nextui-org/react";
+import { login } from "@/src/app/login/actions";
+import { Button, Input } from "@nextui-org/react";
 import Logo from "Components/Logo/Logo";
 import React, { useState } from "react";
-import { createClient } from '@/utils/supabase/client';
-import toast, { Toaster } from 'react-hot-toast';
+import { createClient } from "@/utils/supabase/client";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ForgotPasswordPage() {
   const supabase = createClient();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [success, setSuccess] = useState<boolean>(false);
 
   const sendResetPassword = async () => {
     try {
       const { data: resetData, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) {
@@ -22,12 +22,10 @@ export default function ForgotPasswordPage() {
       }
 
       setSuccess(true);
-      toast.success('Password reset email sent successfully!');
+      toast.success("Password reset email sent successfully!");
     } catch (error) {
       console.log(error);
-      toast.error('Failed to send password reset email.');
-      
-
+      toast.error("Failed to send password reset email.");
     }
   };
 
@@ -55,9 +53,7 @@ export default function ForgotPasswordPage() {
         >
           Reset my password
         </Button>
-
-          </div>
+      </div>
     </div>
   );
 }
-

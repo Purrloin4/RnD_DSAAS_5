@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@nextui-org/react";
 
-
 import Navbar_Logo from "Components/Icons/Navbar_Logo";
 import Communities_Icon from "Components/Icons/Communities_Icon";
 import Settings_Icon from "Components/Icons/Settings_Icon";
@@ -15,7 +14,6 @@ import { createClient } from "@/utils/supabase/client";
 import dayjs from "dayjs";
 
 export default function Navbar() {
-
   const [todayNotificationCount, setTodayNotificationCount] = useState(0);
 
   useEffect(() => {

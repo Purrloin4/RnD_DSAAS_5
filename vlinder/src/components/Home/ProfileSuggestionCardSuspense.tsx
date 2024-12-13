@@ -26,8 +26,10 @@ interface ProfileHobby {
 
 export default function ProfileSuggestionCardSuspense({ className }: { className?: string }) {
   return (
-    <Card className={`p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
-    data-testid = "skeleton-card">
+    <Card
+      className={`p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
+      data-testid="skeleton-card"
+    >
       <div className="relative w-full aspect-square overflow-hidden rounded-md mb-4">
         <Skeleton className="w-full h-full object-cover object-center border-r-medium" />
       </div>
