@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/button";
+import { Button, Input } from "@nextui-org/react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
@@ -27,11 +27,7 @@ export default function Page() {
 
   const fetchUserRole = async () => {
     if (userId) {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", userId)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
 
       if (error) {
         console.error("Error fetching user role:", error);
@@ -59,7 +55,7 @@ export default function Page() {
 
   if (accessDenied) {
     return (
-      <div style={styles.container}>
+      <div>
         <p>You do not have access to this page.</p>
       </div>
     );
@@ -124,53 +120,24 @@ export default function Page() {
   };
 
   return (
-    <main style={styles.container}>
-      <div>
-        <label>
-          Email:
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter user email"
-          />
-        </label>
+    <main className="flex items-center justify-center w-screen h-screen">
+      <div className="flex flex-col items-center gap-2 w-full max-w-md">
+        <h2 className="w-full text-center mb-4">Invite a User</h2>
+        <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+        <Input label="First Name" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+
+        <Input
+          className="mb-2"
+          label="Last Name"
+          type="text"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+        />
+        <Button className="w-full" color="primary" onClick={handleButtonClick}>
+          Send Email
+        </Button>
       </div>
-      <div>
-        <label>
-          First Name:
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder="Enter user first name"
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Last Name:
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder="Enter user last name"
-          />
-        </label>
-      </div>
-      <Button onClick={handleButtonClick}>Send Email</Button>
     </main>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column" as const,
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#f0f8ff",
-    fontFamily: "Arial, sans-serif",
-  },
-};
