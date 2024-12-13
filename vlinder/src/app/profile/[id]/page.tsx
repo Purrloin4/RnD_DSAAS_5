@@ -166,21 +166,6 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     return <div>No profile found.</div>;
   }
 
-  const renderFriendButton = () => {
-    if (isAdmin) return null;
-
-    switch (friendStatus) {
-      case "accepted":
-        return <Button disabled>Connected</Button>;
-      case "pending":
-        return <Button disabled>Pending</Button>;
-      case "rejected":
-        return <Button disabled>Rejected</Button>;
-      default:
-        return <Button onPress={sendFriendRequest}>Connect</Button>;
-    }
-  };
-
   return (
     <main className="flex flex-col items-center justify-start p-6 min-h-screen bg-purple-50">
       <div className="flex flex-col items-center space-y-4">

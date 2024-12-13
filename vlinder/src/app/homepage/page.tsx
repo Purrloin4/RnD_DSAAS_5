@@ -40,6 +40,7 @@ interface Profile {
   sexual_orientation: string;
   sex_positive: boolean;
   gender: string;
+  birthday: string;
   smoker: boolean | undefined;
   display_disability: boolean;
   need_assistance: boolean | undefined;
@@ -49,6 +50,7 @@ interface Profile {
 }
 
 export default function HomePage() {
+  
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();

@@ -36,8 +36,8 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           type="text"
-          label="Email/Phone number"
-          placeholder="Enter your email or phone number"
+          label="Email"
+          placeholder="Enter your email"
           className="w-full md-4"
         />
 

@@ -8,7 +8,9 @@ import NeedAssistanceChip from "./NeedAssistanceChip";
 import SmokerChip from "./SmokerChip";
 import Link from "next/link";
 import AddFriendBtn from "./AddFriendBtn";
-
+import { useState } from "react";
+import {createClient} from "@/utils/supabase/client"
+import {useUser} from "@/utils/store/user"
 interface Profile {
   id: string;
   username: string;
@@ -36,7 +38,7 @@ interface ProfileHobby {
 
 export default function ProfileSuggestionCard({ className, profile }: { className?: string; profile: Profile }) {
   //console.log(profile);
-
+  
   return (
     <Card
       className={`flex flex-col p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
@@ -77,7 +79,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
           {profile.description}
         </p>
       </div>
-      <AddFriendBtn isFriend={false} />
+      <AddFriendBtn profile_id={profile.id} />
       <Link href={`/profile/${profile.id}`} replace>
         <Button className="justify-self-end w-full py-2 rounded-md">See Profile</Button>
       </Link>
