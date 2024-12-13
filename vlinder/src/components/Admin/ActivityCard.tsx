@@ -40,7 +40,7 @@ export default function ActivityCard({
         </div>
       )}
 
-      <div className="w-full h-2/3 overflow-hidden rounded-lg">
+      <div className="w-full h-2/3 overflow-hidden rounded-t-lg">
         <Image src={picture_url || ""} width={1000} height={1000} alt={title} className="w-full h-full object-cover" />
       </div>
 
