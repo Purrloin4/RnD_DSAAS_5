@@ -12,6 +12,7 @@ import SexPositiveChip from "Components/Home//SexPositiveChip";
 import { SexualOrientationChip } from "Components/Home//SexualOrientationChip";
 import NeedAssistanceChip from "Components/Home//NeedAssistanceChip";
 import SmokerChip from "Components/Home//SmokerChip";
+import AddFriendBtn from "@/src/components/Home/AddFriendBtn";
 
 const supabase = createClient();
 
@@ -206,30 +207,8 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      {!isAdmin && (
-        <div className="w-full max-w-md mt-8">
-          {friendStatus === 'accepted' ? (
-            <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
-              Connected
-            </Button>
-          ) : friendStatus === 'pending' ? (
-            <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
-              Pending
-            </Button>
-          ) : friendStatus === 'rejected' ? (
-            <Button disabled className="w-full bg-red-500 text-white py-2 rounded-md">
-              Rejected
-            </Button>
-          ) : (
-            <Button
-              className="w-full bg-purple-500 text-white py-2 rounded-md"
-              onClick={sendFriendRequest}
-            >
-              Connect
-            </Button>
-          )}
-        </div>
-      )}
+     <AddFriendBtn profile_id={params.id} />
+
     </main>
   );
 }
