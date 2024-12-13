@@ -62,7 +62,10 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
             className="w-full h-full object-cover object-center border-r-medium"
           />
         </div>
-        <h3 className="text-lg font-semibold text-gray-800">{`${profile.username || "Unnamed User"}, ${calculateAge(profile.birthday)}`}</h3>
+        <h3 className="text-lg font-semibold text-gray-800">
+          {`${profile.username || "Unnamed User"}`}
+          <span>{`, ${calculateAge(profile.birthday)}`}</span>
+        </h3>
         <div className="flex flex-wrap gap-2 w-full mb-2">
           <GenderChip gender={profile.gender} data-testid="gender-chip" />
           <SexPositiveChip sex_positive={profile.sex_positive} />
