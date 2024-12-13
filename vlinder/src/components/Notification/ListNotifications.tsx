@@ -284,7 +284,33 @@ export default function ListNotifications() {
                         }}
                         name={notification.from_who_details?.username || "Unknown User"}
                         description={notification.content || "No description available"}
+
                       />
+                      {notification.notification_type === 'FriendshipRequest' && (
+                    <ButtonGroup>
+
+<Button
+  onPress={() => handleAcceptRequest(notification.from_who, notification.to_who, notification.id)}
+  size="sm"
+  color="success"
+  variant="flat"
+>
+  Accept
+</Button>
+
+                      <Button
+    
+                        // className="bg-red-500 text-white px-4 py-2 rounded-md"
+                        onPress={() => handleRejectRequest(notification.from_who, notification.to_who,notification.id)}
+                        size="sm"
+                        color="danger"
+                        variant="flat"
+                      >
+                        Reject
+                      </Button>
+                      </ButtonGroup>
+                    
+                  )}
                     </Skeleton>
                     <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
                       <small className="text-gray-500">

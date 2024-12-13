@@ -549,7 +549,7 @@ export default function EditProfilePage() {
           >
             Save Changes
           </Button>
-          <Button             className="w-full max-w-sm btn-secondary font-semibold"
+          <Button        color="success"     className="w-full max-w-sm font-semibold mt-4"
 onPress={onOpen}>Show Friends</Button>
       <Modal
         isDismissable={false}

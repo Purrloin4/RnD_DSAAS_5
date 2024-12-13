@@ -59,6 +59,7 @@ export default function MessageInput({ roomId }: { roomId: string }) {
       addMessage(newMessage as Imessage);
       setOptimisticIds(newMessage.id);
       const { error } = await supabase.from("messages").insert({ content, id, profile_id: user?.id, room_id: roomId });
+      fetchLastMessage();
       if (error) {
         toast.error(error.message);
       }
