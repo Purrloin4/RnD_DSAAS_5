@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import SettingsIconImage from './settings_icon.svg'
+import SettingsIconImage from "./settings_icon.svg";
 
 interface LogoComponentProps {
   alt: string;
@@ -10,7 +10,6 @@ interface LogoComponentProps {
 }
 
 const Settings_Icon: React.FC<LogoComponentProps> = ({ alt, className, width, height }) => {
-
   return (
     <div className={className}>
       <Image src={SettingsIconImage} alt={alt} layout="responsive" width={width} height={height} />

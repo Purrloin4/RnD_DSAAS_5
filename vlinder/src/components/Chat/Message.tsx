@@ -18,9 +18,7 @@ export default function Message({ message }: { message: Imessage }) {
 
   return (
     <div
-      className={`flex gap-2 items-start ${
-        isOwnMessage ? "justify-end" : "justify-start"
-      }`}
+      className={`flex gap-2 items-start ${isOwnMessage ? "justify-end" : "justify-start"}`}
     >
       {/* Avatar only appears for received messages */}
       {!isOwnMessage && (

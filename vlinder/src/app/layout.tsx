@@ -31,9 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <HotJar />
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
         <NextUIProvider>
           <ConditionalNavbar /> {/* Render Client Component for Navbar logic */}
           {children}

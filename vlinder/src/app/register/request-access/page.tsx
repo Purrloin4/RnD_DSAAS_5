@@ -20,7 +20,7 @@ export default function page() {
   return (
     <main className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
-      <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
+        <Logo alt="Purple Logo" color="purple" className="w-full md-4" />
         <Input type="email" label="Email" placeholder="john.doe@vlinder.com" className="max-w-full" />
 
         <Select label="Select your organisation" className="max-w-full mt-4">
@@ -32,10 +32,7 @@ export default function page() {
         <Link className="w-full flex justify-center text-sm font-semibold text-primary" href="./" replace>
           I already have a token
         </Link>
-        <Button 
-          size="lg"          
-          className="w-full md-4 btn-primary font-semibold"
-          aria-label="request-access-token-button">
+        <Button size="lg" className="w-full md-4 btn-primary font-semibold" aria-label="request-access-token-button">
           Request my token
         </Button>
       </div>

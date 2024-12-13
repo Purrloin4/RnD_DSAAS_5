@@ -22,11 +22,7 @@ export default function ChatHeader({ user, roomId }: ChatHeaderProps) {
     const supabase = createClient();
 
     try {
-      const { data, error } = await supabase
-        .from("rooms")
-        .select("name")
-        .eq("id", roomId)
-        .single();
+      const { data, error } = await supabase.from("rooms").select("name").eq("id", roomId).single();
 
       if (error) {
         console.error("Error fetching room name:", error.message);

@@ -205,6 +205,8 @@ export default function ListNotifications() {
           console.log("DM room created successfully:", roomData);
         }
       }
+
+      window.location.reload();
     } catch (error) {
       if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
         console.error("Unexpected error accepting friend request:", error);
@@ -259,7 +261,7 @@ export default function ListNotifications() {
         }
         return;
       }
-
+      window.location.reload();
       console.log("Notification updated successfully.");
     } catch (error) {
       if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -304,7 +306,17 @@ export default function ListNotifications() {
                     }
                   />
                   {notification.notification_type === "FriendshipRequest" && (
-                    <ButtonGroup>
+                    <div className="w-full flex justify-end flex-row gap-2">
+                      <Skeleton
+                        className="rounded-lg mt-2 "
+                        isLoaded={!loading}
+                      >
+                        <small className="text-gray-500">
+                          {new Date(notification.created_at).toLocaleString()}
+                        </small>
+                      </Skeleton>
+
+                      <div className="flex-grow"></div>
                       <Button
                         onPress={() =>
                           handleAcceptRequest(
@@ -314,8 +326,7 @@ export default function ListNotifications() {
                           )
                         }
                         size="sm"
-                        color="success"
-                        variant="flat"
+                        className="btn-primary"
                       >
                         Accept
                       </Button>
@@ -331,17 +342,11 @@ export default function ListNotifications() {
                         }
                         size="sm"
                         color="danger"
-                        variant="flat"
                       >
                         Reject
                       </Button>
-                    </ButtonGroup>
+                    </div>
                   )}
-                </Skeleton>
-                <Skeleton className="rounded-lg mt-2" isLoaded={!loading}>
-                  <small className="text-gray-500">
-                    {new Date(notification.created_at).toLocaleString()}
-                  </small>
                 </Skeleton>
               </div>
             ))

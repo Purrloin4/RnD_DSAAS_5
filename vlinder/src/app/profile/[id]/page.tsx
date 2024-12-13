@@ -48,9 +48,7 @@ function calculateAge(birthday: string) {
   const birthDate = new Date(birthday);
   const age = new Date().getFullYear() - birthDate.getFullYear();
   const m = new Date().getMonth() - birthDate.getMonth();
-  return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate())
-    ? age - 1
-    : age;
+  return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate()) ? age - 1 : age;
 }
 
 export default function ProfilePage({ params }: { params: { id: string } }) {
@@ -118,11 +116,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     }
 
     const userId = userResponse.data.user.id;
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .single();
+    const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
 
     if (data?.role === "admin") {
       setIsAdmin(true);
@@ -201,10 +195,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         <h3 className="text-lg font-semibold text-gray-800">Hobbies</h3>
         <div className="mt-4 flex flex-wrap gap-2">
           {profile.profile_hobbies.map((hobby) => (
-            <span
-              key={hobby.hobbies.id}
-              className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-            >
+            <span key={hobby.hobbies.id} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
               {hobby.hobbies.name} {hobby.hobbies.emoji}
             </span>
           ))}

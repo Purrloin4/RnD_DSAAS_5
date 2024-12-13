@@ -144,17 +144,10 @@ export default function EditProfilePage() {
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    const checked =
-      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
-    setProfile((prev) =>
-      prev ? { ...prev, [name]: type === "checkbox" ? !!checked : value } : null
-    );
+    const checked = type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
+    setProfile((prev) => (prev ? { ...prev, [name]: type === "checkbox" ? !!checked : value } : null));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,9 +159,7 @@ export default function EditProfilePage() {
   const uploadAvatar = async (): Promise<string | null> => {
     if (!avatarFile || !profile) return null;
 
-    const fileName = `${profile.id}-${Date.now()}.${avatarFile.name
-      .split(".")
-      .pop()}`;
+    const fileName = `${profile.id}-${Date.now()}.${avatarFile.name.split(".").pop()}`;
     try {
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from("avatars")
@@ -181,9 +172,7 @@ export default function EditProfilePage() {
         return null;
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
+      const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(fileName);
 
       if (!publicUrlData || !publicUrlData.publicUrl) {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -241,9 +230,7 @@ export default function EditProfilePage() {
       const currentHobbyIds = currentHobbies.map((h) => h.hobby_id);
       const updatedHobbyIds = profile_hobbies.map((ph) => ph.hobbies.id);
 
-      const hobbiesToDelete = currentHobbyIds.filter(
-        (id) => !updatedHobbyIds.includes(id)
-      );
+      const hobbiesToDelete = currentHobbyIds.filter((id) => !updatedHobbyIds.includes(id));
 
       if (hobbiesToDelete.length > 0) {
         const { error: deleteError } = await supabase
@@ -260,19 +247,15 @@ export default function EditProfilePage() {
         }
       }
 
-      const hobbiesToAdd = updatedHobbyIds.filter(
-        (id) => !currentHobbyIds.includes(id)
-      );
+      const hobbiesToAdd = updatedHobbyIds.filter((id) => !currentHobbyIds.includes(id));
 
       if (hobbiesToAdd.length > 0) {
-        const { error: insertError } = await supabase
-          .from("profile_hobbies")
-          .insert(
-            hobbiesToAdd.map((hobbyId) => ({
-              profile_id: profile.id,
-              hobby_id: hobbyId,
-            }))
-          );
+        const { error: insertError } = await supabase.from("profile_hobbies").insert(
+          hobbiesToAdd.map((hobbyId) => ({
+            profile_id: profile.id,
+            hobby_id: hobbyId,
+          }))
+        );
 
         if (insertError) {
           if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -322,11 +305,7 @@ export default function EditProfilePage() {
       <div className="flex flex-col items-center space-y-4 w-full max-w-md p-8">
         <Skeleton isLoaded={!isLoading} className="w-24 h-24 rounded-full">
           {profile?.avatar_url ? (
-            <img
-              src={profile.avatar_url}
-              alt="Avatar"
-              className="w-24 h-24 rounded-full object-cover mb-4"
-            />
+            <img src={profile.avatar_url} alt="Avatar" className="w-24 h-24 rounded-full object-cover mb-4" />
           ) : (
             <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center mb-4">
               <span className="text-sm text-gray-700">No Avatar</span>
@@ -342,16 +321,8 @@ export default function EditProfilePage() {
             >
               Choose File
             </Button>
-            <input
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleAvatarChange}
-              className="hidden"
-            />
-            {avatarFile && (
-              <p className="text-sm text-gray-600">{avatarFile.name}</p>
-            )}
+            <input id="file-upload" type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+            {avatarFile && <p className="text-sm text-gray-600">{avatarFile.name}</p>}
           </div>
         </Skeleton>
 
@@ -360,11 +331,7 @@ export default function EditProfilePage() {
             label="Full Name"
             placeholder="Enter your full name"
             value={profile?.full_name}
-            onChange={(e) =>
-              setProfile((prev) =>
-                prev ? { ...prev, full_name: e.target.value } : null
-              )
-            }
+            onChange={(e) => setProfile((prev) => (prev ? { ...prev, full_name: e.target.value } : null))}
             className="w-full"
           />
         </Skeleton>
@@ -373,14 +340,10 @@ export default function EditProfilePage() {
           <Select
             label="Gender"
             placeholder="Select your gender"
-            selectedKeys={
-              profile?.gender ? new Set([profile.gender]) : new Set()
-            }
+            selectedKeys={profile?.gender ? new Set([profile.gender]) : new Set()}
             onSelectionChange={(selectedKey) => {
               const selectedValue = Array.from(selectedKey).join(", ");
-              setProfile((prev) =>
-                prev ? { ...prev, gender: selectedValue } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, gender: selectedValue } : null));
             }}
             className="w-full"
           >
@@ -397,9 +360,7 @@ export default function EditProfilePage() {
             value={profile?.birthday ? parseDate(profile.birthday) : undefined}
             onChange={(selectedDate) => {
               const isoDate = selectedDate?.toString();
-              setProfile((prev) =>
-                prev ? { ...prev, birthday: isoDate } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, birthday: isoDate } : null));
             }}
           />
         </Skeleton>
@@ -409,11 +370,7 @@ export default function EditProfilePage() {
             label="Sexual Orientation"
             placeholder="Enter your sexual orientation"
             value={profile?.sexual_orientation}
-            onChange={(e) =>
-              setProfile((prev) =>
-                prev ? { ...prev, sexual_orientation: e.target.value } : null
-              )
-            }
+            onChange={(e) => setProfile((prev) => (prev ? { ...prev, sexual_orientation: e.target.value } : null))}
             className="w-full"
           />
         </Skeleton>
@@ -423,9 +380,7 @@ export default function EditProfilePage() {
             isSelected={!!profile?.smoker}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const isSelected = event.target.checked;
-              setProfile((prev) =>
-                prev ? { ...prev, smoker: isSelected } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, smoker: isSelected } : null));
             }}
           >
             Smoker
@@ -437,9 +392,7 @@ export default function EditProfilePage() {
             isSelected={!!profile?.display_disability}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const isSelected = event.target.checked;
-              setProfile((prev) =>
-                prev ? { ...prev, display_disability: isSelected } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, display_disability: isSelected } : null));
             }}
           >
             Display Disability
@@ -451,9 +404,7 @@ export default function EditProfilePage() {
             isSelected={!!profile?.need_assistance}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               const isSelected = event.target.checked;
-              setProfile((prev) =>
-                prev ? { ...prev, need_assistance: isSelected } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, need_assistance: isSelected } : null));
             }}
           >
             Need Assistance
@@ -467,9 +418,7 @@ export default function EditProfilePage() {
             value={profile?.disability?.join(", ") || ""}
             onChange={(e) => {
               const value = e.target.value.split(",").map((d) => d.trim());
-              setProfile((prev) =>
-                prev ? { ...prev, disability: value } : null
-              );
+              setProfile((prev) => (prev ? { ...prev, disability: value } : null));
             }}
             className="w-full"
             rows={3}
@@ -480,11 +429,7 @@ export default function EditProfilePage() {
           <Textarea
             label="Hobbies"
             readOnly
-            value={
-              profile?.profile_hobbies
-                ?.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`)
-                .join(", ") || ""
-            }
+            value={profile?.profile_hobbies?.map((h) => `${h.hobbies.name} ${h.hobbies.emoji}`).join(", ") || ""}
             className="w-full h-24 overflow-y-auto resize-none"
           />
         </Skeleton>
@@ -501,13 +446,9 @@ export default function EditProfilePage() {
 
         <div className="flex flex-wrap gap-2 border p-4 rounded-md bg-white max-h-32 overflow-y-auto scrollbar-none">
           {allHobbies
-            .filter((hobby) =>
-              hobby.name.toLowerCase().includes(searchTerm.toLowerCase())
-            )
+            .filter((hobby) => hobby.name.toLowerCase().includes(searchTerm.toLowerCase()))
             .map((hobby) => {
-              const isSelected = profile?.profile_hobbies.some(
-                (ph) => ph.hobbies.id === hobby.id
-              );
+              const isSelected = profile?.profile_hobbies.some((ph) => ph.hobbies.id === hobby.id);
               return (
                 <Button
                   key={hobby.id}
@@ -516,9 +457,7 @@ export default function EditProfilePage() {
                       if (!prevProfile) return null;
 
                       const updatedHobbies = isSelected
-                        ? prevProfile.profile_hobbies.filter(
-                            (ph) => ph.hobbies.id !== hobby.id
-                          )
+                        ? prevProfile.profile_hobbies.filter((ph) => ph.hobbies.id !== hobby.id)
                         : [...prevProfile.profile_hobbies, { hobbies: hobby }];
 
                       return {
@@ -528,14 +467,9 @@ export default function EditProfilePage() {
                     });
                   }}
                   size="sm"
-                  className={
-                    isSelected
-                      ? "bg-red-500 text-white"
-                      : "bg-purple-500 text-white"
-                  }
+                  className={isSelected ? "bg-red-500 text-white" : "bg-purple-500 text-white"}
                 >
-                  {isSelected ? `Remove ${hobby.name}` : `Add ${hobby.name}`}{" "}
-                  {hobby.emoji}
+                  {isSelected ? `Remove ${hobby.name}` : `Add ${hobby.name}`} {hobby.emoji}
                 </Button>
               );
             })}
@@ -543,17 +477,10 @@ export default function EditProfilePage() {
 
         <Skeleton isLoaded={!isLoading} className="w-full max-w-sm rounded-lg">
           <div>
-            <Button
-              onClick={handleSave}
-              className="w-full max-w-sm btn-primary font-semibold"
-            >
+            <Button onClick={handleSave} className="w-full max-w-sm btn-primary font-semibold mb-1">
               Save Changes
             </Button>
-            <Button
-              color="success"
-              className="w-full max-w-sm font-semibold mt-4"
-              onPress={onOpen}
-            >
+            <Button color="success" className="w-full max-w-sm font-semibold mt-4" onPress={onOpen}>
               Show Friends
             </Button>
             <Modal
@@ -566,9 +493,7 @@ export default function EditProfilePage() {
               <ModalContent>
                 {(onClose) => (
                   <>
-                    <ModalHeader className="flex flex-col gap-1">
-                      Friends
-                    </ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1">Friends</ModalHeader>
                     <ModalBody>
                       <FriendshipList />
                     </ModalBody>
@@ -585,11 +510,7 @@ export default function EditProfilePage() {
         </Skeleton>
 
         <Skeleton isLoaded={!isLoading} className="w-full max-w-sm rounded-lg">
-          <Button
-            onClick={handleLogout}
-            color="danger"
-            className="w-full max-w-sm font-semibold"
-          >
+          <Button onClick={handleLogout} color="danger" className="w-full max-w-sm font-semibold">
             Logout
           </Button>
         </Skeleton>

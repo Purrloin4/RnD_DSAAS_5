@@ -64,10 +64,7 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-sm font-semibold text-primary"
-          >
+          <Link href="/forgot-password" className="text-sm font-semibold text-primary">
             Forgot Password?
           </Link>
         </div>

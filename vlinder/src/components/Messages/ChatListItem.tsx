@@ -17,6 +17,7 @@ interface ChatListItemProps {
   id: string;
   type: string;
 }
+
 interface Participants {
   created_at: string;
   profile_id: string;
@@ -98,11 +99,7 @@ export default function ChatListItem({
 
   const fetchAvatarUrl = async (roomId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("avatar_url")
-        .eq("id", roomId)
-        .single();
+      const { data, error } = await supabase.from("profiles").select("avatar_url").eq("id", roomId).single();
 
       if (error) {
         console.error("Error fetching avatar URL:", error);
@@ -143,11 +140,7 @@ export default function ChatListItem({
               ))}
           </AvatarGroup>
         ) : (
-          <Avatar
-            size="md"
-            src={avatarUrl || undefined}
-            className="mr-4 flex-shrink-0"
-          />
+          <Avatar size="md" src={avatarUrl || undefined} className="mr-4 flex-shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-lg truncate">{chatName}</h3>

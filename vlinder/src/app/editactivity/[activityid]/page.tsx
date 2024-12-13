@@ -23,9 +23,7 @@ interface Organization {
 export default function EditActivityPage() {
   const [activity, setActivity] = useState<Activity | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  const [visibleOrganizations, setVisibleOrganizations] = useState<string[]>(
-    []
-  );
+  const [visibleOrganizations, setVisibleOrganizations] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -36,8 +34,7 @@ export default function EditActivityPage() {
 
   useEffect(() => {
     const fetchUserRole = async () => {
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
+      const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData?.user) {
         router.push("/login");
         return;
@@ -79,11 +76,7 @@ export default function EditActivityPage() {
     const fetchActivity = async () => {
       if (!activityId) return;
 
-      const { data, error } = await supabase
-        .from("activities")
-        .select("*")
-        .eq("id", activityId)
-        .single();
+      const { data, error } = await supabase.from("activities").select("*").eq("id", activityId).single();
 
       if (data) {
         setActivity(data);
@@ -123,9 +116,7 @@ export default function EditActivityPage() {
     }
   }, [activityId, isAdmin]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setActivity((prev) => (prev ? { ...prev, [name]: value } : null));
   };
@@ -175,9 +166,7 @@ export default function EditActivityPage() {
     try {
       await Promise.all(
         orgsToAdd.map((orgId) =>
-          supabase
-            .from("activity_organization")
-            .insert([{ activity_id: activityId, organization_id: orgId }])
+          supabase.from("activity_organization").insert([{ activity_id: activityId, organization_id: orgId }])
         )
       );
       setVisibleOrganizations(allOrgIds);
@@ -200,9 +189,7 @@ export default function EditActivityPage() {
         return null;
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from("activity")
-        .getPublicUrl(fileName);
+      const { data: publicUrlData } = supabase.storage.from("activity").getPublicUrl(fileName);
 
       if (!publicUrlData || !publicUrlData.publicUrl) {
         console.error("Failed to retrieve public URL");
@@ -254,23 +241,11 @@ export default function EditActivityPage() {
     <div style={styles.page}>
       <div style={styles.inputContainer}>
         <label>Title:</label>
-        <input
-          type="text"
-          name="title"
-          value={activity.title}
-          onChange={handleChange}
-          style={styles.input}
-        />
+        <input type="text" name="title" value={activity.title} onChange={handleChange} style={styles.input} />
       </div>
       <div style={styles.inputContainer}>
         <label>Place:</label>
-        <input
-          type="text"
-          name="place"
-          value={activity.place}
-          onChange={handleChange}
-          style={styles.input}
-        />
+        <input type="text" name="place" value={activity.place} onChange={handleChange} style={styles.input} />
       </div>
       <div style={styles.inputContainer}>
         <label>Time:</label>
@@ -284,12 +259,7 @@ export default function EditActivityPage() {
       </div>
       <div style={styles.inputContainer}>
         <label>Description:</label>
-        <textarea
-          name="description"
-          value={activity.description}
-          onChange={handleChange}
-          style={styles.textarea}
-        />
+        <textarea name="description" value={activity.description} onChange={handleChange} style={styles.textarea} />
       </div>
       <div style={styles.inputContainer}>
         <label>Current Picture:</label>
@@ -302,12 +272,7 @@ export default function EditActivityPage() {
         ) : (
           <div>No picture uploaded</div>
         )}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={styles.fileInput}
-        />
+        <input type="file" accept="image/*" onChange={handleImageChange} style={styles.fileInput} />
       </div>
       <div style={styles.inputContainer}>
         <label>Visible Organizations:</label>
@@ -327,10 +292,7 @@ export default function EditActivityPage() {
             </li>
           ))}
         </ul>
-        <button
-          onClick={handleSelectAllOrganizations}
-          style={styles.selectAllButton}
-        >
+        <button onClick={handleSelectAllOrganizations} style={styles.selectAllButton}>
           Select All
         </button>
       </div>

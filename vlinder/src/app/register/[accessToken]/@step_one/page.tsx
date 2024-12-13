@@ -42,9 +42,7 @@ export default function Page() {
     const { data: userData, error: userError } = await supabase.auth.getUser();
 
     if (!userError && userData) {
-      setMessage(
-        "You have already entered your credentials, please go to the next step"
-      );
+      setMessage("You have already entered your credentials, please go to the next step");
       return;
     }
   };
@@ -123,21 +121,11 @@ export default function Page() {
           placeholder="Repeat Your Password"
           onChange={(e) => setRepeatPassword(e.target.value)}
         />
-        {error && (
-          <p className="w-full flex justify-center text-center text-sm font-semibold text-red-500">
-            {error}
-          </p>
-        )}
+        {error && <p className="w-full flex justify-center text-center text-sm font-semibold text-red-500">{error}</p>}
         {message && (
-          <p className="w-full flex justify-center text-center text-sm font-semibold text-green-500">
-            {message}
-          </p>
+          <p className="w-full flex justify-center text-center text-sm font-semibold text-green-500">{message}</p>
         )}
-        <Button
-          size="lg"
-          className="w-full mt-4 btn-primary font-semibold"
-          onClick={handleSave}
-        >
+        <Button size="lg" className="w-full mt-4 btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

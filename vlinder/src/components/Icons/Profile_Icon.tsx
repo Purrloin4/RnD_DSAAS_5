@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import ProfileIconImage from './profile_icon.svg'
+import ProfileIconImage from "./profile_icon.svg";
 
 interface LogoComponentProps {
   alt: string;
@@ -10,7 +10,6 @@ interface LogoComponentProps {
 }
 
 const Profile_Icon: React.FC<LogoComponentProps> = ({ alt, className, width, height }) => {
-
   return (
     <div className={className}>
       <Image src={ProfileIconImage} alt={alt} layout="responsive" width={width} height={height} />

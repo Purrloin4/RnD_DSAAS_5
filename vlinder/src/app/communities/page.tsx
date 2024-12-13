@@ -9,6 +9,7 @@ import { Calendar } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { format } from "date-fns";
 import Image from "next/image";
+import ActivityCardSkeleton from "@/src/components/Admin/ActivityCardSkeleton";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -387,10 +388,6 @@ export default function UserActivitiesPage() {
     return [formattedDate, formattedTime];
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <main className="p-6 md:p-10 min-h-screenmin-h-screen">
       <h2>Activities</h2>
@@ -403,6 +400,7 @@ export default function UserActivitiesPage() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
+          {loading && Array.from({ length: 4 }, (_, index) => <ActivityCardSkeleton key={index} />)}
           {comingActivities.length > 0 ? (
             comingActivities.map((activity, index) => (
               <Card

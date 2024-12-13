@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import CommunitiesIconImage from './communities_icon.svg'
+import CommunitiesIconImage from "./communities_icon.svg";
 
 interface LogoComponentProps {
   alt: string;
@@ -10,7 +10,6 @@ interface LogoComponentProps {
 }
 
 const Communities_Icon: React.FC<LogoComponentProps> = ({ alt, className, width, height }) => {
-
   return (
     <div className={className}>
       <Image src={CommunitiesIconImage} alt={alt} layout="responsive" width={width} height={height} />
