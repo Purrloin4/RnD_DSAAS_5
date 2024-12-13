@@ -1,16 +1,15 @@
 "use client";
-import { login } from './actions';
-import { Button, Input} from "@nextui-org/react";
+import { login } from "./actions";
+import { Button, Input } from "@nextui-org/react";
 import Logo from "Components/Logo/Logo";
 import React, { useState } from "react";
-import {EyeFilledIcon} from "Components/Icons/EyeFilledIcon";
-import {EyeSlashFilledIcon} from "Components/Icons/EyeSlashFilledIcon";
+import { EyeFilledIcon } from "Components/Icons/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "Components/Icons/EyeSlashFilledIcon";
 import Link from "next/link";
 
-
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isVisible, setIsVisible] = useState(false); // State for toggling password visibility
 
   const toggleVisibility = () => {
@@ -65,10 +64,7 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-sm font-semibold text-primary"
-          >
+          <Link href="/forgot-password" className="text-sm font-semibold text-primary">
             Forgot Password?
           </Link>
         </div>
@@ -93,4 +89,3 @@ export default function LoginPage() {
     </main>
   );
 }
-

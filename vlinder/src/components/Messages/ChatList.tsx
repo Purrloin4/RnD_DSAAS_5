@@ -77,7 +77,9 @@ export default function ChatList({ children, className }: ChatListProps) {
   const fetchUserRooms = async (): Promise<void> => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.rpc("get_user_rooms", { user_id: user?.id });
+      const { data, error } = await supabase.rpc("get_user_rooms", {
+        user_id: user?.id,
+      });
 
       if (error) {
         console.error("Error fetching user rooms:", error);
@@ -133,13 +135,18 @@ export default function ChatList({ children, className }: ChatListProps) {
       const participantIds = [...selectedFriendIds, user?.id];
 
       for (const participantId of participantIds) {
-        const { error: participantError } = await supabase.from("room_participants").insert({
-          profile_id: participantId,
-          room_id: roomId,
-        });
+        const { error: participantError } = await supabase
+          .from("room_participants")
+          .insert({
+            profile_id: participantId,
+            room_id: roomId,
+          });
 
         if (participantError) {
-          console.error(`Error adding participant (ID: ${participantId}) to room:`, participantError);
+          console.error(
+            `Error adding participant (ID: ${participantId}) to room:`,
+            participantError
+          );
         }
       }
 
@@ -190,13 +197,17 @@ export default function ChatList({ children, className }: ChatListProps) {
                       selectedKeys={selectedKeys}
                       selectionMode="multiple"
                       variant="flat"
-                      onSelectionChange={(keys) => setSelectedKeys(new Set<string>(keys as Set<string>))}
+                      onSelectionChange={(keys) =>
+                        setSelectedKeys(new Set<string>(keys as Set<string>))
+                      }
                     >
                       {friendships.map((friend) => (
                         <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.friend_avatar || "/default-avatar.png"}
+                              src={
+                                friend.friend_avatar || "/default-avatar.png"
+                              }
                               alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />

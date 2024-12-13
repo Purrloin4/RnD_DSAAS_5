@@ -15,7 +15,11 @@ interface Profile {
   avatar_url: string;
 }
 
-export default function CheckProfilePage({ params }: { params: { id: string; organizationid: string } }) {
+export default function CheckProfilePage({
+  params,
+}: {
+  params: { id: string; organizationid: string };
+}) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [organizationName, setOrganizationName] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // Track admin status
@@ -90,7 +94,9 @@ export default function CheckProfilePage({ params }: { params: { id: string; org
       <h2 className="w-full text-center">Profiles in {organizationName}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 p-4">
         {(isAdmin === null || !organizationName) &&
-          Array.from({ length: 10 }, (_, index) => <ProfileCardSkeleton key={index} />)}
+          Array.from({ length: 10 }, (_, index) => (
+            <ProfileCardSkeleton key={index} />
+          ))}
         {profiles.map((profile) => (
           <ProfileCard key={profile.id} profile={profile} />
         ))}

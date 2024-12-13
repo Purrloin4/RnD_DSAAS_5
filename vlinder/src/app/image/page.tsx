@@ -4,7 +4,7 @@ import React from "react";
 // import Image from "next/image";
 // import DeletePost from "@/src/components/Gallery/DeletePost";
 export default async function page() {
-	return(<></>)
+  return <></>;
 }
 // 	const supabase = createClient();
 // 	const { data } = await supabase
@@ -13,7 +13,7 @@ export default async function page() {
 // 		.order("created_at", { ascending: false });
 // 	const imgeUrlHost =
 // 		"https://abctwtskoufyjtelmfwd.supabase.co/storage/v1/object/public/images/";
-		
+
 // 	const posts = data?.map((post) => {
 // 		return {
 // 			image: `${post.post_by}/${post.id}/${post.name}`,

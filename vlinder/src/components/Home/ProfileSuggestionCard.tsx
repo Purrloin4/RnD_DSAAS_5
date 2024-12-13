@@ -8,9 +8,7 @@ import NeedAssistanceChip from "./NeedAssistanceChip";
 import SmokerChip from "./SmokerChip";
 import Link from "next/link";
 import AddFriendBtn from "./AddFriendBtn";
-import { useState } from "react";
-import {createClient} from "@/utils/supabase/client"
-import {useUser} from "@/utils/store/user"
+
 interface Profile {
   id: string;
   username: string;
@@ -21,6 +19,7 @@ interface Profile {
   smoker: boolean | undefined;
   display_disability: boolean;
   need_assistance: boolean | undefined;
+  birthday: string;
   disability: string[];
   description: string;
   profile_hobbies: ProfileHobby[];
@@ -36,9 +35,24 @@ interface ProfileHobby {
   hobbies: Hobby;
 }
 
-export default function ProfileSuggestionCard({ className, profile }: { className?: string; profile: Profile }) {
+function calculateAge(birthday: string) {
+  const birthDate = new Date(birthday);
+  const age = new Date().getFullYear() - birthDate.getFullYear();
+  const m = new Date().getMonth() - birthDate.getMonth();
+  return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate())
+    ? age - 1
+    : age;
+}
+
+export default function ProfileSuggestionCard({
+  className,
+  profile,
+}: {
+  className?: string;
+  profile: Profile;
+}) {
   //console.log(profile);
-  
+
   return (
     <Card
       className={`flex flex-col p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
@@ -54,11 +68,16 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
             className="w-full h-full object-cover object-center border-r-medium"
           />
         </div>
-        <h3 className="text-lg font-semibold text-gray-800">{profile.username || "Unnamed User"}</h3>
+        <h3 className="text-lg font-semibold text-gray-800">
+          {`${profile.username || "Unnamed User"}`}
+          <span>{`, ${calculateAge(profile.birthday)}`}</span>
+        </h3>
         <div className="flex flex-wrap gap-2 w-full mb-2">
-          <GenderChip gender={profile.gender} data-testid = "gender-chip"/>
+          <GenderChip gender={profile.gender} data-testid="gender-chip" />
           <SexPositiveChip sex_positive={profile.sex_positive} />
-          <SexualOrientationChip sexual_orientation={profile.sexual_orientation} />
+          <SexualOrientationChip
+            sexual_orientation={profile.sexual_orientation}
+          />
           <NeedAssistanceChip need_assistance={profile.need_assistance} />
           <SmokerChip Smoker={profile.smoker} />
           {profile.display_disability
@@ -69,8 +88,7 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
               ))
             : ""}
           {profile.profile_hobbies.map((ph, index) => (
-            <Chip key={index} size="sm"
-            data-testid = "hobby-chip">
+            <Chip key={index} size="sm" data-testid="hobby-chip">
               {ph.hobbies.name}
             </Chip>
           ))}
@@ -81,7 +99,9 @@ export default function ProfileSuggestionCard({ className, profile }: { classNam
       </div>
       <AddFriendBtn profile_id={profile.id} />
       <Link href={`/profile/${profile.id}`} replace>
-        <Button className="justify-self-end w-full py-2 rounded-md">See Profile</Button>
+        <Button className="justify-self-end w-full py-2 rounded-md">
+          See Profile
+        </Button>
       </Link>
     </Card>
   );

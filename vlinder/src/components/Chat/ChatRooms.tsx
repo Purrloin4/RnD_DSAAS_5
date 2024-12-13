@@ -76,7 +76,10 @@ export default function ChatRooms() {
         const { data: roomData, error: roomError } = await supabase
           .from("rooms")
           .select("id, name, created_at")
-          .in("id", data.map((room: { room_id: string }) => room.room_id));
+          .in(
+            "id",
+            data.map((room: { room_id: string }) => room.room_id)
+          );
 
         if (roomError) {
           console.error("Error fetching room details:", roomError);
@@ -118,18 +121,13 @@ export default function ChatRooms() {
       const participantIds = [...selectedFriendIds, user?.id];
 
       for (const participantId of participantIds) {
-        const { error: participantError } = await supabase
-          .from("room_participants")
-          .insert({
-            profile_id: participantId,
-            room_id: roomId,
-          });
+        const { error: participantError } = await supabase.from("room_participants").insert({
+          profile_id: participantId,
+          room_id: roomId,
+        });
 
         if (participantError) {
-          console.error(
-            `Error adding participant (ID: ${participantId}) to room:`,
-            participantError
-          );
+          console.error(`Error adding participant (ID: ${participantId}) to room:`, participantError);
         }
       }
 
@@ -175,15 +173,15 @@ export default function ChatRooms() {
                       selectedKeys={selectedKeys}
                       selectionMode="multiple"
                       variant="flat"
-                      onSelectionChange={(keys) =>
-                        setSelectedKeys(new Set<string>(keys as Set<string>))
-                      }
+                      onSelectionChange={(keys) => setSelectedKeys(new Set<string>(keys as Set<string>))}
                     >
                       {friendships.map((friend) => (
                         <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.friend_avatar || "/default-avatar.png"}
+                              src={
+                                friend.friend_avatar || "/default-avatar.png"
+                              }
                               alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />
@@ -214,12 +212,8 @@ export default function ChatRooms() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
-                  Room Name
-                </th>
-                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>
-                  Actions
-                </th>
+                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>Room Name</th>
+                <th style={{ borderBottom: "1px solid #ddd", padding: "8px" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -239,10 +233,7 @@ export default function ChatRooms() {
                       padding: "8px",
                     }}
                   >
-                    <Button
-                      color="primary"
-                      onPress={() => router.push(`/chat/${room.id}`)}
-                    >
+                    <Button color="primary" onPress={() => router.push(`/chat/${room.id}`)}>
                       Enter Room
                     </Button>
                   </td>

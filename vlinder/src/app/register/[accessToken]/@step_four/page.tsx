@@ -71,11 +71,7 @@ export default function PersonalInfoPage() {
       return;
     }
 
-    if (
-      smoker === null ||
-      displayDisability === null ||
-      needAssistance === null
-    ) {
+    if (smoker === null || displayDisability === null || needAssistance === null) {
       setError("Please fill in all fields.");
       return;
     }
@@ -121,18 +117,10 @@ export default function PersonalInfoPage() {
         <div className="w-full mb-4 text-black">
           <p>Are you a smoker?</p>
           <div className="flex gap-4">
-            <Checkbox
-              isSelected={smoker === true}
-              onChange={() => setSmoker(true)}
-              color="primary"
-            >
+            <Checkbox isSelected={smoker === true} onChange={() => setSmoker(true)} color="primary">
               Yes
             </Checkbox>
-            <Checkbox
-              isSelected={smoker === false}
-              onChange={() => setSmoker(false)}
-              color="primary"
-            >
+            <Checkbox isSelected={smoker === false} onChange={() => setSmoker(false)} color="primary">
               No
             </Checkbox>
           </div>
@@ -149,15 +137,10 @@ export default function PersonalInfoPage() {
                   placeholder="Enter your disability"
                   className="w-full"
                   value={disability}
-                  onChange={(e) =>
-                    handleDisabilityChange(index, e.target.value)
-                  }
+                  onChange={(e) => handleDisabilityChange(index, e.target.value)}
                 />
                 {index > 0 && (
-                  <Button
-                    color="warning"
-                    onClick={() => removeDisabilityField(index)}
-                  >
+                  <Button color="warning" onClick={() => removeDisabilityField(index)}>
                     -
                   </Button>
                 )}
@@ -190,28 +173,17 @@ export default function PersonalInfoPage() {
         <div className="w-full mb-4 text-black">
           <p>Do you require full-time assistance for daily activities?</p>
           <div className="flex gap-4">
-            <Checkbox
-              isSelected={needAssistance === true}
-              onChange={() => setNeedAssistance(true)}
-              color="primary"
-            >
+            <Checkbox isSelected={needAssistance === true} onChange={() => setNeedAssistance(true)} color="primary">
               Yes
             </Checkbox>
-            <Checkbox
-              isSelected={needAssistance === false}
-              onChange={() => setNeedAssistance(false)}
-              color="primary"
-            >
+            <Checkbox isSelected={needAssistance === false} onChange={() => setNeedAssistance(false)} color="primary">
               No
             </Checkbox>
           </div>
         </div>
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button
-          className="w-full mb-4 text-black btn-primary font-semibold"
-          onClick={handleSave}
-        >
+        <Button className="w-full mb-4 text-black btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

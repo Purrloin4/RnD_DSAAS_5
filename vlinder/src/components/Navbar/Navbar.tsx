@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@nextui-org/react";
 
-
 import Navbar_Logo from "Components/Icons/Navbar_Logo";
 import Communities_Icon from "Components/Icons/Communities_Icon";
 import Settings_Icon from "Components/Icons/Settings_Icon";
@@ -15,7 +14,6 @@ import { createClient } from "@/utils/supabase/client";
 import dayjs from "dayjs";
 
 export default function Navbar() {
-
   const [todayNotificationCount, setTodayNotificationCount] = useState(0);
 
   useEffect(() => {
@@ -38,7 +36,10 @@ export default function Navbar() {
           setTodayNotificationCount(count || 0);
         }
       } catch (error) {
-        console.error("Unexpected error fetching today's notification count:", error);
+        console.error(
+          "Unexpected error fetching today's notification count:",
+          error
+        );
       }
     };
 
@@ -52,23 +53,43 @@ export default function Navbar() {
   return (
     <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-2xl px-6 py-4 w-[90%] max-w-md z-50">
       <div className="flex justify-around items-center">
-        <Link href="/messages" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+        <Link
+          href="/messages"
+          className="flex flex-col items-center text-gray-700 hover:text-purple-600"
+          replace
+        >
           <Messages_Icon alt="messages icon" className="w-6 h-6" />
         </Link>
 
-        <Link href="/communities" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+        <Link
+          href="/communities"
+          className="flex flex-col items-center text-gray-700 hover:text-purple-600"
+          replace
+        >
           <Communities_Icon alt="communities icon" className="w-6 h-6" />
         </Link>
 
-        <Link href="/homepage" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+        <Link
+          href="/homepage"
+          className="flex flex-col items-center text-gray-700 hover:text-purple-600"
+          replace
+        >
           <Navbar_Logo alt="navbar logo" className="w-6 h-6 text-black" />
         </Link>
 
-        <Link href="/profile" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+        <Link
+          href="/profile"
+          className="flex flex-col items-center text-gray-700 hover:text-purple-600"
+          replace
+        >
           <Profile_Icon alt="profile icon" className="w-6 h-6" />
         </Link>
 
-        <Link href="/notifications" className="flex flex-col items-center text-gray-700 hover:text-purple-600" replace>
+        <Link
+          href="/notifications"
+          className="flex flex-col items-center text-gray-700 hover:text-purple-600"
+          replace
+        >
           <Badge
             content={todayNotificationCount}
             isInvisible={todayNotificationCount === 0}

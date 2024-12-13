@@ -41,7 +41,13 @@ export default function ActivityCard({
       )}
 
       <div className="w-full h-2/3 overflow-hidden rounded-t-lg">
-        <Image src={picture_url || ""} width={1000} height={1000} alt={title} className="w-full h-full object-cover" />
+        <Image
+          src={picture_url || ""}
+          width={1000}
+          height={1000}
+          alt={title}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       <div className="w-full flex flex-col items-start justify-between p-4">
@@ -49,7 +55,9 @@ export default function ActivityCard({
           <h3 className="text-lg font-semibold truncate">{title}</h3>
           {(() => {
             const [formattedDate, formattedTime] = formatActivityTime(time);
-            return <p className="text-sm text-gray-500">{`At ${place}, ${formattedTime} ${formattedDate}`}</p>;
+            return (
+              <p className="text-sm text-gray-500">{`At ${place}, ${formattedTime} ${formattedDate}`}</p>
+            );
           })()}
           <p className="text-gray-600 line-clamp-3 overflow-hidden text-ellipsis text-wrap truncate break-all mb-4">
             {desc}
@@ -59,16 +67,31 @@ export default function ActivityCard({
         <div className="w-full justify-end flex flex-row gap-2">
           {canEdit && (
             <>
-              <Button size="sm" color="danger" aria-label="delete-button" onClick={() => deleteActivity()}>
+              <Button
+                size="sm"
+                color="danger"
+                aria-label="delete-button"
+                onClick={() => deleteActivity()}
+              >
                 Delete
               </Button>
-              <Button size="sm" color="success" aria-label="edit-button" onClick={() => edit()}>
+              <Button
+                size="sm"
+                color="success"
+                aria-label="edit-button"
+                onClick={() => edit()}
+              >
                 Edit
               </Button>
             </>
           )}
 
-          <Button size="sm" className="btn-primary" aria-label="show-users-button" onClick={() => show_users()}>
+          <Button
+            size="sm"
+            className="btn-primary"
+            aria-label="show-users-button"
+            onClick={() => show_users()}
+          >
             Show Users
           </Button>
         </div>

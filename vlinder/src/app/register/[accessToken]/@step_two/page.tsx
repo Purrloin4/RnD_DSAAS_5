@@ -15,9 +15,7 @@ const supabase = createClient();
 
 export default function Page() {
   const [location, setLocation] = useState("");
-  const [locationError, setLocationError] = useState<string | undefined>(
-    undefined
-  );
+  const [locationError, setLocationError] = useState<string | undefined>(undefined);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -63,12 +61,8 @@ export default function Page() {
     }
 
     if (profileData?.full_name) {
-      const first_name = profileData?.full_name
-        ? profileData.full_name.split(" ")[0]
-        : "";
-      const last_name = profileData?.full_name
-        ? profileData.full_name.split(" ")[1]
-        : "";
+      const first_name = profileData?.full_name ? profileData.full_name.split(" ")[0] : "";
+      const last_name = profileData?.full_name ? profileData.full_name.split(" ")[1] : "";
 
       if (first_name) {
         setFirstName(first_name);
@@ -89,8 +83,7 @@ export default function Page() {
 
     if (profileData.username) setUsername(profileData.username);
 
-    if (profileData.birth_date)
-      if (profileData.location) setLocation(profileData.location);
+    if (profileData.birth_date) if (profileData.location) setLocation(profileData.location);
   };
 
   useEffect(() => {
@@ -157,10 +150,10 @@ export default function Page() {
 
     const accessToken = pathName.split("/").pop();
     const { data: tokenData, error: tokenError } = await supabase
-    .from("accessToken")
-    .select("organization_id")
-    .eq("id", accessToken)
-    .single();
+      .from("accessToken")
+      .select("organization_id")
+      .eq("id", accessToken)
+      .single();
 
     if (tokenError || !tokenData) {
       setError("Error retrieving organization ID");
@@ -170,18 +163,15 @@ export default function Page() {
 
     const { organization_id } = tokenData;
 
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: userData.user.id,
-        full_name: `${firstName} ${lastName}`,
-        username: username,
-        birthday: birthDay,
-        location: location,
-        organization_id: organization_id,
-        role: "user",
-      });
+    const { data, error } = await supabase.from("profiles").upsert({
+      id: userData.user.id,
+      full_name: `${firstName} ${lastName}`,
+      username: username,
+      birthday: birthDay,
+      location: location,
+      organization_id: organization_id,
+      role: "user",
+    });
 
     if (error) {
       setError("Error saving data");
@@ -294,9 +284,7 @@ export default function Page() {
           onChange={(date) => setBirthDate(date)}
           value={birthDate}
         />
-        <text className="text-sm text-default-400">
-          Tip: press the location icon to get your location!
-        </text>
+        <text className="text-sm text-default-400">Tip: press the location icon to get your location!</text>
         <Input
           className="w-full"
           color="default"
@@ -320,10 +308,7 @@ export default function Page() {
         />
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button
-          className="w-full mt-4 btn-primary font-semibold"
-          onClick={handleSave}
-        >
+        <Button className="w-full mt-4 btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

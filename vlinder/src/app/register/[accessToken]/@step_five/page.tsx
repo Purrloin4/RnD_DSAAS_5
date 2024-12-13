@@ -13,9 +13,7 @@ import { b, tr } from "framer-motion/client";
 const supabase = createClient();
 
 export default function Page() {
-  const [lookingFor, setLookingFor] = React.useState<LookingFor | undefined>(
-    undefined
-  );
+  const [lookingFor, setLookingFor] = React.useState<LookingFor | undefined>(undefined);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
@@ -61,8 +59,8 @@ export default function Page() {
         profileData.sex_positive === null
           ? null
           : profileData.sex_positive === true
-          ? LookingFor.PartnerAndFriends
-          : LookingFor.Friends;
+            ? LookingFor.PartnerAndFriends
+            : LookingFor.Friends;
       if (lookingFor) setLookingFor(lookingFor);
     }
   };
@@ -110,9 +108,7 @@ export default function Page() {
         <Button
           color={lookingFor === LookingFor.Friends ? "primary" : "default"}
           className={`w-full mb-4 ${
-            lookingFor === LookingFor.Friends
-              ? "bg-primary text-white"
-              : "bg-gray-200 text-black"
+            lookingFor === LookingFor.Friends ? "bg-primary text-white" : "bg-gray-200 text-black"
           } active:text-white active:bg-primary-dark`}
           data-gender={LookingFor.Friends}
           onClick={lookingForChange}
@@ -120,13 +116,9 @@ export default function Page() {
           {LookingForDisplayNames[LookingFor.Friends]}
         </Button>
         <Button
-          color={
-            lookingFor === LookingFor.PartnerAndFriends ? "primary" : "default"
-          }
+          color={lookingFor === LookingFor.PartnerAndFriends ? "primary" : "default"}
           className={`w-full mb-4 ${
-            lookingFor === LookingFor.PartnerAndFriends
-              ? "bg-primary text-white"
-              : "bg-gray-200 text-black"
+            lookingFor === LookingFor.PartnerAndFriends ? "bg-primary text-white" : "bg-gray-200 text-black"
           } active:text-white active:bg-primary-dark`}
           data-gender={LookingFor.PartnerAndFriends}
           onClick={lookingForChange}
@@ -135,10 +127,7 @@ export default function Page() {
         </Button>
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button
-          className="w-full mb-4 text-white btn-primary font-semibold "
-          onClick={handleSave}
-        >
+        <Button className="w-full mb-4 text-white btn-primary font-semibold " onClick={handleSave}>
           Save
         </Button>
       </div>

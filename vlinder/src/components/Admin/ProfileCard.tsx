@@ -9,7 +9,13 @@ interface Profile {
   avatar_url: string;
 }
 
-export default function ProfileCard({ profile, className }: { profile: Profile; className?: string }) {
+export default function ProfileCard({
+  profile,
+  className,
+}: {
+  profile: Profile;
+  className?: string;
+}) {
   return (
     <Card
       className={`flex flex-col p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
@@ -24,10 +30,14 @@ export default function ProfileCard({ profile, className }: { profile: Profile; 
           className="w-full h-full object-cover object-center border-r-medium"
         />
       </div>
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">{profile.full_name || "Unnamed User"}</h3>
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        {profile.full_name || "Unnamed User"}
+      </h3>
 
       <Link href={`/profile/${profile.id}`} replace>
-        <Button className="justify-self-end w-full py-2 rounded-md">See Profile</Button>
+        <Button className="justify-self-end w-full py-2 rounded-md">
+          See Profile
+        </Button>
       </Link>
     </Card>
   );

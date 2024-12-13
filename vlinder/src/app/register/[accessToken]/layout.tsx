@@ -43,15 +43,10 @@ function RegisterLayout({
           </Button>
         )}
         {step < numberOfSteps - 1 ? (
-          <Button
-            onClick={nextStep}
-            color="primary"
-            className="min-w-fit w-1/3 font-semibold"
-          >
+          <Button onClick={nextStep} color="primary" className="min-w-fit w-1/3 font-semibold">
             Next
           </Button>
         ) : null}
-
       </div>
     </main>
   );

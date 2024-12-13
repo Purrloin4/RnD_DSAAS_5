@@ -24,10 +24,16 @@ interface ProfileHobby {
   hobbies: Hobby;
 }
 
-export default function ProfileSuggestionCardSuspense({ className }: { className?: string }) {
+export default function ProfileSuggestionCardSuspense({
+  className,
+}: {
+  className?: string;
+}) {
   return (
-    <Card className={`p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
-    data-testid = "skeleton-card">
+    <Card
+      className={`p-4 rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${className}`}
+      data-testid="skeleton-card"
+    >
       <div className="relative w-full aspect-square overflow-hidden rounded-md mb-4">
         <Skeleton className="w-full h-full object-cover object-center border-r-medium" />
       </div>
@@ -37,9 +43,15 @@ export default function ProfileSuggestionCardSuspense({ className }: { className
         <Skeleton className="text-sm rounded-full mb-2 w-14">----</Skeleton>
         <Skeleton className="text-sm rounded-full mb-2 w-14">----</Skeleton>
       </div>
-      <Skeleton className="text-sm rounded-full mb-1 w-full">------------------</Skeleton>
-      <Skeleton className="text-sm rounded-full mb-1 w-3/5">------------------</Skeleton>
-      <Skeleton className="text-sm rounded-full mb-4 w-4/5">------------------</Skeleton>
+      <Skeleton className="text-sm rounded-full mb-1 w-full">
+        ------------------
+      </Skeleton>
+      <Skeleton className="text-sm rounded-full mb-1 w-3/5">
+        ------------------
+      </Skeleton>
+      <Skeleton className="text-sm rounded-full mb-4 w-4/5">
+        ------------------
+      </Skeleton>
       <Skeleton className="h-10 text-white w-full py-2 rounded-md hover:bg-blue-600 transition-colors mb-2" />
       <Skeleton className="h-10 text-white w-full py-2 rounded-md hover:bg-blue-600 transition-colors" />
     </Card>

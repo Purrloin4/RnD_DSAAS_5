@@ -7,7 +7,10 @@ import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { useFriendships } from "@/utils/store/friendships";
 import InitFriendships from "@/utils/store/InitFriendships";
 import { createClient } from "@/utils/supabase/client";
-import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
+import {
+  IRoomParticipant,
+  useRoomParticipant,
+} from "@/utils/store/roomParticipant";
 import {
   Button,
   Modal,
@@ -23,11 +26,14 @@ import { useUser } from "@/utils/store/user";
 export default function RoomParticipantsList({ roomId }: { roomId: string }) {
   const supabase = createClient();
 
-  const [scrollBehavior, setScrollBehavior] = React.useState<ModalProps["scrollBehavior"]>("inside");
+  const [scrollBehavior, setScrollBehavior] =
+    React.useState<ModalProps["scrollBehavior"]>("inside");
 
   const user = useUser((state) => state.user);
   const router = useRouter();
-  const { participants, setParticipants } = useRoomParticipant((state) => state);
+  const { participants, setParticipants } = useRoomParticipant(
+    (state) => state
+  );
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   // Fetch friendships (optional, if not already initialized)
@@ -62,11 +68,18 @@ export default function RoomParticipantsList({ roomId }: { roomId: string }) {
       <Button className="w-full" color="primary" onPress={onOpen}>
         View Participants
       </Button>
-      <Modal scrollBehavior={scrollBehavior} size="sm" isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        scrollBehavior={scrollBehavior}
+        size="sm"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">View Participants</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                View Participants
+              </ModalHeader>
               <ModalBody>
                 <Listbox>
                   {participants.map((participant) => (
@@ -77,7 +90,10 @@ export default function RoomParticipantsList({ roomId }: { roomId: string }) {
                     >
                       <div className="flex items-center gap-3">
                         <Avatar
-                          src={participant.profiles?.avatar_url || "/default-avatar.png"}
+                          src={
+                            participant.profiles?.avatar_url ||
+                            "/default-avatar.png"
+                          }
                           alt={participant.profiles?.username || "Friend"}
                           size="md"
                           className="cursor-pointer"
@@ -85,7 +101,9 @@ export default function RoomParticipantsList({ roomId }: { roomId: string }) {
                         {participant.profile_id === user?.id ? (
                           <span className="font-semibold">You</span>
                         ) : (
-                          <span className="font-semibold">{participant.profiles?.username}</span>
+                          <span className="font-semibold">
+                            {participant.profiles?.username}
+                          </span>
                         )}
                         {/* <span className="font-semibold">{participant.profiles?.username}</span> */}
                       </div>

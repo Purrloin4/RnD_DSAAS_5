@@ -3,7 +3,10 @@ import { Skeleton } from "@nextui-org/react";
 
 export default function Loading() {
   const skeletons = Array.from({ length: 12 }, () => {
-    const stars = Array.from({ length: Math.max(Math.round(Math.random() * 100), 15) }, () => "*").join("");
+    const stars = Array.from(
+      { length: Math.max(Math.round(Math.random() * 100), 15) },
+      () => "*"
+    ).join("");
     return stars;
   });
 

@@ -50,7 +50,6 @@ interface Profile {
 }
 
 export default function HomePage() {
-  
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
@@ -59,10 +58,16 @@ export default function HomePage() {
   const [loverFilter, setLoverFilter] = useState<boolean>();
   const [smokerFilter, setSmokerFilter] = useState(false);
   const [assistanceFilter, setAssistanceFilter] = useState(false);
-  const [ageFilterValue, setAgeFilterValue] = useState<[number, number]>([18, 100]);
+  const [ageFilterValue, setAgeFilterValue] = useState<[number, number]>([
+    18, 100,
+  ]);
   const [loading, setLoading] = useState(true);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [genderFilter, setGenderFilter] = useState<string[]>(["Male", "Female", "Other"]);
+  const [genderFilter, setGenderFilter] = useState<string[]>([
+    "Male",
+    "Female",
+    "Other",
+  ]);
   const [allHobbies, setAllHobbies] = useState<Hobby[]>([]);
   const [selectedHobbies, setSelectedHobbies] = useState<number[]>([]);
 
@@ -89,11 +94,17 @@ export default function HomePage() {
     const birthDate = new Date(birthday);
     const age = new Date().getFullYear() - birthDate.getFullYear();
     const m = new Date().getMonth() - birthDate.getMonth();
-    return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate()) ? age - 1 : age;
+    return m < 0 || (m === 0 && new Date().getDate() < birthDate.getDate())
+      ? age - 1
+      : age;
   }
 
   const fetchProfile = async () => {
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
     if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
       console.log("profile data", data);
@@ -159,16 +170,20 @@ export default function HomePage() {
       return age >= ageFilterValue[0] && age <= ageFilterValue[1];
     });
 
-    const filteredProfilesAgeAndHobbies = filteredProfilesAge?.filter((profile) => {
-      if (!selectedHobbies || selectedHobbies.length === 0) return true;
+    const filteredProfilesAgeAndHobbies = filteredProfilesAge?.filter(
+      (profile) => {
+        if (!selectedHobbies || selectedHobbies.length === 0) return true;
 
-      const hobbyIds = profile.profile_hobbies.flatMap((ph) => {
-        const hobbies = ph.hobbies as Hobby | Hobby[];
-        return Array.isArray(hobbies) ? hobbies.map((hobby) => hobby.id) : [hobbies.id];
-      });
+        const hobbyIds = profile.profile_hobbies.flatMap((ph) => {
+          const hobbies = ph.hobbies as Hobby | Hobby[];
+          return Array.isArray(hobbies)
+            ? hobbies.map((hobby) => hobby.id)
+            : [hobbies.id];
+        });
 
-      return hobbyIds.some((hobbyId) => selectedHobbies.includes(hobbyId));
-    });
+        return hobbyIds.some((hobbyId) => selectedHobbies.includes(hobbyId));
+      }
+    );
 
     // @ts-expect-error intellisense is wrong, this works
     setProfiles(filteredProfilesAgeAndHobbies || []);
@@ -215,7 +230,12 @@ export default function HomePage() {
   return (
     <main className="pt-4">
       <div className="w-full px-4 mt-2">
-        <Button className="w-full" data-testid="open-filters-button" color="primary" onPress={onOpen}>
+        <Button
+          className="w-full"
+          data-testid="open-filters-button"
+          color="primary"
+          onPress={onOpen}
+        >
           Open Filters
         </Button>
       </div>
@@ -245,7 +265,11 @@ export default function HomePage() {
                 <Spacer y={1} />
                 <div>
                   <h4>Not A Smoker</h4>
-                  <Switch data-testid="smoker-switch" isSelected={smokerFilter} onValueChange={setSmokerFilter} />
+                  <Switch
+                    data-testid="smoker-switch"
+                    isSelected={smokerFilter}
+                    onValueChange={setSmokerFilter}
+                  />
                 </div>
                 <Spacer y={1} />
                 <div>
@@ -272,7 +296,10 @@ export default function HomePage() {
                         <Checkbox value="Other">Other</Checkbox>
                       </>
                     ) : (
-                      <text>Gender filter is applied based on your sexual orientation</text>
+                      <text>
+                        Gender filter is applied based on your sexual
+                        orientation
+                      </text>
                     )}
                   </CheckboxGroup>
                 </div>
@@ -300,7 +327,9 @@ export default function HomePage() {
                       key={hobby.id}
                       onClick={() => toggleHobby(hobby.id)}
                       className={`m-1 ${
-                        selectedHobbies.includes(hobby.id) ? "bg-secondary text-black" : "bg-gray-200"
+                        selectedHobbies.includes(hobby.id)
+                          ? "bg-secondary text-black"
+                          : "bg-gray-200"
                       }`}
                     >
                       {hobby.name} {hobby.emoji}

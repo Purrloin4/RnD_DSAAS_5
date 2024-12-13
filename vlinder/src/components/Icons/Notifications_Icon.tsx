@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import NotificationsIconImage from './notifications_icon.svg'
+import NotificationsIconImage from "./notifications_icon.svg";
 
 interface LogoComponentProps {
   alt: string;
@@ -10,7 +10,6 @@ interface LogoComponentProps {
 }
 
 const Notifications_Icon: React.FC<LogoComponentProps> = ({ alt, className, width, height }) => {
-
   return (
     <div className={className}>
       <Image src={NotificationsIconImage} alt={alt} layout="responsive" width={width} height={height} />

@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Image from "next/image";
 
-import NavbarLogoImage from './navbar_logo.svg'
+import NavbarLogoImage from "./navbar_logo.svg";
 
 interface LogoComponentProps {
   alt: string;
@@ -10,7 +10,6 @@ interface LogoComponentProps {
 }
 
 const Navbar_Logo: React.FC<LogoComponentProps> = ({ alt, className, width, height }) => {
-
   return (
     <div className={className}>
       <Image src={NavbarLogoImage} alt={alt} layout="responsive" width={width} height={height} />

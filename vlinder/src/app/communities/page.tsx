@@ -9,6 +9,7 @@ import { Calendar } from "@nextui-org/react";
 import { today, getLocalTimeZone } from "@internationalized/date";
 import { format } from "date-fns";
 import Image from "next/image";
+import ActivityCardSkeleton from "@/src/components/Admin/ActivityCardSkeleton";
 
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -50,7 +51,9 @@ export default function UserActivitiesPage() {
   const [loading1, setLoading1] = useState(true);
   const [loading2, setLoading2] = useState(true);
   const [joinedActivities, setJoinedActivities] = useState<string[]>([]);
-  const [activityOrganizations, setActivityOrganizations] = useState<Record<string, string[]>>({});
+  const [activityOrganizations, setActivityOrganizations] = useState<
+    Record<string, string[]>
+  >({});
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
   const defaultDate = today(getLocalTimeZone());
@@ -77,7 +80,9 @@ export default function UserActivitiesPage() {
     if (!scrollRef.current) return;
 
     const containerWidth = scrollRef.current.offsetWidth;
-    const childWidth = scrollRef.current.firstChild ? (scrollRef.current.firstChild as HTMLElement).offsetWidth : 0;
+    const childWidth = scrollRef.current.firstChild
+      ? (scrollRef.current.firstChild as HTMLElement).offsetWidth
+      : 0;
 
     const currentScroll = scrollRef.current.scrollLeft;
     const snapPoint = Math.round(currentScroll / childWidth) * childWidth;
@@ -90,7 +95,8 @@ export default function UserActivitiesPage() {
 
   const fetchUserOrganization = async () => {
     try {
-      const { data: userData, error: userError } = await supabase.auth.getUser();
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
       if (userError || !userData?.user) {
         router.push("/login");
         return null;
@@ -135,18 +141,22 @@ export default function UserActivitiesPage() {
 
       const activityIds = activityOrgData.map((item) => item.activity_id);
 
-      const { data: comingActivitiesData, error: comingActivitiesError } = await supabase
-        .from("activities")
-        .select("*")
-        .in("id", activityIds)
-        .gt("time", new Date().toISOString());
+      const { data: comingActivitiesData, error: comingActivitiesError } =
+        await supabase
+          .from("activities")
+          .select("*")
+          .in("id", activityIds)
+          .gt("time", new Date().toISOString());
 
       if (comingActivitiesData) {
         setComingActivities(comingActivitiesData);
         fetchActivityOrganizations(comingActivitiesData.map((a) => a.id));
       } else {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
-          console.error("Error fetching coming activities:", comingActivitiesError);
+          console.error(
+            "Error fetching coming activities:",
+            comingActivitiesError
+          );
         }
       }
     } catch (err) {
@@ -167,17 +177,23 @@ export default function UserActivitiesPage() {
 
       if (activityOrgError || !activityOrgData) {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
-          console.error("Error fetching activity organizations:", activityOrgError);
+          console.error(
+            "Error fetching activity organizations:",
+            activityOrgError
+          );
         }
         return;
       }
 
-      const organizationIds = Array.from(new Set(activityOrgData.map((item) => item.organization_id)));
+      const organizationIds = Array.from(
+        new Set(activityOrgData.map((item) => item.organization_id))
+      );
 
-      const { data: organizationsData, error: organizationsError } = await supabase
-        .from("organizations")
-        .select("*")
-        .in("id", organizationIds);
+      const { data: organizationsData, error: organizationsError } =
+        await supabase
+          .from("organizations")
+          .select("*")
+          .in("id", organizationIds);
 
       if (organizationsError || !organizationsData) {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -191,13 +207,14 @@ export default function UserActivitiesPage() {
         {}
       );
 
-      const activityToOrganizations: Record<string, string[]> = activityOrgData.reduce((map, item) => {
-        //@ts-expect-error err
-        if (!map[item.activity_id]) map[item.activity_id] = [];
-        //@ts-expect-error err
-        map[item.activity_id].push(organizationMap[item.organization_id]);
-        return map;
-      }, {});
+      const activityToOrganizations: Record<string, string[]> =
+        activityOrgData.reduce((map, item) => {
+          //@ts-expect-error err
+          if (!map[item.activity_id]) map[item.activity_id] = [];
+          //@ts-expect-error err
+          map[item.activity_id].push(organizationMap[item.organization_id]);
+          return map;
+        }, {});
 
       setActivityOrganizations(activityToOrganizations);
     } catch (err) {
@@ -209,7 +226,10 @@ export default function UserActivitiesPage() {
 
   const fetchJoinedActivities = async (userId: string) => {
     try {
-      const { data, error } = await supabase.from("user_activity").select("activity_id").eq("user_id", userId);
+      const { data, error } = await supabase
+        .from("user_activity")
+        .select("activity_id")
+        .eq("user_id", userId);
 
       if (error) {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -229,7 +249,9 @@ export default function UserActivitiesPage() {
   const handleJoinActivity = async (activityId: string) => {
     if (!userId) return;
     try {
-      const { error } = await supabase.from("user_activity").insert([{ user_id: userId, activity_id: activityId }]);
+      const { error } = await supabase
+        .from("user_activity")
+        .insert([{ user_id: userId, activity_id: activityId }]);
 
       if (error) {
         if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
@@ -366,10 +388,6 @@ export default function UserActivitiesPage() {
     return [formattedDate, formattedTime];
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <main className="p-6 md:p-10 min-h-screenmin-h-screen">
       <h2>Activities</h2>
@@ -382,6 +400,7 @@ export default function UserActivitiesPage() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
+          {loading && Array.from({ length: 4 }, (_, index) => <ActivityCardSkeleton key={index} />)}
           {comingActivities.length > 0 ? (
             comingActivities.map((activity, index) => (
               <Card
@@ -406,9 +425,13 @@ export default function UserActivitiesPage() {
 
                 <div className="w-full flex flex-col justify-start items-start p-4">
                   <div className="flex flex-col flex-1">
-                    <h3 className="text-lg font-semibold truncate">{activity.title}</h3>
+                    <h3 className="text-lg font-semibold truncate">
+                      {activity.title}
+                    </h3>
                     {(() => {
-                      const [formattedDate, formattedTime] = formatActivityTime(activity.time);
+                      const [formattedDate, formattedTime] = formatActivityTime(
+                        activity.time
+                      );
                       return (
                         <p className="text-sm text-gray-500">{`At ${activity.place}, ${formattedTime} ${formattedDate}`}</p>
                       );
