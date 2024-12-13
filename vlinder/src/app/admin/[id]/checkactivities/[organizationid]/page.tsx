@@ -228,6 +228,7 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
         {showComingActivities
           ? comingActivities.map((activity) => (
               <ActivityCard
+                key={activity.id}
                 picture_url={activity.picture_url}
                 title={activity.title}
                 time={activity.time}
@@ -241,6 +242,7 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
             ))
           : pastActivities.map((activity) => (
               <ActivityCard
+                key={activity.id}
                 picture_url={activity.picture_url}
                 title={activity.title}
                 desc={activity.description}
