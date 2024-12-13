@@ -16,7 +16,7 @@
 // const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
 //   const inputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  
+
 //   const user = useUser((state) => state.user);
 
 //   const supabase = createClient();
@@ -109,7 +109,7 @@
 //           <Input placeholder="Image description" ref={inputRef} />
 //         </ModalBody>
 //         <ModalFooter>
-          
+
 // 		  <Button color="danger" variant="light" onPress={onClose}>
 //                   Close
 //                 </Button>

@@ -76,7 +76,10 @@ export default function ChatRooms() {
         const { data: roomData, error: roomError } = await supabase
           .from("rooms")
           .select("id, name, created_at")
-          .in("id", data.map((room: { room_id: string }) => room.room_id));
+          .in(
+            "id",
+            data.map((room: { room_id: string }) => room.room_id)
+          );
 
         if (roomError) {
           console.error("Error fetching room details:", roomError);
@@ -183,7 +186,9 @@ export default function ChatRooms() {
                         <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.friend_avatar || "/default-avatar.png"}
+                              src={
+                                friend.friend_avatar || "/default-avatar.png"
+                              }
                               alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />

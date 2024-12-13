@@ -52,7 +52,9 @@ export default function ChatInput({ roomId }: { roomId: string }) {
       };
       addMessage(newMessage as Imessage);
       setOptimisticIds(newMessage.id);
-      const { error } = await supabase.from("messages").insert({ content, id, profile_id: user?.id, room_id: roomId });
+      const { error } = await supabase
+        .from("messages")
+        .insert({ content, id, profile_id: user?.id, room_id: roomId });
       if (error) {
         toast.error(error.message);
       }
@@ -77,7 +79,9 @@ export default function ChatInput({ roomId }: { roomId: string }) {
       const lastMessage = messages[0];
       const lastMessageTime = new Date(lastMessage.created_at);
       const currentTime = new Date();
-      const timeDifference = (currentTime.getTime() - lastMessageTime.getTime()) / (1000 * 60 * 60 * 24); // time difference in days
+      const timeDifference =
+        (currentTime.getTime() - lastMessageTime.getTime()) /
+        (1000 * 60 * 60 * 24); // time difference in days
       console.log("Time difference: ", timeDifference);
       // Suggest message based on time difference
       if (timeDifference > 1) {
@@ -111,7 +115,10 @@ export default function ChatInput({ roomId }: { roomId: string }) {
               <Button>Suggested Message: {suggestedMessage}</Button>
             </PopoverTrigger>
             <PopoverContent>
-              <Button color="primary" onPress={() => handleSendMessage(suggestedMessage)}>
+              <Button
+                color="primary"
+                onPress={() => handleSendMessage(suggestedMessage)}
+              >
                 Send
               </Button>
             </PopoverContent>

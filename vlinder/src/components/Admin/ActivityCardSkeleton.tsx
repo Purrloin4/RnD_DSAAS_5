@@ -18,8 +18,12 @@ export default function ActivityCard() {
 
       <div className="w-full flex flex-col gap- items-start justify-between p-4">
         <div className="flex flex-col flex-1 w-full gap-1 mb-4">
-          <Skeleton className="text-lg font-semibold rounded-full w-1/2 ">-------------</Skeleton>
-          <Skeleton className="text-sm rounded-full w-4/5 text-gray-500">--------------</Skeleton>
+          <Skeleton className="text-lg font-semibold rounded-full w-1/2 ">
+            -------------
+          </Skeleton>
+          <Skeleton className="text-sm rounded-full w-4/5 text-gray-500">
+            --------------
+          </Skeleton>
           <Skeleton className="text-gray-600 rounded-full w-2/3 h-4 overflow-hidden text-ellipsis mb-1">
             -------------------------
           </Skeleton>

@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { Id: string } }) {
         roomId={roomData.id}
         className="flex-1 h-screen max-h-screen overflow-x-hidden"
         name={roomData.name || "Unnamed Chat"}
-        user = {userData.user?.id || ""}
+        user={userData.user?.id || ""}
         type={roomData.chat_type}
       >
         <LoadMessages userId={userData.user?.id || ""} roomId={roomData.id} />

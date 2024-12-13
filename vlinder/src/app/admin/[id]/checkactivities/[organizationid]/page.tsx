@@ -7,7 +7,14 @@ import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import ActivityCard from "@/src/components/Admin/ActivityCard";
 import ActivityCardSkeleton from "@/src/components/Admin/ActivityCardSkeleton";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/react";
 
 const supabase = createClient();
 
@@ -37,11 +44,17 @@ interface Worker {
   organization_id: string;
 }
 
-export default function CheckActivitiesPage({ params }: { params: { id: string; organizationid: string } }) {
+export default function CheckActivitiesPage({
+  params,
+}: {
+  params: { id: string; organizationid: string };
+}) {
   const [comingActivities, setComingActivities] = useState<Activity[]>([]);
   const [pastActivities, setPastActivities] = useState<Activity[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<UserWithActivity[]>([]);
-  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(
+    null
+  );
   const [showComingActivities, setShowComingActivities] = useState(true);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [worker, setWorker] = useState<Worker | null>(null);
@@ -90,23 +103,28 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
     if (activityOrgData) {
       const activityIds = activityOrgData.map((item) => item.activity_id);
 
-      const { data: comingActivitiesData, error: comingActivitiesError } = await supabase
-        .from("activities")
-        .select("*")
-        .in("id", activityIds)
-        .gt("time", new Date().toISOString());
+      const { data: comingActivitiesData, error: comingActivitiesError } =
+        await supabase
+          .from("activities")
+          .select("*")
+          .in("id", activityIds)
+          .gt("time", new Date().toISOString());
 
       if (comingActivitiesData) {
         setComingActivities(comingActivitiesData);
       } else {
-        console.error("Error fetching coming activities:", comingActivitiesError);
+        console.error(
+          "Error fetching coming activities:",
+          comingActivitiesError
+        );
       }
 
-      const { data: pastActivitiesData, error: pastActivitiesError } = await supabase
-        .from("activities")
-        .select("*")
-        .in("id", activityIds)
-        .lt("time", new Date().toISOString());
+      const { data: pastActivitiesData, error: pastActivitiesError } =
+        await supabase
+          .from("activities")
+          .select("*")
+          .in("id", activityIds)
+          .lt("time", new Date().toISOString());
 
       if (pastActivitiesData) {
         setPastActivities(pastActivitiesData);
@@ -114,13 +132,19 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
         console.error("Error fetching past activities:", pastActivitiesError);
       }
     } else {
-      console.error("Error fetching activity organization data:", activityOrgError);
+      console.error(
+        "Error fetching activity organization data:",
+        activityOrgError
+      );
     }
   };
 
   const fetchUsersForActivity = async (activityId: string) => {
     setLoadingUsers(true);
-    const { data, error } = await supabase.from("user_activity").select("user_id").eq("activity_id", activityId);
+    const { data, error } = await supabase
+      .from("user_activity")
+      .select("user_id")
+      .eq("activity_id", activityId);
 
     if (data) {
       const userDetails = await Promise.all(
@@ -182,10 +206,19 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
   const handleDeleteActivity = async (activityId: string) => {
     if (confirm("Are you sure you want to delete this activity?")) {
       try {
-        await supabase.from("activity_organization").delete().eq("activity_id", activityId);
-        await supabase.from("user_activity").delete().eq("activity_id", activityId);
+        await supabase
+          .from("activity_organization")
+          .delete()
+          .eq("activity_id", activityId);
+        await supabase
+          .from("user_activity")
+          .delete()
+          .eq("activity_id", activityId);
 
-        const { error } = await supabase.from("activities").delete().eq("id", activityId);
+        const { error } = await supabase
+          .from("activities")
+          .delete()
+          .eq("id", activityId);
         if (error) {
           console.error("Error deleting activity:", error);
           return;
@@ -220,11 +253,20 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
 
   return (
     <main className="p-4">
-      <Button className="w-full mb-4" color="primary" onClick={() => setShowComingActivities(!showComingActivities)}>
-        {showComingActivities ? "Show Past Activities" : "Show Comming Activities"}
+      <Button
+        className="w-full mb-4"
+        color="primary"
+        onClick={() => setShowComingActivities(!showComingActivities)}
+      >
+        {showComingActivities
+          ? "Show Past Activities"
+          : "Show Comming Activities"}
       </Button>
       <div className="flex justify-center flex-wrap gap-4">
-        {(loading || !worker) && Array.from({ length: 9 }, (_, index) => <ActivityCardSkeleton key={index} />)}
+        {(loading || !worker) &&
+          Array.from({ length: 9 }, (_, index) => (
+            <ActivityCardSkeleton key={index} />
+          ))}
         {showComingActivities
           ? comingActivities.map((activity) => (
               <ActivityCard

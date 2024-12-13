@@ -1,5 +1,5 @@
-import { Resend } from 'resend';
-import Welcome from '@/src/app/emails/Welcome';
+import { Resend } from "resend";
+import Welcome from "@/src/app/emails/Welcome";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -8,9 +8,9 @@ export async function POST(request: Request) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@mothim.com',
+      from: "onboarding@mothim.com",
       to: email,
-      subject: 'Vlinder Invitation',
+      subject: "Vlinder Invitation",
       react: Welcome({ firstName, accessTokenId }), // Pass both firstName and accessTokenId
     });
 

@@ -42,7 +42,6 @@ interface UserProfile {
   profile_hobbies: ProfileHobby[];
   description: string;
   sex_positive: boolean;
-
 }
 
 function calculateAge(birthday: string) {
@@ -172,7 +171,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
     <main className="flex flex-col items-center justify-start p-6 min-h-screen bg-purple-50">
       <div className="flex flex-col items-center space-y-4">
         <Avatar
-          src={profile.avatar_url || '/default-avatar.png'}
+          src={profile.avatar_url || "/default-avatar.png"}
           alt="Profile Avatar"
           className="w-24 h-24 rounded-full"
         />
@@ -183,12 +182,16 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
 
       <div className="w-full max-w-md mt-6">
         <h3 className="text-lg font-semibold text-gray-800">Description</h3>
-        <p className="text-gray-700 mt-2">{profile.description || 'No description provided.'}</p>
+        <p className="text-gray-700 mt-2">
+          {profile.description || "No description provided."}
+        </p>
       </div>
 
       <div className="w-full max-w-md mt-6 flex flex-wrap gap-3">
         <GenderChip gender={profile.gender} />
-        <SexualOrientationChip sexual_orientation={profile.sexual_orientation} />
+        <SexualOrientationChip
+          sexual_orientation={profile.sexual_orientation}
+        />
         <SmokerChip Smoker={profile.smoker} />
         <SexPositiveChip sex_positive={profile.sex_positive} />
         <NeedAssistanceChip need_assistance={profile.need_assistance} />
@@ -208,8 +211,7 @@ export default function ProfilePage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-     <AddFriendBtn profile_id={params.id} />
-
+      <AddFriendBtn profile_id={params.id} />
     </main>
   );
 }

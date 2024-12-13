@@ -25,11 +25,15 @@ export default function Message({ message }: { message: Imessage }) {
       {/* Avatar only appears for received messages */}
       {!isOwnMessage && (
         <div>
-         { message.profiles && message.profiles.avatar_url?
-          <Image src={message.profiles?.avatar_url!}
-           alt={message.profiles?.username!} 
-           width={40} height={40} className=" rounded-full ring-2" /> 
-           :null}
+          {message.profiles && message.profiles.avatar_url ? (
+            <Image
+              src={message.profiles?.avatar_url!}
+              alt={message.profiles?.username!}
+              width={40}
+              height={40}
+              className=" rounded-full ring-2"
+            />
+          ) : null}
         </div>
       )}
 
@@ -43,19 +47,20 @@ export default function Message({ message }: { message: Imessage }) {
       >
         {/* Username and Message Metadata */}
         <div className="flex items-center justify-between">
-		<div className="flex items-center gap-1">
-  {!isOwnMessage && (
-    <h1 className="font-bold">{message.profiles?.username}</h1>
-  )}
-  <h1 className="text-sm text-gray-400">
-    {new Date(message.created_at).toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
-    })}
-  </h1>
-  {message.is_edit && <h1 className="text-sm text-gray-400">edited</h1>}
-</div>
-
+          <div className="flex items-center gap-1">
+            {!isOwnMessage && (
+              <h1 className="font-bold">{message.profiles?.username}</h1>
+            )}
+            <h1 className="text-sm text-gray-400">
+              {new Date(message.created_at).toLocaleTimeString([], {
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </h1>
+            {message.is_edit && (
+              <h1 className="text-sm text-gray-400">edited</h1>
+            )}
+          </div>
 
           {/* Message Actions (Edit/Delete) for Own Messages
           {isOwnMessage && <MessageMenu message={message} />} */}

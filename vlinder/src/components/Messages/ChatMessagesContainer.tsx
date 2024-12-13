@@ -6,7 +6,12 @@ import { Avatar, Input, Chip } from "@nextui-org/react";
 import useScreenSize from "./useScreenSize";
 import { ReactNode } from "react";
 import { Skeleton } from "@nextui-org/react";
-import { Popover, PopoverTrigger, PopoverContent, Button } from "@nextui-org/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Button,
+} from "@nextui-org/react";
 import { Alert } from "@nextui-org/alert";
 import MessageInput from "./MessageInput";
 import { User } from "@supabase/supabase-js";
@@ -15,7 +20,14 @@ import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import RoomParticipantList from "@/src/components/Messages/RoomParticipantsList";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/react";
 import { sup } from "framer-motion/client";
 import ChatPresence from "@/src/components/Chat/ChatPresence";
 import AddNewParticipant from "@/src/components/Messages/AddNewParticipant";
@@ -111,7 +123,11 @@ export default function ChatMessagesContainer({
     <div className={`flex flex-col pr-4 ${className}`}>
       <div className="flex gap-2 items-center justify-start p-4 border-b border-gray-300 overflow-x-hidden">
         {width <= 1024 && roomId && (
-          <Link className="w-10 text-primary flex justify-center" href="/messages" replace>
+          <Link
+            className="w-10 text-primary flex justify-center"
+            href="/messages"
+            replace
+          >
             <ArrowLeft className="" />
           </Link>
         )}
@@ -141,7 +157,9 @@ export default function ChatMessagesContainer({
                 <ModalContent>
                   {(onClose) => (
                     <>
-                      <ModalHeader className="flex flex-col gap-1">Leaving "{name}"</ModalHeader>
+                      <ModalHeader className="flex flex-col gap-1">
+                        Leaving "{name}"
+                      </ModalHeader>
                       <ModalBody>
                         {/* Are you sure you want to leave the room? */}
                         <div className="w-full flex items-center my-3">
@@ -155,7 +173,10 @@ export default function ChatMessagesContainer({
                       </ModalBody>
                       <ModalFooter>
                         <Button onPress={onClose}>Cancel</Button>
-                        <Button color="danger" onPress={() => handleLeaveGroup(roomId)}>
+                        <Button
+                          color="danger"
+                          onPress={() => handleLeaveGroup(roomId)}
+                        >
                           Yes, I am sure
                         </Button>
                       </ModalFooter>
@@ -175,12 +196,16 @@ export default function ChatMessagesContainer({
         </div>
       </div>
 
-      <div className="relative flex-1 w-full overflow-y-auto p-4 overflow-x-hidden">{children}</div>
+      <div className="relative flex-1 w-full overflow-y-auto p-4 overflow-x-hidden">
+        {children}
+      </div>
 
       <div className="flex items-center p-4 border-t border-gray-300 overflow-x-hidden">
         <MessageInput roomId={roomId} />
       </div>
-      <div className="h-28 w-full">{/* Do not remove fix for floting navbar */}</div>
+      <div className="h-28 w-full">
+        {/* Do not remove fix for floting navbar */}
+      </div>
     </div>
   );
 }

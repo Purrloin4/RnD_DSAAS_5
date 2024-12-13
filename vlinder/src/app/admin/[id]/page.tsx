@@ -32,7 +32,11 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
 
   const fetchUserRole = async () => {
     if (userId) {
-      const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .single();
 
       if (error) {
         console.error("Error fetching user role:", error);
@@ -76,7 +80,9 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
 
   const handleCheckActivitiesClick = () => {
     if (worker && worker.organization_id) {
-      router.push(`/admin/${params.id}/checkactivities/${worker.organization_id}`);
+      router.push(
+        `/admin/${params.id}/checkactivities/${worker.organization_id}`
+      );
     } else {
       alert("Organization ID not found!");
     }
@@ -120,16 +126,32 @@ export default function GreetingPage({ params }: { params: { id: string } }) {
             </>
           ) : (
             <>
-              <Button className="w-full" color="primary" onClick={handleProfileClick}>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={handleProfileClick}
+              >
                 Check Profiles
               </Button>
-              <Button className="w-full" color="primary" onClick={handleInviteUserClick}>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={handleInviteUserClick}
+              >
                 Invite a New User
               </Button>
-              <Button className="w-full" color="primary" onClick={handleCheckActivitiesClick}>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={handleCheckActivitiesClick}
+              >
                 Check Activities
               </Button>
-              <Button className="w-full" color="primary" onClick={handleCreateActivityClick}>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={handleCreateActivityClick}
+              >
                 Create Activity
               </Button>
             </>

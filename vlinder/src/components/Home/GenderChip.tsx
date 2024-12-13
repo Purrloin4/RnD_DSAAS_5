@@ -20,7 +20,11 @@ export const GenderChip = ({ gender }: { gender?: Gender | string }) => {
 
 export function GenderMaleChip() {
   return (
-    <Chip size="sm" className="pl-2 bg-blue-500 text-white" startContent={<MaleIcon size={15} />}>
+    <Chip
+      size="sm"
+      className="pl-2 bg-blue-500 text-white"
+      startContent={<MaleIcon size={15} />}
+    >
       Male
     </Chip>
   );
@@ -28,7 +32,11 @@ export function GenderMaleChip() {
 
 export function GenderFemaleChip() {
   return (
-    <Chip size="sm" className="pl-2 bg-rose-500 text-white" startContent={<FemaleIcon size={15} />}>
+    <Chip
+      size="sm"
+      className="pl-2 bg-rose-500 text-white"
+      startContent={<FemaleIcon size={15} />}
+    >
       Female
     </Chip>
   );

@@ -3,7 +3,11 @@
 import { Skeleton, Avatar } from "@nextui-org/react";
 import Link from "next/link";
 
-export default function ChatListSuspense({ className }: { className?: string }) {
+export default function ChatListSuspense({
+  className,
+}: {
+  className?: string;
+}) {
   const rooms = Array.from({ length: 15 }, () => false);
 
   return (
@@ -19,8 +23,14 @@ export default function ChatListSuspense({ className }: { className?: string }) 
               <Avatar size="lg" />
             </Skeleton>
             <div className="flex-1 min-w-0">
-              <Skeleton className="h-6 w-3/5 mb-2 rounded-full"> Name is loading </Skeleton>
-              <Skeleton className="h-4 w-4/5 rounded-full"> This was the las message</Skeleton>
+              <Skeleton className="h-6 w-3/5 mb-2 rounded-full">
+                {" "}
+                Name is loading{" "}
+              </Skeleton>
+              <Skeleton className="h-4 w-4/5 rounded-full">
+                {" "}
+                This was the las message
+              </Skeleton>
             </div>
             <Skeleton className="text-gray-400 text-sm whitespace-nowrap ml-4 flex-shrink-0 rounded-full">
               00:00

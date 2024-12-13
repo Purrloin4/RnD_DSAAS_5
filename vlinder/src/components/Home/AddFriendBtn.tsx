@@ -1,11 +1,10 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@nextui-org/react";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/utils/store/user";
 import toast, { Toaster } from "react-hot-toast";
 import EndFriendBtn from "./EndFriendBtn";
 import {
-
   Modal,
   ModalContent,
   ModalHeader,
@@ -15,17 +14,15 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 
-
-export default function AddFriendBtn({profile_id}: {profile_id:string}) {
+export default function AddFriendBtn({ profile_id }: { profile_id: string }) {
   const supabase = createClient();
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
   const [friendStatus, setFriendStatus] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const user = useUser((state) => state.user);
 
-
-const fetchFriendStatus = async (otherUserId: string) => {
+  const fetchFriendStatus = async (otherUserId: string) => {
     try {
       const { data, error } = await supabase.rpc("get_friend_status", {
         other_user_id: otherUserId,
@@ -95,9 +92,12 @@ const fetchFriendStatus = async (otherUserId: string) => {
         toast.error("You cannot send a friend request to yourself.");
         return;
       } else {
-        const { data, error } = await supabase.rpc("cancel_sending_friend_request", {
-          recipient_id: profile_id,
-        });
+        const { data, error } = await supabase.rpc(
+          "cancel_sending_friend_request",
+          {
+            recipient_id: profile_id,
+          }
+        );
 
         if (error) {
           console.error("Error cancelling friend request:", error);
@@ -111,29 +111,26 @@ const fetchFriendStatus = async (otherUserId: string) => {
       console.error("Unexpected error cancelling friend request:", error);
     }
   };
-useEffect(() => {
+  useEffect(() => {
     fetchFriendStatus(profile_id);
     checkAdminStatus();
   }, [user?.id, profile_id]);
 
- 
-
   return (
     <>
-        {!isAdmin && (
-            <div className="w-full max-w-md mt-8">
-              {friendStatus === 'accepted' ? (
-                // <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
-                //   Connected
-                // </Button>
-                <EndFriendBtn profile_id={profile_id} />
-                
-              ) : friendStatus === 'pending' ? (
-                // <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
-                //   Pending
-                // </Button>
-                <>
-                <Button className="w-full" color="primary" onPress={onOpen}>
+      {!isAdmin && (
+        <div className="w-full max-w-md mt-8">
+          {friendStatus === "accepted" ? (
+            // <Button disabled className="w-full bg-green-500 text-white py-2 rounded-md">
+            //   Connected
+            // </Button>
+            <EndFriendBtn profile_id={profile_id} />
+          ) : friendStatus === "pending" ? (
+            // <Button disabled className="w-full bg-yellow-500 text-white py-2 rounded-md">
+            //   Pending
+            // </Button>
+            <>
+              <Button className="w-full" color="primary" onPress={onOpen}>
                 Pending
               </Button>
               <Modal isOpen={isOpen} size="md" onOpenChange={onOpenChange}>
@@ -142,11 +139,15 @@ useEffect(() => {
                     <>
                       <ModalHeader>Cancelling your friend request?</ModalHeader>
                       <ModalBody>
-                      Are you sure you want to cancel your friend request?
+                        Are you sure you want to cancel your friend request?
                       </ModalBody>
                       <ModalFooter>
                         <Button onPress={onClose}>Cancel</Button>
-                        <Button color="danger" variant="flat" onPress={cancelFriendRequest}>
+                        <Button
+                          color="danger"
+                          variant="flat"
+                          onPress={cancelFriendRequest}
+                        >
                           Yes, I am sure
                         </Button>
                       </ModalFooter>
@@ -154,21 +155,24 @@ useEffect(() => {
                   )}
                 </ModalContent>
               </Modal>
-              </>
-              ) : friendStatus === 'rejected' ? (
-                <Button disabled className="w-full bg-red-500 text-white py-2 rounded-md">
-                  Rejected
-                </Button>
-              ) : (
-                <Button
-                  className="w-full bg-purple-500 text-white py-2 rounded-md"
-                  onClick={sendFriendRequest}
-                >
-                  Connect
-                </Button>
-              )}
-            </div>
+            </>
+          ) : friendStatus === "rejected" ? (
+            <Button
+              disabled
+              className="w-full bg-red-500 text-white py-2 rounded-md"
+            >
+              Rejected
+            </Button>
+          ) : (
+            <Button
+              className="w-full bg-purple-500 text-white py-2 rounded-md"
+              onClick={sendFriendRequest}
+            >
+              Connect
+            </Button>
           )}
-          </>
+        </div>
+      )}
+    </>
   );
 }

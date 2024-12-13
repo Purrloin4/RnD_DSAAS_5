@@ -8,7 +8,6 @@ import { useFriendships } from "@/utils/store/friendships";
 import InitFriendships from "@/utils/store/InitFriendships";
 import { createClient } from "@/utils/supabase/client";
 
-
 export default function FriendshipList() {
   const router = useRouter();
   const { friendships, setFriendships } = useFriendships(); // Access Zustand store

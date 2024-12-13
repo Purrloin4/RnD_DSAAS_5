@@ -36,7 +36,10 @@ export default function EditChatName({ roomId, roomName }: ChatNameProps) {
     }
 
     try {
-      const { error } = await supabase.from("rooms").update({ name: newRoomName.trim() }).eq("id", roomId);
+      const { error } = await supabase
+        .from("rooms")
+        .update({ name: newRoomName.trim() })
+        .eq("id", roomId);
 
       if (error) {
         console.error("Error updating room name:", error.message);

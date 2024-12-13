@@ -12,39 +12,62 @@ export default function ListMessages({ roomId }: { roomId: string }) {
   const [userScrolled, setUserScrolled] = useState(false);
   const [notification, setNotification] = useState(0);
 
-  const { messages, addMessage, optimisticIds, optimisticDeleteMessage, optimisticUpdateMessage } = useMessage(
-    (state) => state
-  );
+  const {
+    messages,
+    addMessage,
+    optimisticIds,
+    optimisticDeleteMessage,
+    optimisticUpdateMessage,
+  } = useMessage((state) => state);
   // console.log("ListMessages:", roomId);
   const supabase = createClient();
   useEffect(() => {
     const channel = supabase
       .channel(`chat-room-${roomId}`) // Unique channel name for each room
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, async (payload) => {
-        if (!optimisticIds.includes(payload.new.id)) {
-          const { error, data } = await supabase.from("profiles").select("*").eq("id", payload.new.profile_id).single();
-          if (error) {
-            toast.error(error.message);
-          } else {
-            const newMessage = {
-              ...payload.new,
-              profiles: data,
-            };
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        async (payload) => {
+          if (!optimisticIds.includes(payload.new.id)) {
+            const { error, data } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", payload.new.profile_id)
+              .single();
+            if (error) {
+              toast.error(error.message);
+            } else {
+              const newMessage = {
+                ...payload.new,
+                profiles: data,
+              };
 
-            addMessage(newMessage as Imessage);
+              addMessage(newMessage as Imessage);
+            }
+          }
+          const scrollContainer = scrollRef.current;
+          if (
+            scrollContainer.scrollTop <
+            scrollContainer.scrollHeight - scrollContainer.clientHeight - 10
+          ) {
+            setNotification((current) => current + 1);
           }
         }
-        const scrollContainer = scrollRef.current;
-        if (scrollContainer.scrollTop < scrollContainer.scrollHeight - scrollContainer.clientHeight - 10) {
-          setNotification((current) => current + 1);
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "messages" },
+        (payload) => {
+          optimisticDeleteMessage(payload.old.id);
         }
-      })
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, (payload) => {
-        optimisticDeleteMessage(payload.old.id);
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, (payload) => {
-        optimisticUpdateMessage(payload.new as Imessage);
-      })
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages" },
+        (payload) => {
+          optimisticUpdateMessage(payload.new as Imessage);
+        }
+      )
       .subscribe();
 
     return () => {
@@ -62,9 +85,14 @@ export default function ListMessages({ roomId }: { roomId: string }) {
   const handleOnScroll = () => {
     const scrollContainer = scrollRef.current;
     if (scrollContainer) {
-      const isScroll = scrollContainer.scrollTop < scrollContainer.scrollHeight - scrollContainer.clientHeight - 10;
+      const isScroll =
+        scrollContainer.scrollTop <
+        scrollContainer.scrollHeight - scrollContainer.clientHeight - 10;
       setUserScrolled(isScroll);
-      if (scrollContainer.scrollTop === scrollContainer.scrollHeight - scrollContainer.clientHeight) {
+      if (
+        scrollContainer.scrollTop ===
+        scrollContainer.scrollHeight - scrollContainer.clientHeight
+      ) {
         setNotification(0);
       }
     }
@@ -76,7 +104,11 @@ export default function ListMessages({ roomId }: { roomId: string }) {
   console.log("ListMessages:", messages);
   return (
     <>
-      <div className="flex-1 flex flex-col p-5 h-full overflow-y-auto" ref={scrollRef} onScroll={handleOnScroll}>
+      <div
+        className="flex-1 flex flex-col p-5 h-full overflow-y-auto"
+        ref={scrollRef}
+        onScroll={handleOnScroll}
+      >
         <div className="flex-1 pb-5 ">
           <LoadMoreMessages />
         </div>
@@ -92,7 +124,10 @@ export default function ListMessages({ roomId }: { roomId: string }) {
       {userScrolled && (
         <div className=" absolute bottom-20 w-full">
           {notification ? (
-            <div className="w-36 mx-auto bg-indigo-500 p-1 rounded-md cursor-pointer" onClick={scrollDown}>
+            <div
+              className="w-36 mx-auto bg-indigo-500 p-1 rounded-md cursor-pointer"
+              onClick={scrollDown}
+            >
               <h1>New {notification} messages</h1>
             </div>
           ) : (

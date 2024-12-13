@@ -7,7 +7,10 @@ import { Listbox, ListboxItem } from "@nextui-org/listbox";
 import { useFriendships } from "@/utils/store/friendships";
 import InitFriendships from "@/utils/store/InitFriendships";
 import { createClient } from "@/utils/supabase/client";
-import { IRoomParticipant, useRoomParticipant } from "@/utils/store/roomParticipant";
+import {
+  IRoomParticipant,
+  useRoomParticipant,
+} from "@/utils/store/roomParticipant";
 import { toast } from "sonner";
 import {
   Button,
@@ -29,10 +32,14 @@ export default function AddNewParticipant({ roomId }: { roomId: string }) {
   const supabase = createClient();
   const router = useRouter();
 
-  const { participants, setParticipants, addParticipant, removeParticipant } = useRoomParticipant((state) => state);
-  const disabledKeys = new Set(participants.map((participant) => participant.profile_id));
+  const { participants, setParticipants, addParticipant, removeParticipant } =
+    useRoomParticipant((state) => state);
+  const disabledKeys = new Set(
+    participants.map((participant) => participant.profile_id)
+  );
 
-  const [scrollBehavior, setScrollBehavior] = React.useState<ModalProps["scrollBehavior"]>("inside");
+  const [scrollBehavior, setScrollBehavior] =
+    React.useState<ModalProps["scrollBehavior"]>("inside");
   const { friendships, setFriendships } = useFriendships(); // Access Zustand store
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -47,13 +54,18 @@ export default function AddNewParticipant({ roomId }: { roomId: string }) {
       const participantIds = [...selectedFriendIds];
 
       for (const participantId of participantIds) {
-        const { data: participant, error: participantError } = await supabase.from("room_participants").insert({
-          profile_id: participantId,
-          room_id: roomId,
-        });
+        const { data: participant, error: participantError } = await supabase
+          .from("room_participants")
+          .insert({
+            profile_id: participantId,
+            room_id: roomId,
+          });
 
         if (participantError) {
-          console.error(`Error adding participant (ID: ${participantId}) to room:`, participantError);
+          console.error(
+            `Error adding participant (ID: ${participantId}) to room:`,
+            participantError
+          );
         }
       }
       toast.success("Member added successfully!");
@@ -71,7 +83,12 @@ export default function AddNewParticipant({ roomId }: { roomId: string }) {
       <Button className="w-full" color="primary" onPress={onOpen}>
         Add New Participants
       </Button>
-      <Modal scrollBehavior={scrollBehavior} isOpen={isOpen} size="md" onOpenChange={onOpenChange}>
+      <Modal
+        scrollBehavior={scrollBehavior}
+        isOpen={isOpen}
+        size="md"
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -86,13 +103,17 @@ export default function AddNewParticipant({ roomId }: { roomId: string }) {
                       selectedKeys={selectedKeys}
                       selectionMode="multiple"
                       variant="flat"
-                      onSelectionChange={(keys) => setSelectedKeys(new Set<string>(keys as Set<string>))}
+                      onSelectionChange={(keys) =>
+                        setSelectedKeys(new Set<string>(keys as Set<string>))
+                      }
                     >
                       {friendships.map((friend) => (
                         <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.friend_avatar || "/default-avatar.png"}
+                              src={
+                                friend.friend_avatar || "/default-avatar.png"
+                              }
                               alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />

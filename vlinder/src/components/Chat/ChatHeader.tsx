@@ -57,12 +57,12 @@ export default function ChatHeader({ user, roomId }: ChatHeaderProps) {
         return;
       }
 
-    //   if (data.length === 0) {
-    //     toast.error("You were not part of this chat.");
-    //   } else {
-        toast.success("You have successfully left the chat.");
-        router.push("/messages"); // Redirect to the chatrooms page
-    //   }
+      //   if (data.length === 0) {
+      //     toast.error("You were not part of this chat.");
+      //   } else {
+      toast.success("You have successfully left the chat.");
+      router.push("/messages"); // Redirect to the chatrooms page
+      //   }
     } catch (error) {
       console.error("Unexpected error leaving the room:", error);
       toast.error("An error occurred while leaving the chat.");
@@ -83,13 +83,10 @@ export default function ChatHeader({ user, roomId }: ChatHeaderProps) {
       <div className="p-5 border-b flex items-center justify-between h-full">
         <div>
           <h1 className="text-xl font-bold">{roomName || "Chat Room"}</h1>
-          <ChatPresence/>
+          <ChatPresence />
         </div>
         {user ? (
-          <Button
-            color="danger"
-            onPress={() => handleLeaveGroup(roomId)}
-          >
+          <Button color="danger" onPress={() => handleLeaveGroup(roomId)}>
             Leave Chat
           </Button>
         ) : (
