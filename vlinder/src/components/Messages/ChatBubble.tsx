@@ -28,7 +28,7 @@ export default function ChatBubble({ children, timestamp, type, isOwnMessage }: 
   };
 
   return (
-    <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"} w-full`}>
+    <div className={`mb-1 flex flex-col ${isOwnMessage ? "items-end" : "items-start"} w-full`}>
       <div
         onClick={() => setIsInFocus(!isInFocus)}
         className={`${
