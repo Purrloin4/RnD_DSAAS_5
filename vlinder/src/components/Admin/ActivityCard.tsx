@@ -20,9 +20,9 @@ export default function ActivityCard({
   time: string;
   desc: string;
   place: string;
-  edit: Function;
-  deleteActivity: Function;
-  show_users: Function;
+  edit: () => void;
+  deleteActivity: () => void;
+  show_users: () => void;
   canEdit: boolean;
 }) {
   const formatActivityTime = (isoString: string): string[] => {
