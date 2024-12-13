@@ -244,7 +244,18 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
                 canEdit={activity.organization_id === worker.organization_id}
               />
             ))
-          : ""}
+          : pastActivities.map((activity) => (
+              <ActivityCard
+                picture_url={activity.picture_url}
+                title={activity.title}
+                time={activity.time}
+                place={activity.place}
+                edit={() => handleEditActivity(activity.id)}
+                deleteActivity={() => handleDeleteActivity(activity.id)}
+                show_users={() => handleActivitySelect(activity.id)}
+                canEdit={false}
+              />
+            ))}
       </div>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
