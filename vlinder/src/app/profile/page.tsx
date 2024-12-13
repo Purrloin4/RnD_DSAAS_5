@@ -542,12 +542,41 @@ export default function EditProfilePage() {
         </div>
 
         <Skeleton isLoaded={!isLoading} className="w-full max-w-sm rounded-lg">
+          <div>
           <Button
             onClick={handleSave}
             className="w-full max-w-sm btn-primary font-semibold"
           >
             Save Changes
           </Button>
+          <Button             className="w-full max-w-sm btn-secondary font-semibold"
+onPress={onOpen}>Show Friends</Button>
+      <Modal
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="sm"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Friends</ModalHeader>
+              <ModalBody>
+              <FriendshipList/>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+            
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+            
+          </div>
         </Skeleton>
 
         <Skeleton isLoaded={!isLoading} className="w-full max-w-sm rounded-lg">

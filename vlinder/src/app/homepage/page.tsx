@@ -40,6 +40,7 @@ interface Profile {
   sexual_orientation: string;
   sex_positive: boolean;
   gender: string;
+  birthday: string;
   smoker: boolean | undefined;
   display_disability: boolean;
   need_assistance: boolean | undefined;
@@ -49,6 +50,7 @@ interface Profile {
 }
 
 export default function HomePage() {
+  
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
@@ -119,9 +121,9 @@ export default function HomePage() {
                 profile_hobbies (
                 hobbies (id, name, emoji)
             )`);
-    query = query.neq('username', null);
+    query = query.neq("username", null);
     // query = query.neq('id', userId); // fkn doesn't work for some reason
-    query = query.neq("role", 'admin');
+    query = query.neq("role", "admin");
     if (smokerFilter == true) {
       query = query.eq("smoker", false);
     }
@@ -307,11 +309,9 @@ export default function HomePage() {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
+                <Button onPress={onClose}>Close</Button>
                 <Button
-                  color="success"
+                  color="primary"
                   onPress={() => {
                     fetchProfiles();
                     onClose();
@@ -330,7 +330,7 @@ export default function HomePage() {
         {loading ? (
           <>
             {Array.from({ length: 8 }).map((_, index) => (
-              <ProfileSuggestionCardSuspense key={index}/>
+              <ProfileSuggestionCardSuspense key={index} />
             ))}
           </>
         ) : (
