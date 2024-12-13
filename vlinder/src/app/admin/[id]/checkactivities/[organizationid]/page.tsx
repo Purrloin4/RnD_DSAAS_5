@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@nextui-org/react";
 import ActivityCard from "@/src/components/Admin/ActivityCard";
+import ActivityCardSkeleton from "@/src/components/Admin/ActivityCardSkeleton";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 
 const supabase = createClient();
@@ -213,16 +214,8 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
     }
   }, [isAdmin, worker]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (isAdmin === false) {
     return <div>You do not have permission to access this page.</div>;
-  }
-
-  if (!worker) {
-    return <div>Loading...</div>;
   }
 
   return (
@@ -231,23 +224,26 @@ export default function CheckActivitiesPage({ params }: { params: { id: string; 
         {showComingActivities ? "Show Past Activities" : "Show Comming Activities"}
       </Button>
       <div className="flex justify-center flex-wrap gap-4">
+        {(loading || !worker) && Array.from({ length: 9 }, (_, index) => <ActivityCardSkeleton key={index} />)}
         {showComingActivities
           ? comingActivities.map((activity) => (
               <ActivityCard
                 picture_url={activity.picture_url}
                 title={activity.title}
                 time={activity.time}
+                desc={activity.description}
                 place={activity.place}
                 edit={() => handleEditActivity(activity.id)}
                 deleteActivity={() => handleDeleteActivity(activity.id)}
                 show_users={() => handleActivitySelect(activity.id)}
-                canEdit={activity.organization_id === worker.organization_id}
+                canEdit={activity.organization_id === worker?.organization_id}
               />
             ))
           : pastActivities.map((activity) => (
               <ActivityCard
                 picture_url={activity.picture_url}
                 title={activity.title}
+                desc={activity.description}
                 time={activity.time}
                 place={activity.place}
                 edit={() => handleEditActivity(activity.id)}

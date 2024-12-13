@@ -24,5 +24,5 @@ export default function ConditionalNavbar() {
     return regex.test(pathname);
   });
 
-  return showNavbar ? <Navbar /> : null;
+  return showNavbar && <Navbar />;
 }

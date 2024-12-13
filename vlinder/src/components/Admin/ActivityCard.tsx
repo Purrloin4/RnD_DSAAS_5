@@ -7,6 +7,7 @@ export default function ActivityCard({
   picture_url,
   title,
   time,
+  desc,
   place,
   edit,
   deleteActivity,
@@ -17,6 +18,7 @@ export default function ActivityCard({
   picture_url: string;
   title: string;
   time: string;
+  desc: string;
   place: string;
   edit: Function;
   deleteActivity: Function;
@@ -42,23 +44,19 @@ export default function ActivityCard({
         <Image src={picture_url || ""} width={1000} height={1000} alt={title} className="w-full h-full object-cover" />
       </div>
 
-      <div className="flex items-center justify-between p-4">
+      <div className="w-full flex flex-col items-start justify-between p-4">
         <div className="flex flex-col flex-1">
           <h3 className="text-lg font-semibold truncate">{title}</h3>
-          <p className="text-sm text-gray-500">{place}</p>
           {(() => {
             const [formattedDate, formattedTime] = formatActivityTime(time);
-            return (
-              <p className="text-sm text-gray-500">
-                {formattedDate}
-                <br />
-                {formattedTime}
-              </p>
-            );
+            return <p className="text-sm text-gray-500">{`At ${place}, ${formattedTime} ${formattedDate}`}</p>;
           })()}
+          <p className="text-gray-600 line-clamp-3 overflow-hidden text-ellipsis text-wrap truncate break-all mb-4">
+            {desc}
+          </p>
         </div>
 
-        <div className="ml-4 flex flex-row gap-2">
+        <div className="w-full justify-end flex flex-row gap-2">
           {canEdit && (
             <>
               <Button size="sm" color="danger" aria-label="delete-button" onClick={() => deleteActivity()}>
