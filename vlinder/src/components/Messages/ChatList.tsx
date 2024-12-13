@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import useScreenSize from "@/src/components/Messages/useScreenSize";
 import { createClient } from "@/utils/supabase/client";
 import { useUser } from "@/utils/store/user";
 import { useRouter, useParams } from "next/navigation";
@@ -44,7 +45,6 @@ export default function ChatList({ children, className }: ChatListProps) {
   const supabase = createClient();
 
   const user = useUser((state) => state.user);
-  const router = useRouter();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { Id } = useParams();
@@ -52,8 +52,8 @@ export default function ChatList({ children, className }: ChatListProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedKeys, setSelectedKeys] = useState(new Set<string>());
   const [groupName, setGroupName] = useState("");
-;
-const fetchFriendships = async () => {
+  const { width, height } = useScreenSize();
+  const fetchFriendships = async () => {
     try {
       const { data, error } = await supabase.rpc("show_friends");
       if (error) {
@@ -74,12 +74,12 @@ const fetchFriendships = async () => {
     }
   };
 
-  
-
   const fetchUserRooms = async (): Promise<void> => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.rpc("get_user_rooms", { user_id: user?.id });
+      const { data, error } = await supabase.rpc("get_user_rooms", {
+        user_id: user?.id,
+      });
 
       if (error) {
         console.error("Error fetching user rooms:", error);
@@ -108,8 +108,6 @@ const fetchFriendships = async () => {
     }
   };
 
-
-  
   const createGroupChat = async (): Promise<void> => {
     try {
       if (!groupName.trim() || selectedKeys.size === 0) {
@@ -151,7 +149,7 @@ const fetchFriendships = async () => {
           );
         }
       }
-  
+
       console.log("Group chat created successfully.");
       fetchUserRooms(); // Refresh the rooms after creation
       onOpenChange(); // Close modal
@@ -170,10 +168,14 @@ const fetchFriendships = async () => {
     return <ChatListSuspense className={className} />;
   }
 
+  if (width <= 1024 && Id) return;
+
   return (
     <div className={`flex flex-col p-4 ${className}`}>
-      <h2 className="">Chats</h2>
-      <Button onPress={onOpen}>Create Group Chat</Button>
+      <h2 className="mb-4">Chats</h2>
+      <Button className="mb-2" onPress={onOpen}>
+        Create Group Chat
+      </Button>
       <Modal isOpen={isOpen} size="sm" onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
@@ -203,7 +205,9 @@ const fetchFriendships = async () => {
                         <ListboxItem key={friend.friend_id}>
                           <div className="flex items-center gap-3">
                             <img
-                              src={friend.friend_avatar || "/default-avatar.png"}
+                              src={
+                                friend.friend_avatar || "/default-avatar.png"
+                              }
                               alt={friend.username || "Unknown"}
                               className="w-8 h-8 rounded-full"
                             />
@@ -216,11 +220,9 @@ const fetchFriendships = async () => {
                 </div>
               </ModalBody>
               <ModalFooter>
+                <Button onPress={onClose}>Cancel</Button>
                 <Button color="primary" onPress={createGroupChat}>
                   Create
-                </Button>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
                 </Button>
               </ModalFooter>
             </>

@@ -1,6 +1,6 @@
 enum schemeStrings {
-    DEVELOPMENT = 'public',
-    TEST = 'testing'
+  DEVELOPMENT = "public",
+  TEST = "testing",
 }
 
 export default schemeStrings;

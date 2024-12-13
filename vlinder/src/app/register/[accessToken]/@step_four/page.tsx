@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Input, Button, Checkbox, Textarea } from "@nextui-org/react";
+import EnviromentStrings from "@/src/enums/envStrings";
 
 const supabase = createClient();
 
@@ -71,23 +72,23 @@ export default function PersonalInfoPage() {
     }
 
     if (smoker === null || displayDisability === null || needAssistance === null) {
-        setError("Please fill in all fields.");
-        return;
-      }
+      setError("Please fill in all fields.");
+      return;
+    }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: userData.user.id,
-        smoker: smoker,
-        disability: disabilities.filter((d) => d.trim() !== ""),
-        display_disability: displayDisability,
-        need_assistance: needAssistance,
-      });
+    const { data, error } = await supabase.from("profiles").upsert({
+      id: userData.user.id,
+      smoker: smoker,
+      disability: disabilities.filter((d) => d.trim() !== ""),
+      display_disability: displayDisability,
+      need_assistance: needAssistance,
+    });
 
     if (error) {
       setError("Error saving data");
-      console.log(error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log(error);
+      }
       return;
     } else {
       setMessage("Information saved successfully");
@@ -113,21 +114,13 @@ export default function PersonalInfoPage() {
     <section className="w-full flex flex-col justify-start items-center p-4">
       <h2>Now, some personal questions</h2>
       <div className="w-full max-w-md p-8 h-fit">
-      <div className="w-full mb-4 text-black">
+        <div className="w-full mb-4 text-black">
           <p>Are you a smoker?</p>
           <div className="flex gap-4">
-            <Checkbox
-              isSelected={smoker === true}
-              onChange={() => setSmoker(true)}
-              color="secondary"
-            >
+            <Checkbox isSelected={smoker === true} onChange={() => setSmoker(true)} color="primary">
               Yes
             </Checkbox>
-            <Checkbox
-              isSelected={smoker === false}
-              onChange={() => setSmoker(false)}
-              color="secondary"
-            >
+            <Checkbox isSelected={smoker === false} onChange={() => setSmoker(false)} color="primary">
               No
             </Checkbox>
           </div>
@@ -154,51 +147,43 @@ export default function PersonalInfoPage() {
               </div>
             ))
           )}
-          <Button color="secondary" onClick={addDisabilityField}>
+          <Button color="primary" onClick={addDisabilityField}>
             +
           </Button>
         </div>
         <div className="w-full mb-4 text-black">
-            <p>Would you like to display your disability?</p>
-            <div className="flex gap-4">
-                <Checkbox
-                isSelected={displayDisability === true}
-                onChange={() => setDisplayDisability(true)}
-                color="secondary"
-                >
-                Yes
-                </Checkbox>
-                <Checkbox
-                isSelected={displayDisability === false}
-                onChange={() => setDisplayDisability(false)}
-                color="secondary"
-                >
-                No
-                </Checkbox>
-            </div>
+          <p>Would you like to display your disability?</p>
+          <div className="flex gap-4">
+            <Checkbox
+              isSelected={displayDisability === true}
+              onChange={() => setDisplayDisability(true)}
+              color="primary"
+            >
+              Yes
+            </Checkbox>
+            <Checkbox
+              isSelected={displayDisability === false}
+              onChange={() => setDisplayDisability(false)}
+              color="primary"
+            >
+              No
+            </Checkbox>
           </div>
-          <div className="w-full mb-4 text-black">
-            <p>Do you require full-time assistance for daily activities?</p>
-            <div className="flex gap-4">
-                <Checkbox
-                isSelected={needAssistance === true}
-                onChange={() => setNeedAssistance(true)}
-                color="secondary"
-                >
-                Yes
-                </Checkbox>
-                <Checkbox
-                isSelected={needAssistance === false}
-                onChange={() => setNeedAssistance(false)}
-                color="secondary"
-                >
-                No
-                </Checkbox>
-            </div>
+        </div>
+        <div className="w-full mb-4 text-black">
+          <p>Do you require full-time assistance for daily activities?</p>
+          <div className="flex gap-4">
+            <Checkbox isSelected={needAssistance === true} onChange={() => setNeedAssistance(true)} color="primary">
+              Yes
+            </Checkbox>
+            <Checkbox isSelected={needAssistance === false} onChange={() => setNeedAssistance(false)} color="primary">
+              No
+            </Checkbox>
           </div>
+        </div>
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button className="w-full mb-4 text-black" color="primary" onClick={handleSave}>
+        <Button className="w-full mb-4 text-black btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

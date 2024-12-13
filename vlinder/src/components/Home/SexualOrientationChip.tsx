@@ -2,7 +2,11 @@ import { Chip } from "@nextui-org/react";
 
 import SexualOrientation from "@/src/enums/SexualOrientation";
 
-export const SexualOrientationChip = ({ sexual_orientation }: { sexual_orientation?: SexualOrientation | string }) => {
+export const SexualOrientationChip = ({
+  sexual_orientation,
+}: {
+  sexual_orientation?: SexualOrientation | string;
+}) => {
   switch (sexual_orientation) {
     case SexualOrientation.Asexual:
       return <AsexualChip />;

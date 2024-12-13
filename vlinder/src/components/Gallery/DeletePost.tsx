@@ -30,7 +30,6 @@
 // 		}
 // 	};
 
-	
 // 	if (user?.id === post_by) {
 // 		return (
 // 			<div className=" absolute top-0 right-5">

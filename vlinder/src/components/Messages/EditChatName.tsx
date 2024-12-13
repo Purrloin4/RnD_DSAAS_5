@@ -56,8 +56,8 @@ export default function EditChatName({ roomId, roomName }: ChatNameProps) {
 
   return (
     <>
-      <Button color="danger" onPress={onOpen}>
-        EDIT CHAT NAME
+      <Button className="w-full" color="primary" onPress={onOpen}>
+        Edit Chat Name
       </Button>
       <Modal isOpen={isOpen} size="md" onOpenChange={onOpenChange}>
         <ModalContent>
@@ -75,9 +75,7 @@ export default function EditChatName({ roomId, roomName }: ChatNameProps) {
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
+                <Button onPress={onClose}>Cancel</Button>
                 <Button color="primary" onPress={handleUpdateRoomName}>
                   Set
                 </Button>

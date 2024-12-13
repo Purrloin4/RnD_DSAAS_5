@@ -2,22 +2,20 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
-//Enums
 import Gender, { GenderDisplayNames } from "@/src/enums/Gender";
+import EnviromentStrings from "@/src/enums/envStrings";
 import SexualOrientation, { SexualOrientationDisplayNames } from "@/src/enums/SexualOrientation";
 
-//Components
 import { Input } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 
-//Icons
 import { EyeFilledIcon } from "Components/Icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "Components/Icons/EyeSlashFilledIcon";
 
-///backend
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { b } from "framer-motion/client";
+
 const supabase = createClient();
 
 export default function Page() {
@@ -42,7 +40,7 @@ export default function Page() {
 
   const handleStepThreeRegistration = async () => {
     const accessToken = pathName.split("/").pop();
-  
+
     const { data: tokenData, error: tokenError } = await supabase
       .from("accessToken")
       .select("*")
@@ -50,34 +48,32 @@ export default function Page() {
       .eq("is_used", false)
       .single();
 
-  
     if (tokenError || !tokenData) {
       router.push(`/register`);
       return;
     }
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
-    
+
     if (userError || !userData) {
       setError("Please first enter your credentials");
       router.push(`/register/${accessToken}`);
       return;
     }
-    
+
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", userData.user.id)
       .single();
-
-    console.log("profileData", profileData);
+    if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+      console.log("profileData", profileData);
+    }
 
     if (!profileError && profileData) {
-      if (profileData.gender)
-        setGender(profileData.gender);
+      if (profileData.gender) setGender(profileData.gender);
 
-      if (profileData.sexual_orientation)
-        setSexualOrientation(profileData.sexual_orientation);
+      if (profileData.sexual_orientation) setSexualOrientation(profileData.sexual_orientation);
     }
   };
 
@@ -106,24 +102,22 @@ export default function Page() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: userData.user.id,
-        gender: gender,
-        sexual_orientation: sexualOrientation,
-      });
+    const { data, error } = await supabase.from("profiles").upsert({
+      id: userData.user.id,
+      gender: gender,
+      sexual_orientation: sexualOrientation,
+    });
 
     if (error) {
       setError("Error saving data");
-      console.log(error);
+      if (process.env.NODE_ENV === EnviromentStrings.DEVELOPMENT) {
+        console.log(error);
+      }
       return;
-    }
-    else {
+    } else {
       setMessage("Information saved successfully");
     }
   };
-
 
   return (
     <section className="w-full flex flex-col justify-start items-center p-4">
@@ -132,8 +126,10 @@ export default function Page() {
         <h3 className="text-gray-800 font-bold mb-2">Gender</h3>
         {Object.values(Gender).map((g) => (
           <Button
-            color={gender === g ? "secondary" : "default"}
-            className="w-full mb-4 text-gray-800"
+            color={gender === g ? "primary" : "default"}
+            className={`w-full mb-4 ${
+              gender === g ? "bg-primary text-white" : "text-gray-800 bg-gray-200"
+            } active:text-white active:bg-primary-dark`}
             data-gender={g}
             key={g}
             onClick={genderChange}
@@ -145,8 +141,10 @@ export default function Page() {
         <h3 className="text-gray-800 font-bold mb-2">Sexual Orientation</h3>
         {Object.values(SexualOrientation).map((o) => (
           <Button
-            color={sexualOrientation === o ? "secondary" : "default"}
-            className="w-full mb-4 text-gray-800"
+            color={sexualOrientation === o ? "primary" : "default"}
+            className={`w-full mb-4 ${
+              sexualOrientation === o ? "bg-primary text-white" : "text-gray-800 bg-gray-200"
+            } active:text-white active:bg-primary-dark`}
             data-sexualorientation={o}
             key={o}
             onClick={sexualOrientationChange}
@@ -156,7 +154,7 @@ export default function Page() {
         ))}
         {error && <p className="text-red-500">{error}</p>}
         {message && <p className="text-green-500">{message}</p>}
-        <Button className="w-full mt-8" color="primary" onClick={handleSave}>
+        <Button className="w-full mt-8 btn-primary font-semibold" onClick={handleSave}>
           Save
         </Button>
       </div>

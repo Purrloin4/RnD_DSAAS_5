@@ -61,6 +61,7 @@ export default function MessageInput({ roomId }: { roomId: string }) {
       const { error } = await supabase
         .from("messages")
         .insert({ content, id, profile_id: user?.id, room_id: roomId });
+      fetchLastMessage();
       if (error) {
         toast.error(error.message);
       }
@@ -71,7 +72,6 @@ export default function MessageInput({ roomId }: { roomId: string }) {
 
   const fetchLastMessage = async () => {
     try {
-
       const { data: messages, error } = await supabase
         .from("messages")
         .select("id, created_at")
@@ -79,7 +79,7 @@ export default function MessageInput({ roomId }: { roomId: string }) {
         .order("created_at", { ascending: false })
         .limit(1);
 
-      if(messages && messages.length === 0){
+      if (messages && messages.length === 0) {
         console.log("No messages found");
       }
       if (error) {
@@ -92,7 +92,8 @@ export default function MessageInput({ roomId }: { roomId: string }) {
         const lastMessageTime = new Date(lastMessage.created_at);
         const currentTime = new Date();
         const timeDifference =
-          (currentTime.getTime() - lastMessageTime.getTime()) / (1000 * 60 * 60 * 24); // Time difference in days
+          (currentTime.getTime() - lastMessageTime.getTime()) /
+          (1000 * 60 * 60 * 24); // Time difference in days
 
         if (timeDifference > 1) {
           setSuggestedMessage("It's been a while, how have you been?");
@@ -129,19 +130,14 @@ export default function MessageInput({ roomId }: { roomId: string }) {
         }}
       />
       {suggestedMessage && (
-        <Popover>
-          <PopoverTrigger>
-            <Button>{suggestedMessage}</Button>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Button
-              color="primary"
-              onPress={() => handleSendMessage(suggestedMessage)}
-            >
-              Send Suggested Message
-            </Button>
-          </PopoverContent>
-        </Popover>
+        <Button
+          className="mx-2"
+          onPress={() => {
+            setMessage(suggestedMessage);
+          }}
+        >
+          {suggestedMessage}
+        </Button>
       )}
       <Button
         isIconOnly

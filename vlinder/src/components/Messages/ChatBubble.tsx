@@ -10,7 +10,12 @@ type ChatListProps = {
   isOwnMessage: boolean;
 };
 
-export default function ChatBubble({ children, timestamp, type, isOwnMessage }: ChatListProps) {
+export default function ChatBubble({
+  children,
+  timestamp,
+  type,
+  isOwnMessage,
+}: ChatListProps) {
   const [isInFocus, setIsInFocus] = useState<boolean>(false);
 
   const getRoundings = () => {
@@ -28,7 +33,9 @@ export default function ChatBubble({ children, timestamp, type, isOwnMessage }: 
   };
 
   return (
-    <div className={`flex flex-col ${isOwnMessage ? "items-end" : "items-start"} w-full`}>
+    <div
+      className={`mb-1 flex flex-col ${isOwnMessage ? "items-end" : "items-start"} w-full`}
+    >
       <div
         onClick={() => setIsInFocus(!isInFocus)}
         className={`${
@@ -37,7 +44,9 @@ export default function ChatBubble({ children, timestamp, type, isOwnMessage }: 
       >
         {children}
       </div>
-      {isInFocus && <span className="mt-1 mb-2 text-xs text-gray-500">{timestamp}</span>}
+      {isInFocus && (
+        <span className="mt-1 mb-2 text-xs text-gray-500">{timestamp}</span>
+      )}
     </div>
   );
 }
